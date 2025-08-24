@@ -1,3 +1,34 @@
+# fredyPortfolio
+
+A Next.js 15 concept portfolio featuring detailed UX case studies (SelahReflect, Sea & Sky, ZipLearn) built with TypeScript, Tailwind CSS, and Framer Motion.
+
+## Tech Stack
+- Next.js 15 (App Router)
+- TypeScript
+- Tailwind CSS
+- Framer Motion, GSAP
+
+## Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+App runs at http://localhost:3000
+
+## Structure
+- `app/projects/[slug]` – individual case studies
+- `components/ui` – reusable UI components (e.g., CardSpotlight, Compare)
+- `src/lib/utils.ts` – utilities
+- `public/` – static assets
+
+## Notes
+This is a concept project for showcasing design/UX thinking and interactions; it is not a shipped production app.
+
+## Deployment
+Pushes to `main` are ready for deployment via your platform of choice (e.g., Vercel).
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
