@@ -6,7 +6,4 @@
 html, body { scroll-behavior: smooth; }
 body { @apply bg-black text-zinc-100 antialiased; }
 
-html, body { scroll-behavior: smooth; }
-body { @apply bg-white text-zinc-800 antialiased; }
-
 
