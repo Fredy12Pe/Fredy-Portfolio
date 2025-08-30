@@ -1,0 +1,110 @@
+.portfolioGrid {
+  display: grid;
+  gap: 1.25rem; /* 20px */
+  grid-template-columns: 1fr;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+@media (min-width: 640px) {
+  .portfolioGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .portfolioGrid {
+    grid-template-columns: 699px 819px;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "sea tidehaus"
+      "selah tidehaus"
+      "ziplearn ecommerce";
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .sea { grid-area: sea; }
+  .selah { grid-area: selah; }
+  .ziplearn { grid-area: ziplearn; }
+  .tidehaus { grid-area: tidehaus; }
+  .ecommerce { grid-area: ecommerce; }
+}
+
+.cardBase {
+  min-height: 506px;
+  border-radius: 1.25rem; /* ~20px */
+}
+
+@media (min-width: 1024px) {
+  .tideTall { min-height: 1039px; }
+}
+
+
+/* Animated info bubbles for Tidehaus */
+@keyframes bubbleFloat {
+  0% { opacity: 0; transform: translateX(-40%) scale(0.98); }
+  15% { opacity: 1; }
+  45% { opacity: 1; transform: translateX(0) scale(1); }
+  85% { opacity: 0; transform: translateX(25%) scale(1); }
+  100% { opacity: 0; }
+}
+
+@keyframes bubbleFloatAlt {
+  0% { opacity: 0; transform: translateX(-55%) translateY(-6%) scale(0.96); }
+  20% { opacity: 1; }
+  50% { opacity: 1; transform: translateX(3%) translateY(0) scale(1); }
+  90% { opacity: 0; transform: translateX(30%) translateY(4%) scale(1.02); }
+  100% { opacity: 0; }
+}
+
+.bubble {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1.25rem; /* 20px */
+  padding-right: 1.25rem; /* 20px */
+  height: 3.25rem; /* ~52px */
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.20);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-family: Poppins, sans-serif;
+  font-weight: 500;
+  font-size: 1rem; /* 16px */
+  line-height: 1;
+  animation: bubbleFloat 7s ease-in-out infinite both;
+}
+
+/* Staggered delays (more spaced out to feel less synced) */
+.delay1 { animation-delay: 0s; }
+.delay2 { animation-delay: 0.6s; }
+.delay3 { animation-delay: 1.2s; }
+.delay4 { animation-delay: 1.8s; }
+.delay5 { animation-delay: 2.4s; }
+.delay6 { animation-delay: 3.1s; }
+.delay7 { animation-delay: 3.7s; }
+.delay8 { animation-delay: 4.3s; }
+.delayNeg1 { animation-delay: -1.1s; }
+.delayNeg2 { animation-delay: -2.2s; }
+
+/* Slight duration variations to further desync the loop */
+.speed1 { animation-duration: 6.8s; }
+.speed2 { animation-duration: 7.6s; }
+.speed3 { animation-duration: 8.4s; }
+
+/* Alternate path variant for extra desync */
+.variant2 { animation-name: bubbleFloatAlt; }
+
+.tideRegion {
+  position: absolute;
+  left: 2rem;
+  right: auto;
+  width: min(560px, 44%);
+  top: 16rem; /* pushed below text */
+  bottom: 8rem;
+}
+
+
