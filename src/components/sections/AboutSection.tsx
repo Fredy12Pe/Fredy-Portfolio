@@ -1,0 +1,219 @@
+"use client";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+
+// Local assets
+import fredyImg from "../../../app/mainPage Assets/About Me/Fredy.png";
+import surfImg from "../../../app/mainPage Assets/About Me/Surf.png";
+import summerSong from "../../../app/mainPage Assets/About Me/Summer Song.mp4";
+
+export default function AboutSection() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const items = section.querySelectorAll<HTMLElement>('[data-parallax]');
+      const vh = window.innerHeight || 800;
+      items.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const progress = Math.min(Math.max((vh - rect.top) / (vh + rect.height), 0), 1);
+        const speedAttr = el.getAttribute('data-speed');
+        const speed = speedAttr ? parseFloat(speedAttr) : 0.25;
+        const translate = (0.5 - progress) * speed * 180; // stronger vertical drift
+        el.style.willChange = 'transform, opacity';
+        el.style.transform = `translateY(${translate.toFixed(2)}px)`;
+        el.style.opacity = (0.6 + progress * 0.4).toFixed(2);
+      });
+    };
+    onScroll();
+    // Local reveal for About section
+    const revealItems = Array.from(sectionRef.current?.querySelectorAll<HTMLElement>('[data-reveal]') || []);
+    revealItems.forEach((el, idx) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(28px)';
+      el.style.transition = 'opacity 650ms ease, transform 650ms cubic-bezier(0.22,1,0.36,1)';
+      el.style.transitionDelay = `${idx * 110}ms`;
+    });
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target as HTMLElement;
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+          io.unobserve(el);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealItems.forEach((el) => io.observe(el));
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      io.disconnect();
+    };
+  }, []);
+
+  return (
+    <section ref={sectionRef} id="about" className="mx-auto mt-24 max-w-[100rem] px-4 md:px-8">
+      <h2 className="text-[64px] sm:text-[96px] md:text-[140px] lg:text-[170px] xl:text-[200px] font-black tracking-tight text-white uppercase">About Me</h2>
+
+      <div data-reveal>
+        <div data-parallax data-speed="0.18" className="mt-0 w-full md:w-4/6">
+          <p className="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#828282]">
+            Fredy is a passionate <span className="font-semibold text-white">UI/UX designer</span> focused on creating clear, intuitive, and visually engaging digital experiences. With a strong foundation in design and a growing skill set in development, <span className="font-semibold text-white">he blends creativity with functionality to turn ideas into real, working products.</span> His work emphasizes usability and detail, ensuring that every interaction feels seamless and purposeful.
+          </p>
+          <p className="mt-8 text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[26px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#6C6C6C]">
+            Outside of design, he enjoys surfing, running, and producing music, simple passions that keep him inspired and balanced.
+          </p>
+        </div>
+      </div>
+
+      <Carousel />
+    </section>
+  );
+}
+
+type Slide = { type: "image" | "video"; src: any; alt?: string };
+
+function Carousel() {
+  const slides: Slide[] = [
+    { type: "image", src: fredyImg, alt: "Fredy smiling with ocean background" },
+    { type: "image", src: surfImg, alt: "Surfboard and street scene" },
+    { type: "video", src: summerSong },
+  ];
+  // We build an infinite track by cloning first and last
+  const track: Slide[] = [slides[slides.length - 1], ...slides, slides[0]];
+  const [current, setCurrent] = useState(1); // start at first real slide
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [enableTransition, setEnableTransition] = useState(true);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const realIndex = (current - 1 + slides.length) % slides.length;
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (slides[realIndex].type === "video") {
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
+  }, [realIndex]);
+
+  const go = (dir: -1 | 1) => {
+    setIsAnimating(true);
+    setEnableTransition(true);
+    setCurrent((i) => i + dir);
+  };
+
+  const nextIndex = (realIndex + 1) % slides.length;
+
+  return (
+    <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div data-reveal>
+        <div data-parallax data-speed="0.3" className="relative overflow-hidden rounded-2xl ring-1 ring-white/10 bg-white/5 mt-8 h-[500px] md:h-[580px] lg:h-[660px]">
+        <div className="relative h-full w-full">
+          <div
+            className={`flex h-full w-full will-change-transform ${enableTransition ? "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" : ""}`}
+            style={{ transform: `translate3d(-${current * 100}%,0,0)` }}
+            onTransitionEnd={() => {
+              // Snap when hitting clones using double RAF to ensure the transition-none style applies.
+              if (current === 0) {
+                setEnableTransition(false);
+                setCurrent(slides.length);
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => {
+                    setEnableTransition(true);
+                    setIsAnimating(false);
+                  });
+                });
+              } else if (current === slides.length + 1) {
+                setEnableTransition(false);
+                setCurrent(1);
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => {
+                    setEnableTransition(true);
+                    setIsAnimating(false);
+                  });
+                });
+              } else {
+                setIsAnimating(false);
+              }
+            }}
+          >
+            {track.map((s, i) => (
+              <div key={i} className="relative h-full w-full shrink-0 grow-0 basis-full">
+                {s.type === "image" ? (
+                  <Image
+                    src={s.src}
+                    alt={s.alt || ""}
+                    className={`h-full w-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
+                    priority={i === 1}
+                  />
+                ) : (
+                  <video
+                    ref={i === current ? videoRef : undefined}
+                    className={`about-media h-full w-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
+                    src={s.src}
+                    muted
+                    controls
+                    playsInline
+                    autoPlay
+                    loop
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+        <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 transform flex gap-2">
+          <button
+            onClick={() => go(-1)}
+            className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white ring-1 ring-white/10 hover:bg-black/80"
+            aria-label="Previous"
+          >
+            ‹
+          </button>
+          <button
+            onClick={() => go(1)}
+            className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white ring-1 ring-white/10 hover:bg-black/80"
+            aria-label="Next"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+
+      <div data-reveal>
+        <div data-parallax data-speed="0.22" className="relative overflow-hidden rounded-2xl ring-1 ring-white/10 bg-white/5 mt-8 h-[500px] md:h-[580px] lg:h-[660px]">
+        {(() => {
+          const s = slides[nextIndex];
+          return s.type === "image" ? (
+            <Image
+              src={s.src}
+              alt={s.alt || ""}
+              className={`h-full w-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
+            />
+          ) : (
+            <video
+              className={`about-media h-full w-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
+              src={s.src}
+              muted
+              playsInline
+              loop
+              // no controls on preview
+            />
+          );
+        })()}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
