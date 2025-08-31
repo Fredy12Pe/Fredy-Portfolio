@@ -1,14 +1,20 @@
+import SplineOverlay from "@/components/hero/SplineOverlay";
 import Header from "@/components/layout/Header";
 import ProjectsSection from "@/components/sections/ProjectsSection";
+import AboutSection from "@/components/sections/AboutSection";
 
 export default function Home() {
   return (
-    <>
-      <Header />
-      <main className="w-full px-0 py-16">
-        <ProjectsSection />
-      </main>
-    </>
+    <div className="min-h-screen">
+      <SplineOverlay />
+      <div className="relative">
+        <Header />
+        <main className="w-full px-0 py-16">
+          <ProjectsSection />
+          <AboutSection />
+        </main>
+      </div>
+    </div>
   );
 }
 

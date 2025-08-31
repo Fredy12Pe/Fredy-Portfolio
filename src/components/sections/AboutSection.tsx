@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 // Local assets
 import fredyImg from "../../../app/mainPage Assets/About Me/Fredy.png";
 import surfImg from "../../../app/mainPage Assets/About Me/Surf.png";
-import summerSong from "../../../app/mainPage Assets/About Me/Summer Song.mp4";
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -30,6 +29,7 @@ export default function AboutSection() {
     onScroll();
     // Local reveal for About section
     const revealItems = Array.from(sectionRef.current?.querySelectorAll<HTMLElement>('[data-reveal]') || []);
+
     revealItems.forEach((el, idx) => {
       el.style.opacity = '0';
       el.style.transform = 'translateY(28px)';
@@ -76,21 +76,21 @@ export default function AboutSection() {
   );
 }
 
-type Slide = { type: "image" | "video"; src: any; alt?: string };
+type Slide = { type: "image" | "video" | "placeholder"; src: any; alt?: string };
 
 function Carousel() {
   const slides: Slide[] = [
     { type: "image", src: fredyImg, alt: "Fredy smiling with ocean background" },
     { type: "image", src: surfImg, alt: "Surfboard and street scene" },
-    { type: "video", src: summerSong },
+    // Video placeholder - will be replaced with YouTube embed later
+    { type: "placeholder", src: null, alt: "Video coming soon" },
   ];
-  // We build an infinite track by cloning first and last
+  
   const track: Slide[] = [slides[slides.length - 1], ...slides, slides[0]];
-  const [current, setCurrent] = useState(1); // start at first real slide
+  const [current, setCurrent] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
   const [enableTransition, setEnableTransition] = useState(true);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-
   const realIndex = (current - 1 + slides.length) % slides.length;
 
   useEffect(() => {
@@ -101,7 +101,7 @@ function Carousel() {
     } else {
       v.pause();
     }
-  }, [realIndex]);
+  }, [realIndex, slides]);
 
   const go = (dir: -1 | 1) => {
     setIsAnimating(true);
@@ -115,105 +115,125 @@ function Carousel() {
     <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
       <div data-reveal>
         <div data-parallax data-speed="0.3" className="relative overflow-hidden rounded-2xl ring-1 ring-white/10 bg-white/5 mt-8 h-[500px] md:h-[580px] lg:h-[660px]">
-        <div className="relative h-full w-full">
-          <div
-            className={`flex h-full w-full will-change-transform ${enableTransition ? "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" : ""}`}
-            style={{ transform: `translate3d(-${current * 100}%,0,0)` }}
-            onTransitionEnd={() => {
-              // Snap when hitting clones using double RAF to ensure the transition-none style applies.
-              if (current === 0) {
-                setEnableTransition(false);
-                setCurrent(slides.length);
-                requestAnimationFrame(() => {
+          <div className="relative h-full w-full">
+            <div
+              className={`flex h-full w-full will-change-transform ${enableTransition ? "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" : ""}`}
+              style={{ transform: `translate3d(-${current * 100}%,0,0)` }}
+              onTransitionEnd={() => {
+                if (current === 0) {
+                  setEnableTransition(false);
+                  setCurrent(slides.length);
                   requestAnimationFrame(() => {
-                    setEnableTransition(true);
-                    setIsAnimating(false);
+                    requestAnimationFrame(() => {
+                      setEnableTransition(true);
+                      setIsAnimating(false);
+                    });
                   });
-                });
-              } else if (current === slides.length + 1) {
-                setEnableTransition(false);
-                setCurrent(1);
-                requestAnimationFrame(() => {
+                } else if (current === slides.length + 1) {
+                  setEnableTransition(false);
+                  setCurrent(1);
                   requestAnimationFrame(() => {
-                    setEnableTransition(true);
-                    setIsAnimating(false);
+                    requestAnimationFrame(() => {
+                      setEnableTransition(true);
+                      setIsAnimating(false);
+                    });
                   });
-                });
-              } else {
-                setIsAnimating(false);
-              }
-            }}
-          >
-            {track.map((s, i) => (
-              <div key={i} className="relative h-full w-full shrink-0 grow-0 basis-full">
-                {s.type === "image" ? (
-                  <Image
-                    src={s.src}
-                    alt={s.alt || ""}
-                    className={`h-full w-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
-                    priority={i === 1}
-                  />
-                ) : (
-                  <video
-                    ref={i === current ? videoRef : undefined}
-                    className={`about-media h-full w-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
-                    src={s.src}
-                    muted
-                    controls
-                    playsInline
-                    autoPlay
-                    loop
-                  />
-                )}
-              </div>
-            ))}
+                } else {
+                  setIsAnimating(false);
+                }
+              }}
+            >
+              {track.map((s, i) => (
+                <div key={i} className="relative h-full w-full shrink-0 grow-0 basis-full">
+                  {s.type === "image" ? (
+                    <Image
+                      src={s.src}
+                      alt={s.alt || ""}
+                      className={`h-full w-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
+                      priority={i === 1}
+                    />
+                  ) : s.type === "video" ? (
+                    <video
+                      ref={i === current ? videoRef : undefined}
+                      className={`about-media h-full w-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
+                      src={s.src}
+                      muted
+                      controls
+                      playsInline
+                      autoPlay
+                      loop
+                    />
+                  ) : (
+                    <div className={`h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}>
+                      <div className="text-center text-white">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                          </svg>
+                        </div>
+                        <p className="text-lg font-medium">Video Coming Soon</p>
+                        <p className="text-sm text-white/70 mt-2">Will be updated with YouTube embed</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </div>
 
-        <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 transform flex gap-2">
-          <button
-            onClick={() => go(-1)}
-            className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white ring-1 ring-white/10 hover:bg-black/80"
-            aria-label="Previous"
-          >
-            ‹
-          </button>
-          <button
-            onClick={() => go(1)}
-            className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white ring-1 ring-white/10 hover:bg-black/80"
-            aria-label="Next"
-          >
-            ›
-          </button>
+          <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 transform flex gap-2">
+            <button
+              onClick={() => go(-1)}
+              className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white ring-1 ring-white/10 hover:bg-black/80"
+              aria-label="Previous"
+            >
+              ‹
+            </button>
+            <button
+              onClick={() => go(1)}
+              className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white ring-1 ring-white/10 hover:bg-black/80"
+              aria-label="Next"
+            >
+              ›
+            </button>
+          </div>
         </div>
       </div>
 
       <div data-reveal>
         <div data-parallax data-speed="0.22" className="relative overflow-hidden rounded-2xl ring-1 ring-white/10 bg-white/5 mt-8 h-[500px] md:h-[580px] lg:h-[660px]">
-        {(() => {
-          const s = slides[nextIndex];
-          return s.type === "image" ? (
-            <Image
-              src={s.src}
-              alt={s.alt || ""}
-              className={`h-full w-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
-            />
-          ) : (
-            <video
-              className={`about-media h-full w-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
-              src={s.src}
-              muted
-              playsInline
-              loop
-              // no controls on preview
-            />
-          );
-        })()}
+          {(() => {
+            const s = slides[nextIndex];
+            return s.type === "image" ? (
+              <Image
+                src={s.src}
+                alt={s.alt || ""}
+                className={`h-full w-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
+              />
+            ) : s.type === "video" ? (
+              <video
+                className={`about-media h-full w-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
+                src={s.src}
+                muted
+                playsInline
+                loop
+                // no controls on preview
+              />
+            ) : (
+              <div className={`h-full w-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}>
+                <div className="text-center text-white/60">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-white/5 flex items-center justify-center">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <p className="text-sm">Preview</p>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
   );
 }
-
-

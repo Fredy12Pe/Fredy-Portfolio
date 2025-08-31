@@ -2,7 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body { scroll-behavior: smooth; }
-body { @apply bg-white text-zinc-800 antialiased; }
+html, body { 
+  scroll-behavior: smooth; 
+}
+
+body { 
+  @apply bg-black text-zinc-100 antialiased; 
+  overflow-x: hidden;
+}
+
+/* Spline transparency and layering */
+spline-viewer { 
+  background: transparent !important; 
+  display: block; 
+}
+
+#spline-overlay canvas, spline-viewer canvas { 
+  background: transparent !important; 
+}
+
+#spline-overlay canvas { 
+  mix-blend-mode: screen; 
+}
+
+/* Header pinning when overlay is active */
+#site-header.is-pinned { 
+  position: fixed; 
+  inset: 0 auto auto 0; 
+  width: 100%; 
+  z-index: 50; 
+}
+
+/* Spline overlay z-index */
+#spline-overlay { 
+  z-index: 9999 !important; 
+}
+
+/* Scroll locking for overlay */
+.body-locked {
+  overflow: hidden !important;
+}
+
+/* Hide main content during loading */
+body.overlay-loading main { 
+  visibility: hidden; 
+}
 
 
