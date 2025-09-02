@@ -25,3 +25,12 @@ body {
   color: var(--foreground);
   font-family: 'Poppins', Arial, Helvetica, sans-serif;
 }
+
+@keyframes slide {
+  from {
+    transform: translateY(-50%) translateX(0);
+  }
+  to {
+    transform: translateY(-50%) translateX(-100%);
+  }
+}

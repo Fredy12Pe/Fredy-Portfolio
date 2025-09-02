@@ -63,10 +63,10 @@ export default function AboutSection() {
       <div data-reveal>
         <div data-parallax data-speed="0.18" className="mt-0 w-full md:w-4/6">
           <p className="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#828282]">
-            Fredy is a passionate <span className="font-semibold text-white">UI/UX designer</span> focused on creating clear, intuitive, and visually engaging digital experiences. With a strong foundation in design and a growing skill set in development, <span className="font-semibold text-white">he blends creativity with functionality to turn ideas into real, working products.</span> His work emphasizes usability and detail, ensuring that every interaction feels seamless and purposeful.
+            I am a passionate <span className="font-semibold text-white">UI/UX designer</span> focused on creating clear, intuitive, and visually engaging unique digital experiences. With a strong foundation in design and a growing skill set in development, <span className="font-semibold text-white">I blend creativity with functionality to turn ideas into real, working products.</span> My work emphasizes usability and detail, ensuring that every interaction feels seamless and purposeful.
           </p>
-          <p className="mt-8 text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[26px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#6C6C6C]">
-            Outside of design, he enjoys surfing, running, and producing music, simple passions that keep him inspired and balanced.
+          <p className="mt-8 text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#6C6C6C]">
+            Outside of design, I enjoy surfing, running, and producing music, simple passions that keep me inspired and balanced.
           </p>
         </div>
       </div>
@@ -76,14 +76,22 @@ export default function AboutSection() {
   );
 }
 
-type Slide = { type: "image" | "video" | "placeholder"; src: any; alt?: string };
+type Slide = { type: "image" | "video" | "youtube" | "placeholder"; src: any; alt?: string };
+
+// Helper function to convert YouTube URL to embed URL
+function getYouTubeEmbedUrl(url: string): string {
+  const videoId = url.includes('youtu.be/') 
+    ? url.split('youtu.be/')[1].split('?')[0]
+    : url.split('v=')[1]?.split('&')[0];
+  return `https://www.youtube.com/embed/${videoId}?autoplay=0&mute=1&loop=1&playlist=${videoId}`;
+}
 
 function Carousel() {
   const slides: Slide[] = [
-    { type: "image", src: fredyImg, alt: "Fredy smiling with ocean background" },
+    { type: "image", src: fredyImg, alt: "I smiling with ocean background" },
     { type: "image", src: surfImg, alt: "Surfboard and street scene" },
-    // Video placeholder - will be replaced with YouTube embed later
-    { type: "placeholder", src: null, alt: "Video coming soon" },
+    // YouTube video embed
+    { type: "youtube", src: "https://youtu.be/NzhowvwpWyo", alt: "Fredy's video" },
   ];
   
   const track: Slide[] = [slides[slides.length - 1], ...slides, slides[0]];
@@ -162,6 +170,15 @@ function Carousel() {
                       playsInline
                       autoPlay
                       loop
+                    />
+                  ) : s.type === "youtube" ? (
+                    <iframe
+                      className={`h-full w-full transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
+                      src={getYouTubeEmbedUrl(s.src)}
+                      title={s.alt || "YouTube video"}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
                     />
                   ) : (
                     <div className={`h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}>
