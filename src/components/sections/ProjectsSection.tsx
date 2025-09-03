@@ -122,8 +122,8 @@ export default function ProjectsSection() {
   }, []);
   return (
     <section id="projects" className="mx-auto mt-16 max-w-[100rem] px-4 md:px-8">
-      <h2 className="text-[100px] font-bold tracking-tight text-white">
-        Highlighted Work
+      <h2 className="whitespace-nowrap text-[36px] sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px] font-black tracking-tight text-white uppercase">
+        Featured Projects
       </h2>
 
       <div className={"mt-8 mx-auto w-full max-w-[100rem] px-0 " + styles.portfolioGrid}>
@@ -221,12 +221,12 @@ export default function ProjectsSection() {
                   {tile.href ? (
                     <Link
                       href={tile.href}
-                      className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[66px] rounded-[1.25rem] bg-white/20 backdrop-blur-md text-white text-base font-medium font-poppins opacity-0 translate-y-2 transition-all duration-500 ease-in-out will-change-transform group-hover:opacity-100 group-hover:translate-y-0 hover:bg-white hover:text-black"
+                      className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[66px] rounded-[1.25rem] bg-white/20 backdrop-blur-md text-white text-base font-medium font-poppins opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 transition-all duration-500 ease-in-out will-change-transform md:group-hover:opacity-100 md:group-hover:translate-y-0 hover:bg-white hover:text-black"
                     >
                       Check Out Project
                     </Link>
                   ) : (
-                    <div className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[72px] rounded-[1.25rem] bg-white/20 backdrop-blur-md text-white text-base font-medium font-poppins opacity-0 translate-y-2 transition-all duration-500 ease-in-out will-change-transform group-hover:opacity-100 group-hover:translate-y-0 hover:bg-white hover:text-black">
+                    <div className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[72px] rounded-[1.25rem] bg-white/20 backdrop-blur-md text-white text-base font-medium font-poppins opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 transition-all duration-500 ease-in-out will-change-transform md:group-hover:opacity-100 md:group-hover:translate-y-0 hover:bg-white hover:text-black">
                       Check Out Project
                     </div>
                   )}
@@ -303,14 +303,7 @@ export default function ProjectsSection() {
         })}
       </div>
 
-      <div className="mt-10 flex w-full justify-center">
-        <a
-          href="#"
-          className="inline-flex items-center justify-center rounded-full bg-zinc-800 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-700"
-        >
-          View More Projects
-        </a>
-      </div>
+      {/* Bottom button temporarily removed until more projects are added */}
     </section>
   );
 }

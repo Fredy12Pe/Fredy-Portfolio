@@ -58,7 +58,7 @@ export default function AboutSection() {
 
   return (
     <section ref={sectionRef} id="about" className="mx-auto mt-24 max-w-[100rem] px-4 md:px-8">
-      <h2 className="text-[64px] sm:text-[96px] md:text-[140px] lg:text-[170px] xl:text-[200px] font-black tracking-tight text-white uppercase">About Me</h2>
+      <h2 className="whitespace-nowrap text-[36px] sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px] font-black tracking-tight text-white uppercase">About Me</h2>
 
       <div data-reveal>
         <div data-parallax data-speed="0.18" className="mt-0 w-full md:w-4/6">
