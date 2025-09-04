@@ -155,7 +155,7 @@ function Carousel() {
                     <img
                       src={s.src}
                       alt={s.alt || ""}
-                      className={`h-full w-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
+                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
                     />
                   ) : s.type === "video" ? (
                     <video
@@ -222,7 +222,7 @@ function Carousel() {
               <img
                 src={s.src}
                 alt={s.alt || ""}
-                className={`h-full w-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
               />
             ) : s.type === "video" ? (
               <video
