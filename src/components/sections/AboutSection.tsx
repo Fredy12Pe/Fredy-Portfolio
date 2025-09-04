@@ -86,8 +86,8 @@ function getYouTubeEmbedUrl(url: string): string {
 
 function Carousel() {
   const slides: Slide[] = [
-    { type: "image", src: "/images/test-image.png", alt: "I smiling with ocean background" },
-    { type: "image", src: "/images/test-image.png", alt: "Surfboard and street scene" },
+    { type: "image", src: "/images/about/Fredy.png", alt: "I smiling with ocean background" },
+    { type: "image", src: "/images/about/Surf.png", alt: "Surfboard and street scene" },
     // YouTube video embed
     { type: "youtube", src: "https://youtu.be/NzhowvwpWyo", alt: "Fredy's video" },
   ];
