@@ -2,20 +2,11 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 
-// Tech Stack Images - back to import method for reliability
-import CursorImg from "../../../app/images/tech-stack/Cursor.png";
-import FigmaImg from "../../../app/images/tech-stack/Figma.png";
-import GPTImg from "../../../app/images/tech-stack/GPT.png";
-import IllustratorImg from "../../../app/images/tech-stack/Illustrator.png";
-import NextJSImg from "../../../app/images/tech-stack/NextJS.png";
-import PhotoshopImg from "../../../app/images/tech-stack/Photoshop.png";
-import ReactImg from "../../../app/images/tech-stack/React.png";
-import SplineImg from "../../../app/images/tech-stack/Spline.png";
-
+// Tech Stack Images - using public folder paths
 interface TechStackItem {
   name: string; // Title shown under the logo
   description: string; // Short blurb under the title
-  image: any;
+  image: string;
   category: "Development" | "Design" | "AI";
 }
 
@@ -23,49 +14,49 @@ const techStack: TechStackItem[] = [
   {
     name: "Cursor",
     description: "AI-powered coding assistant that speeds up development.",
-    image: CursorImg,
+    image: "/images/tech-stack/Cursor.png",
     category: "Development",
   },
   {
     name: "ChatGPT",
     description: "Helps with ideation, copywriting, and dev problem-solving.",
-    image: GPTImg,
+    image: "/images/tech-stack/GPT.png",
     category: "AI",
   },
   {
     name: "Next.js",
     description: "A modern full-stack React framework for web apps.",
-    image: NextJSImg,
+    image: "/images/tech-stack/NextJS.png",
     category: "Development",
   },
   {
     name: "React",
     description: "Component-based UI library for building interactive apps.",
-    image: ReactImg,
+    image: "/images/tech-stack/React.png",
     category: "Development",
   },
   {
     name: "Figma",
     description: "Collaborative UI/UX design and prototyping platform.",
-    image: FigmaImg,
+    image: "/images/tech-stack/Figma.png",
     category: "Design",
   },
   {
     name: "Photoshop",
     description: "Industry-standard tool for image editing and visual design.",
-    image: PhotoshopImg,
+    image: "/images/tech-stack/Photoshop.png",
     category: "Design",
   },
   {
     name: "Illustrator",
     description: "Vector-based design software for icons, graphics, and branding.",
-    image: IllustratorImg,
+    image: "/images/tech-stack/Illustrator.png",
     category: "Design",
   },
   {
     name: "Spline",
     description: "3D design tool for interactive visuals and product mockups.",
-    image: SplineImg,
+    image: "/images/tech-stack/Spline.png",
     category: "Design",
   },
 ];

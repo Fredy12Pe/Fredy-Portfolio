@@ -2,9 +2,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-// Local assets
-import fredyImg from "../../../app/images/about/Fredy.png";
-import surfImg from "../../../app/images/about/Surf.png";
+// Local assets - using public folder paths
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -88,8 +86,8 @@ function getYouTubeEmbedUrl(url: string): string {
 
 function Carousel() {
   const slides: Slide[] = [
-    { type: "image", src: fredyImg, alt: "I smiling with ocean background" },
-    { type: "image", src: surfImg, alt: "Surfboard and street scene" },
+    { type: "image", src: "/images/about/Fredy.png", alt: "I smiling with ocean background" },
+    { type: "image", src: "/images/about/Surf.png", alt: "Surfboard and street scene" },
     // YouTube video embed
     { type: "youtube", src: "https://youtu.be/NzhowvwpWyo", alt: "Fredy's video" },
   ];

@@ -4,13 +4,7 @@ import Image from "next/image";
 import { useEffect } from "react";
 import styles from "./ProjectsSection.module.css";
 
-// Import images statically
-import seaSkyImg from "../../../app/images/projects/seaSky thumbnail.png";
-import tidehausImg from "../../../app/images/projects/tidehaus thumbnail.png";
-import tidehausOverlayImg from "../../../app/images/projects/Tidehaus imgOverlay.png";
-import selahImg from "../../../app/images/projects/selah Thumbnail.png";
-import ziplearnImg from "../../../app/images/projects/ziplearn thumbnail.png";
-import ecommerceImg from "../../../app/images/projects/ecommerce bg.png";
+// Import images statically - using public folder paths
 
 type Tile = {
   title: string;
@@ -133,11 +127,11 @@ export default function ProjectsSection() {
       <div className={"mt-8 mx-auto w-full max-w-[100rem] px-0 " + styles.portfolioGrid}>
         {tiles.map((tile) => {
           const images: Record<string, any> = {
-            sea: seaSkyImg,
-            tidehaus: tidehausImg,
-            selah: selahImg,
-            ziplearn: ziplearnImg,
-            ecommerce: ecommerceImg,
+            sea: "/images/projects/seaSky thumbnail.png",
+            tidehaus: "/images/projects/tidehaus thumbnail.png",
+            selah: "/images/projects/selah Thumbnail.png",
+            ziplearn: "/images/projects/ziplearn thumbnail.png",
+            ecommerce: "/images/projects/ecommerce bg.png",
           };
           const imgSrc = images[tile.tileClass];
           const isCover = tile.tileClass === "tidehaus" || tile.tileClass === "ecommerce";
@@ -210,7 +204,7 @@ export default function ProjectsSection() {
                   >
                     <div className="relative w-5/6 h-5/6 transform scale-95 transition-transform duration-500 ease-in-out md:group-hover:scale-100">
                       <Image
-                        src={tidehausOverlayImg}
+                        src="/images/projects/Tidehaus imgOverlay.png"
                         alt="Tidehaus overlay"
                         fill
                         className="object-contain"
