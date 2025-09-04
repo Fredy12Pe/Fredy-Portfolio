@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import styles from "./ProjectsSection.module.css";
 
 // Import images statically - using public folder paths
@@ -58,6 +58,8 @@ const tiles: Tile[] = [
 ];
 
 export default function ProjectsSection() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     const handleScroll = () => {
       const isSmall = window.innerWidth < 768;
@@ -118,9 +120,39 @@ export default function ProjectsSection() {
       });
     };
   }, []);
+
+  useEffect(() => {
+    // Local reveal for Featured Projects section
+    const revealItems = Array.from(sectionRef.current?.querySelectorAll<HTMLElement>('[data-reveal]') || []);
+
+    revealItems.forEach((el, idx) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(28px)';
+      el.style.transition = 'opacity 650ms ease, transform 650ms cubic-bezier(0.22,1,0.36,1)';
+      el.style.transitionDelay = `${idx * 110}ms`;
+    });
+    
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target as HTMLElement;
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+          io.unobserve(el);
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    revealItems.forEach((el) => io.observe(el));
+    
+    return () => {
+      io.disconnect();
+    };
+  }, []);
+
   return (
-    <section id="projects" className="mx-auto mt-12 md:mt-16 max-w-[100rem] px-4 md:px-8">
-      <h2 className="whitespace-nowrap text-[36px] sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px] font-black tracking-tight text-white uppercase text-center md:text-left">
+    <section ref={sectionRef} id="projects" className="mx-auto mt-12 md:mt-16 max-w-[100rem] px-4 md:px-8">
+      <h2 data-reveal className="whitespace-nowrap text-[36px] sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px] font-black tracking-tight text-white uppercase text-center md:text-left">
         Featured Projects
       </h2>
 
@@ -285,7 +317,7 @@ export default function ProjectsSection() {
           const wrapperClasses = `block ${styles[tile.tileClass as keyof typeof styles] || ""} ${tile.tileClass?.includes("tide") ? styles.tideTall : ""}`;
 
           return (
-            <div key={tile.title} className={wrapperClasses}>
+            <div key={tile.title} data-reveal className={wrapperClasses}>
               {content}
             </div>
           );
