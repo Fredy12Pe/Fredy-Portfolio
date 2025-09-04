@@ -159,11 +159,9 @@ export default function FavoriteStackSection() {
 
               <div className="relative z-10 flex flex-col items-center justify-center h-full w-full transition-all duration-300">
                 <div className="w-16 h-16 md:w-36 md:h-36 transition-transform duration-300 md:group-hover:scale-110 md:group-hover:-translate-y-2 flex items-center justify-center">
-                  <Image
+                  <img
                     src={tech.image}
                     alt={tech.name}
-                    width={144}
-                    height={144}
                     className="object-contain w-full h-full"
                   />
                 </div>

@@ -6,12 +6,10 @@ export default function ContactSection() {
     <section id="contact" className="mx-auto mt-12 md:mt-24 max-w-[100rem] px-4 md:px-8">
       <div className="relative overflow-hidden rounded-[20px] ring-1 ring-white/10 group">
         {/* Background image */}
-        <Image
+        <img
           src="/images/projects/tidehaus-thumbnail.png"
           alt="Tidehaus background"
-          fill
-          className="object-cover"
-          priority={false}
+          className="object-cover w-full h-full absolute inset-0"
         />
 
         {/* Blur overlay above the image */}

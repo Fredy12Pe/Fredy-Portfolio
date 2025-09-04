@@ -165,27 +165,20 @@ export default function ProjectsSection() {
               {imgSrc ? (
                 isCover ? (
                   <div className="pointer-events-none absolute inset-0 p-0">
-                    <Image
+                    <img
                       src={imgSrc}
                       alt={tile.title}
-                      fill
                       className="h-full w-full object-cover object-center"
-                      sizes="(min-width: 1024px) 819px, 100vw"
-                      priority={false}
                     />
                   </div>
                 ) : (
                   <div className={`pointer-events-none absolute inset-0 flex ${tile.tileClass === "sea" ? "items-end justify-center md:items-end" : "items-end"} js-tilt-parent-all ${wrapperPadding}`}>
                     <div className={`js-parallax relative w-full ${tile.tileClass === "sea" ? "h-3/5 md:h-auto" : "h-auto"} will-change-transform`}>
                       <div className={`relative w-full ${tile.tileClass === "sea" ? "h-full md:h-auto" : "h-auto"} ${enableImageScale ? "transition-transform duration-500 ease-in-out md:group-hover:scale-[1.10]" : ""}`}>
-                        <Image
+                        <img
                           src={imgSrc}
                           alt={tile.title}
-                          width={800}
-                          height={600}
                           className={`w-full ${tile.tileClass === "sea" ? "h-full md:h-auto object-cover md:object-contain" : "h-auto object-contain"}`}
-                          sizes="(min-width: 1024px) 819px, 100vw"
-                          priority={false}
                         />
                       </div>
                     </div>
@@ -203,12 +196,10 @@ export default function ProjectsSection() {
                     style={{ top: "14rem", bottom: "2rem" }}
                   >
                     <div className="relative w-5/6 h-5/6 transform scale-95 transition-transform duration-500 ease-in-out md:group-hover:scale-100">
-                      <Image
+                      <img
                         src="/images/projects/Tidehaus-imgOverlay.png"
                         alt="Tidehaus overlay"
-                        fill
-                        className="object-contain"
-                        sizes="(min-width: 1024px) 819px, 100vw"
+                        className="object-contain w-full h-full"
                       />
                     </div>
                   </div>

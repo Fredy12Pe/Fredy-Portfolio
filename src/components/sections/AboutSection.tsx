@@ -152,13 +152,10 @@ function Carousel() {
               {track.map((s, i) => (
                 <div key={i} className="relative h-full w-full shrink-0 grow-0 basis-full">
                   {s.type === "image" ? (
-                    <Image
+                    <img
                       src={s.src}
                       alt={s.alt || ""}
-                      width={800}
-                      height={600}
                       className={`h-full w-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
-                      priority={i === 1}
                     />
                   ) : s.type === "video" ? (
                     <video
@@ -222,11 +219,9 @@ function Carousel() {
           {(() => {
             const s = slides[nextIndex];
             return s.type === "image" ? (
-              <Image
+              <img
                 src={s.src}
                 alt={s.alt || ""}
-                width={800}
-                height={600}
                 className={`h-full w-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
               />
             ) : s.type === "video" ? (

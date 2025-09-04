@@ -202,22 +202,16 @@ export default function Header() {
         }}
       >
         {/* Mobile image (art-directed) */}
-        <Image
+        <img
           src="/images/hero/Fredy-header-mobile.png"
           alt="Fredy"
-          fill
-          className="block md:hidden object-center object-contain"
-          priority
-          sizes="100vw"
+          className="block md:hidden object-center object-contain w-full h-full"
         />
         {/* Desktop image */}
-        <Image
+        <img
           src="/images/hero/Fredy-header.png"
           alt="Fredy"
-          fill
-          className="hidden md:block object-bottom object-contain"
-          priority
-          sizes="(min-width: 768px) 100vw, 0"
+          className="hidden md:block object-bottom object-contain w-full h-full"
         />
       </div>
 
