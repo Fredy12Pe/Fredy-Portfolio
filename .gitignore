@@ -73,7 +73,7 @@ next-env.d.ts
 *.bgeo
 *.vdb
 
-# Large image files
+# Large image files (only exclude very large formats)
 *.exr
 *.hdr
 *.tga
@@ -81,10 +81,6 @@ next-env.d.ts
 *.tif
 *.bmp
 *.gif
-*.png
-*.jpg
-*.jpeg
 *.webp
-*.svg
 *.eps
 *.pdf
