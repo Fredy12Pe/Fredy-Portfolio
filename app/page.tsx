@@ -28,15 +28,22 @@ const SplineOverlay = dynamic(() => import("@/components/hero/SplineOverlay"), {
 });
 
 export default function Home() {
-  const [showSpline, setShowSpline] = useState(true);
+  const [showSpline, setShowSpline] = useState(false);
 
   useEffect(() => {
-    // Only skip Spline if coming from a project page (not for hash navigation)
+    // Check if coming from a project page via referrer
     const fromProject = document.referrer.includes('/projects/');
     
-    // Only skip Spline if coming from project page
-    if (fromProject) {
-      setShowSpline(false);
+    // Check if this is the first visit in this session
+    const hasVisited = sessionStorage.getItem('visited');
+    
+    // Show Spline only on:
+    // 1. First visit (no sessionStorage flag)
+    // 2. NOT coming from a project page (to allow Spline on refresh from other pages)
+    if (!hasVisited && !fromProject) {
+      setShowSpline(true);
+      // Mark that user has visited to prevent showing Spline on subsequent navigations
+      sessionStorage.setItem('visited', 'true');
     }
   }, []);
 
