@@ -155,6 +155,8 @@ function Carousel() {
                     <Image
                       src={s.src}
                       alt={s.alt || ""}
+                      width={800}
+                      height={600}
                       className={`h-full w-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
                       priority={i === 1}
                     />
@@ -223,6 +225,8 @@ function Carousel() {
               <Image
                 src={s.src}
                 alt={s.alt || ""}
+                width={800}
+                height={600}
                 className={`h-full w-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
               />
             ) : s.type === "video" ? (
