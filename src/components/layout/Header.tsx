@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Header() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -8,6 +9,21 @@ export default function Header() {
   const [bannerPosition, setBannerPosition] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Scroll functions for buttons
+  const scrollToProjects = () => {
+    const projectsSection = document.getElementById('projects');
+    if (projectsSection) {
+      projectsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -283,6 +299,7 @@ export default function Header() {
               }}
             >
               <button 
+                onClick={scrollToProjects}
                 style={{
                   padding: '1rem 2rem',
                   backgroundColor: '#FFFFFF',
@@ -292,12 +309,22 @@ export default function Header() {
                   fontSize: '1rem',
                   fontWeight: 600,
                   fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 View My Work
               </button>
               <button 
+                onClick={scrollToContact}
                 style={{
                   padding: '1rem 2rem',
                   backgroundColor: 'transparent',
@@ -307,7 +334,18 @@ export default function Header() {
                   fontSize: '1rem',
                   fontWeight: 600,
                   fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                  e.currentTarget.style.color = '#000000';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = '#FFFFFF';
                 }}
               >
                 Get In Touch
