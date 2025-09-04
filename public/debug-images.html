@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Images - Vercel Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .image-test { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
+        .image-test img { max-width: 300px; height: auto; margin: 10px 0; }
+        .status { font-weight: bold; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Image Loading Debug Test</h1>
+    <p>This page tests if images are loading correctly on Vercel.</p>
+    
+    <div class="image-test">
+        <h3>About Section Images:</h3>
+        <img src="/images/about/Fredy.png" alt="Fredy" onload="showStatus(this, 'success')" onerror="showStatus(this, 'error')">
+        <img src="/images/about/Surf.png" alt="Surf" onload="showStatus(this, 'success')" onerror="showStatus(this, 'error')">
+    </div>
+    
+    <div class="image-test">
+        <h3>Hero Section Images:</h3>
+        <img src="/images/hero/Fredy-header.png" alt="Fredy Header" onload="showStatus(this, 'success')" onerror="showStatus(this, 'error')">
+        <img src="/images/hero/Fredy-header-mobile.png" alt="Fredy Header Mobile" onload="showStatus(this, 'success')" onerror="showStatus(this, 'error')">
+    </div>
+    
+    <div class="image-test">
+        <h3>Project Images:</h3>
+        <img src="/images/projects/tidehaus-thumbnail.png" alt="Tidehaus" onload="showStatus(this, 'success')" onerror="showStatus(this, 'error')">
+        <img src="/images/projects/seaSky-thumbnail.png" alt="Sea Sky" onload="showStatus(this, 'success')" onerror="showStatus(this, 'error')">
+    </div>
+    
+    <div class="image-test">
+        <h3>Tech Stack Images:</h3>
+        <img src="/images/tech-stack/React.png" alt="React" onload="showStatus(this, 'success')" onerror="showStatus(this, 'error')">
+        <img src="/images/tech-stack/NextJS.png" alt="NextJS" onload="showStatus(this, 'success')" onerror="showStatus(this, 'error')">
+    </div>
+
+    <script>
+        function showStatus(img, status) {
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${status}`;
+            statusDiv.textContent = `${img.alt}: ${status.toUpperCase()}`;
+            img.parentNode.appendChild(statusDiv);
+        }
+    </script>
+</body>
+</html>
