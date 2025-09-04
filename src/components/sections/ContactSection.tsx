@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import tidehausImg from "../../../app/mainPage Assets/highlighted work/tidehaus thumbnail.png";
+// Using public folder path for contact background
 
 export default function ContactSection() {
   return (
@@ -8,7 +8,7 @@ export default function ContactSection() {
       <div className="relative overflow-hidden rounded-[20px] ring-1 ring-white/10 group">
         {/* Background image */}
         <Image
-          src={tidehausImg}
+          src="/images/projects/tidehaus thumbnail.png"
           alt="Tidehaus background"
           fill
           className="object-cover"

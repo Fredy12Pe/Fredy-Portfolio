@@ -203,7 +203,7 @@ export default function Header() {
       >
         {/* Mobile image (art-directed) */}
         <Image
-          src="/mainPage Assets/Hero/Fredy-header-mobile.png"
+          src="/images/hero/Fredy-header-mobile.png"
           alt="Fredy"
           fill
           className="block md:hidden object-center object-contain"
@@ -212,7 +212,7 @@ export default function Header() {
         />
         {/* Desktop image */}
         <Image
-          src="/mainPage Assets/Hero/Fredy-header.png"
+          src="/images/hero/Fredy-header.png"
           alt="Fredy"
           fill
           className="hidden md:block object-bottom object-contain"
