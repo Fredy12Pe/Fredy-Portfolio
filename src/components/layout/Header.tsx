@@ -206,12 +206,16 @@ export default function Header() {
           src="/images/hero/Fredy-header-mobile.png"
           alt="Fredy"
           className="block md:hidden object-center object-contain w-full h-full"
+          onLoad={() => console.log('Mobile header image loaded successfully')}
+          onError={(e) => console.error('Mobile header image failed to load:', e)}
         />
         {/* Desktop image */}
         <img
           src="/images/hero/Fredy-header.png"
           alt="Fredy"
           className="hidden md:block object-bottom object-contain w-full h-full"
+          onLoad={() => console.log('Desktop header image loaded successfully')}
+          onError={(e) => console.error('Desktop header image failed to load:', e)}
         />
       </div>
 

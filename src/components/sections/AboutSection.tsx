@@ -156,6 +156,8 @@ function Carousel() {
                       src={s.src}
                       alt={s.alt || ""}
                       className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
+                      onLoad={() => console.log('Image loaded successfully:', s.src)}
+                      onError={(e) => console.error('Image failed to load:', s.src, e)}
                     />
                   ) : s.type === "video" ? (
                     <video
