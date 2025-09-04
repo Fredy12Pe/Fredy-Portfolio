@@ -205,7 +205,7 @@ export default function Header() {
         <img
           src="/images/hero/Fredy-header-mobile.png"
           alt="Fredy"
-          className="block md:hidden object-center object-contain w-full h-full"
+          className="block md:hidden object-center object-cover w-full h-full"
           onLoad={() => console.log('Mobile header image loaded successfully')}
           onError={(e) => console.error('Mobile header image failed to load:', e)}
         />
