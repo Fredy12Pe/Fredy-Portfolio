@@ -4,7 +4,7 @@ import tidehausImg from "../../../app/mainPage Assets/highlighted work/tidehaus 
 
 export default function ContactSection() {
   return (
-    <section id="contact" className="mx-auto mt-24 max-w-[100rem] px-4 md:px-8">
+    <section id="contact" className="mx-auto mt-12 md:mt-24 max-w-[100rem] px-4 md:px-8">
       <div className="relative overflow-hidden rounded-[20px] ring-1 ring-white/10 group">
         {/* Background image */}
         <Image

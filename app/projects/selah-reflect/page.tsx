@@ -6,6 +6,7 @@ import { Compare } from "@/components/ui/compare";
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import Image, { type StaticImageData } from "next/image";
 import dynamic from "next/dynamic";
+import ProjectNav from "@/components/layout/ProjectNav";
 import heroImg from "./images/headerImg.png";
 import imgDevotionalHub from "./images/DevotionalHub.png";
 import imgHymn from "./images/Hymn.png";
@@ -408,7 +409,9 @@ export default function SelahCaseStudyPage() {
   }, []);
   return (
     <div className="relative min-h-screen bg-white text-zinc-800">
-      <ProgressBar />
+      <ProjectNav />
+      <div className="pt-16">
+        <ProgressBar />
 
       {/* Hero */}
       <header className="relative isolate overflow-hidden bg-gradient-to-br from-zinc-900 via-black to-zinc-900">
@@ -760,6 +763,7 @@ export default function SelahCaseStudyPage() {
           <p className="text-center text-xs">© {new Date().getFullYear()} Selah · Case Study by [Your Name]</p>
         </Container>
       </footer>
+      </div>
     </div>
   );
 }

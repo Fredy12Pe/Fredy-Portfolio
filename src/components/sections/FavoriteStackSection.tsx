@@ -129,13 +129,13 @@ export default function FavoriteStackSection() {
   const designTools = techStack.filter(item => item.category === "Design");
 
   return (
-    <section ref={sectionRef} id="favorite-stack" className="mx-auto mt-24 max-w-[100rem] px-4 md:px-8">
-      <h2 className="whitespace-nowrap text-[36px] sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px] font-black tracking-tight text-white uppercase">
+    <section ref={sectionRef} id="favorite-stack" className="mx-auto mt-12 md:mt-24 max-w-[100rem] px-4 md:px-8">
+      <h2 className="whitespace-nowrap text-[36px] sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px] font-black tracking-tight text-white uppercase text-left">
         Favorite Stack
       </h2>
 
       <div data-reveal>
-        <div data-parallax data-speed="0.18" className="mt-0 w-full md:w-4/6">
+        <div data-parallax data-speed="0.18" className="mt-6 md:mt-0 w-full md:w-4/6">
           <p className="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#828282]">
             These are the <span className="font-semibold text-white">tools and technologies</span> that power my creative process. From design to development, each tool in my stack serves a specific purpose in bringing ideas to life with precision and efficiency.
           </p>
@@ -143,18 +143,18 @@ export default function FavoriteStackSection() {
       </div>
 
       {/* Tech Stack Grid */}
-      <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+      <div className="mt-8 md:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
         {techStack.map((tech, index) => (
           <div key={tech.name} data-reveal>
             <div 
               data-parallax 
               data-speed="0.15" 
-              className="group relative overflow-hidden rounded-2xl bg-[#1A1A1A] border border-white/10 md:hover:border-white/20 transition-all duration-300 aspect-square p-6 md:p-8 flex items-center justify-center md:hover:bg-[#222222]"
+              className="group relative overflow-hidden rounded-2xl bg-[#1A1A1A] md:border md:border-white/10 md:hover:border-white/20 transition-all duration-300 aspect-[4/5] md:aspect-square p-4 md:p-8 flex flex-col items-center justify-center md:hover:bg-[#222222]"
             >
               {/* Hover overlay background */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300"
+                className="pointer-events-none absolute inset-0 opacity-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300"
                 style={{
                   width: '100%',
                   height: '100%',
@@ -167,7 +167,7 @@ export default function FavoriteStackSection() {
               />
 
               <div className="relative z-10 flex flex-col items-center justify-center h-full w-full transition-all duration-300">
-                <div className="w-28 h-28 md:w-36 md:h-36 transition-transform duration-300 md:group-hover:scale-110 md:group-hover:-translate-y-2 flex items-center justify-center">
+                <div className="w-16 h-16 md:w-36 md:h-36 transition-transform duration-300 md:group-hover:scale-110 md:group-hover:-translate-y-2 flex items-center justify-center">
                   <Image
                     src={tech.image}
                     alt={tech.name}

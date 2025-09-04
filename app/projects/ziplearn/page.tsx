@@ -5,6 +5,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { CardSpotlight } from "../../../components/ui/card-spotlight";
+import ProjectNav from "@/components/layout/ProjectNav";
 import heroRef from "./images/Header img.png";
 import processRef from "./images/02.png";
 import midFidelity from "./images/mid-fi mockups.png";
@@ -103,8 +104,10 @@ function SlideInPhone({ children, from }: { children: React.ReactNode; from: "le
 
 export default function ZipLearnCaseStudyPage() {
   return (
-    <main className="bg-white text-zinc-800">
-      <ProgressBar />
+    <div className="min-h-screen bg-white">
+      <ProjectNav />
+      <main className="bg-white text-zinc-800 pt-16">
+        <ProgressBar />
       {/* Hero */}
       <header className="relative isolate overflow-hidden" style={{ background: "linear-gradient(223deg, #6A32F9 0%, #4F5A79 100%)" }}>
         {/* static dotted mask */}
@@ -402,7 +405,8 @@ export default function ZipLearnCaseStudyPage() {
           As a concept, ZipLearn let me test assumptions without the constraints of production scope. Through interviews and lightweight prototypes, I saw that cost and time were only surface problems—the deeper friction was uncertainty. Students and parents weren’t sure who to trust, when sessions could actually happen, or what value they’d get from the first booking. By surfacing availability, subject fit, and reviews earlier, and by turning the journey into a series of clear, single decisions, the experience felt more approachable. These explorations also highlighted how much reassurance comes from tight copy and unambiguous states: what happens before, during, and after a session. If this moved toward production, I’d validate pricing cues, add more transparent tutor metrics, and refine scheduling to better reflect real-world constraints.
         </p>
       </Section>
-    </main>
+      </main>
+    </div>
   );
 }
 

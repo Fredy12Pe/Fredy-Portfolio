@@ -2,8 +2,11 @@
 
 import { motion, useScroll, useSpring } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useRef } from "react";
 import { IconUsers, IconFileCertificate, IconVideo } from "@tabler/icons-react";
+import ProjectNav from "@/components/layout/ProjectNav";
 
 const DotGrid = dynamic(() => import("../selah-reflect/DotGrid"), { ssr: false });
 import heroImg from "./images/Project images/Header.png";
@@ -89,7 +92,7 @@ function ProgressBar() {
 
 // GlowCard (hover highlight) -------------------------------------------------
 function useMouseGradient() {
-  const ref = (require("react") as typeof import("react")).useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = e.currentTarget;
     const r = el.getBoundingClientRect();
@@ -180,8 +183,10 @@ function ProblemCard({ title, text, icon }: { title: string; text: string; icon:
 
 export default function SeaSkyCaseStudyPage() {
   return (
-    <main className="bg-white text-zinc-800">
-      <ProgressBar />
+    <div className="min-h-screen bg-white">
+      <ProjectNav />
+      <main className="bg-white text-zinc-800 pt-16">
+        <ProgressBar />
       {/* Hero */}
       <header className="relative isolate overflow-hidden" style={{ background: "linear-gradient(223deg, #02ADEF 0%, #0B53CD 100%)" }}>
         {/* subtle dot grid */}
@@ -482,7 +487,7 @@ export default function SeaSkyCaseStudyPage() {
           <h3 className="text-2xl font-semibold text-black">Interested in more work?</h3>
           <p className="max-w-xl text-sm text-zinc-600">Explore other case studies or reach out for a walkthrough.</p>
           <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-            <a href="/" className="inline-flex items-center rounded-full bg-black px-5 py-3 text-sm font-medium text-white hover:bg-zinc-800">Back to home</a>
+            <Link href="/" className="inline-flex items-center rounded-full bg-black px-5 py-3 text-sm font-medium text-white hover:bg-zinc-800">Back to home</Link>
           </div>
         </div>
       </Section>
@@ -492,7 +497,8 @@ export default function SeaSkyCaseStudyPage() {
           <p className="text-center text-xs">© {new Date().getFullYear()} Sea & Sky · Case Study</p>
         </Container>
       </footer>
-    </main>
+      </main>
+    </div>
   );
 }
 

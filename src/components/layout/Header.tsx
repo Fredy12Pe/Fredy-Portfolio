@@ -6,6 +6,7 @@ import fredyHeaderMobile from "../../../app/mainPage Assets/Hero/Fredy-header-mo
 
 export default function Header() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [bannerPosition, setBannerPosition] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
@@ -58,13 +59,31 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (isMobileMenuOpen && !target.closest('.mobile-menu-container')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
   return (
     <header
       id="site-header"
       className="relative w-full h-[100vh] bg-white overflow-hidden rounded-b-3xl"
     >
       {/* Nav */}
-      <nav className="absolute top-0 left-0 right-0 py-6" style={{ zIndex: 40 }}>
+      <nav className="absolute top-0 left-0 right-0 py-6 mobile-menu-container" style={{ zIndex: 40 }}>
         <div className="mx-auto max-w-[100rem] px-4 md:px-8">
           <div className="flex items-center justify-between">
             <div className="text-black text-xl font-bold">FREDY DESIGN</div>
@@ -76,17 +95,74 @@ export default function Header() {
             </div>
             {/* Mobile hamburger menu */}
             <div className="md:hidden">
-              <button className="text-black p-2">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="3" y1="6" x2="21" y2="6"></line>
-                  <line x1="3" y1="12" x2="21" y2="12"></line>
-                  <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
+              <button 
+                className="text-black p-2"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                  </svg>
+                )}
               </button>
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50">
+          {/* Close button */}
+          <button 
+            className="absolute top-6 right-6 text-white hover:text-white/80 transition-colors p-2"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          
+          <div className="flex flex-col items-center justify-center h-full space-y-8">
+            <a 
+              href="#projects" 
+              className="text-white hover:text-white/80 text-2xl font-medium transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Projects
+            </a>
+            <a 
+              href="#about" 
+              className="text-white hover:text-white/80 text-2xl font-medium transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              About
+            </a>
+            <a 
+              href="#favorite-stack" 
+              className="text-white hover:text-white/80 text-2xl font-medium transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Stack
+            </a>
+            <a 
+              href="#contact" 
+              className="text-white hover:text-white/80 text-2xl font-medium transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Contact
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* Scrolling Banner - behind image - JavaScript animated with parallax */}
       <div 

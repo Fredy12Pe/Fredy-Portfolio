@@ -36,6 +36,12 @@
   border-radius: 1.25rem; /* ~20px */
 }
 
+@media (max-width: 767px) {
+  .ecommerceMobile {
+    min-height: 350px;
+  }
+}
+
 @media (min-width: 1024px) {
   .tideTall { min-height: 1039px; }
 }
