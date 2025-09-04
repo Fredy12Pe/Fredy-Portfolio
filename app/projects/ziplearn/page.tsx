@@ -8,7 +8,7 @@ import { CardSpotlight } from "../../../components/ui/card-spotlight";
 import ProjectNav from "@/components/layout/ProjectNav";
 import heroRef from "./images/Header img.png";
 import processRef from "./images/02.png";
-import midFidelity from "./images/mid-fi mockups.png";
+import midFidelity from "./images/Mid-fi mockups.png";
 import empathyRef from "./images/04.png";
 import highFidelity from "./images/high-fi mockups.png";
 import researchQualImg from "./images/research-qualitative.png";

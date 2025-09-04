@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import fredyHeaderImg from "../../../app/mainPage Assets/Hero/Fredy-header.png";
-import fredyHeaderMobile from "../../../app/mainPage Assets/Hero/Fredy-header-mobile.png";
 
 export default function Header() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -205,7 +203,7 @@ export default function Header() {
       >
         {/* Mobile image (art-directed) */}
         <Image
-          src={fredyHeaderMobile}
+          src="/mainPage Assets/Hero/Fredy-header-mobile.png"
           alt="Fredy"
           fill
           className="block md:hidden object-center object-contain"
@@ -214,7 +212,7 @@ export default function Header() {
         />
         {/* Desktop image */}
         <Image
-          src={fredyHeaderImg}
+          src="/mainPage Assets/Hero/Fredy-header.png"
           alt="Fredy"
           fill
           className="hidden md:block object-bottom object-contain"
