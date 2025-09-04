@@ -203,7 +203,7 @@ export default function Header() {
       >
         {/* Mobile image (art-directed) */}
         <img
-          src="/images/hero/Fredy-header-mobile.png"
+          src="/images/test-image.png"
           alt="Fredy"
           className="block md:hidden object-center object-contain w-full h-full"
           onLoad={() => console.log('Mobile header image loaded successfully')}
@@ -211,7 +211,7 @@ export default function Header() {
         />
         {/* Desktop image */}
         <img
-          src="/images/hero/Fredy-header.png"
+          src="/images/test-image.png"
           alt="Fredy"
           className="hidden md:block object-bottom object-contain w-full h-full"
           onLoad={() => console.log('Desktop header image loaded successfully')}
