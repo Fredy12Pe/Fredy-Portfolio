@@ -127,11 +127,11 @@ export default function ProjectsSection() {
       <div className={"mt-8 mx-auto w-full max-w-[100rem] px-0 " + styles.portfolioGrid}>
         {tiles.map((tile) => {
           const images: Record<string, any> = {
-            sea: "/images/projects/seaSky thumbnail.png",
-            tidehaus: "/images/projects/tidehaus thumbnail.png",
-            selah: "/images/projects/selah Thumbnail.png",
-            ziplearn: "/images/projects/ziplearn thumbnail.png",
-            ecommerce: "/images/projects/ecommerce bg.png",
+            sea: "/images/projects/seaSky-thumbnail.png",
+            tidehaus: "/images/projects/tidehaus-thumbnail.png",
+            selah: "/images/projects/selah-Thumbnail.png",
+            ziplearn: "/images/projects/ziplearn-thumbnail.png",
+            ecommerce: "/images/projects/ecommerce-bg.png",
           };
           const imgSrc = images[tile.tileClass];
           const isCover = tile.tileClass === "tidehaus" || tile.tileClass === "ecommerce";
@@ -204,7 +204,7 @@ export default function ProjectsSection() {
                   >
                     <div className="relative w-5/6 h-5/6 transform scale-95 transition-transform duration-500 ease-in-out md:group-hover:scale-100">
                       <Image
-                        src="/images/projects/Tidehaus imgOverlay.png"
+                        src="/images/projects/Tidehaus-imgOverlay.png"
                         alt="Tidehaus overlay"
                         fill
                         className="object-contain"
