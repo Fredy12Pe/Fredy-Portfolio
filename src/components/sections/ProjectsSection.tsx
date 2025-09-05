@@ -52,6 +52,7 @@ const tiles: Tile[] = [
     title: "E‑COMMERCE",
     description:
       "Led the redesign of the Samples Store, leveraging a Shopify template to create a streamlined and user-friendly shopping journey.",
+    href: "/projects/ecommerce",
     tileClass: "ecommerce",
     backgroundClass: "bg-[linear-gradient(135deg,#1f2937,#0b0f14)]",
   },
