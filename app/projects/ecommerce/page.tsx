@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRef } from "react";
-import { IconShoppingCart, IconUsers, IconSearch, IconCreditCard } from "@tabler/icons-react";
+import { IconShoppingCart, IconUsers, IconSearch } from "@tabler/icons-react";
 import ProjectNav from "@/components/layout/ProjectNav";
 
 const DotGrid = dynamic(() => import("../selah-reflect/DotGrid"), { ssr: false });
@@ -240,7 +240,7 @@ export default function EcommerceCaseStudyPage() {
               The original store was little more than a static page of diagrams, with no product photography, categorization, or ordering system. Ordering required manual coordination with the sales team, creating unnecessary friction for architects, designers, and reps.
             </p>
             <p>
-              The redesign introduced product photography, structured navigation, and an automated checkout process — transforming the store into a user-friendly, modern experience that aligned with Arktura's brand identity.
+              The redesign introduced product photography, structured navigation, and an automated checkout process — transforming the store into a user-friendly, modern experience that aligned with Arktura&apos;s brand identity.
             </p>
           </div>
         </Section>
@@ -276,7 +276,7 @@ export default function EcommerceCaseStudyPage() {
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="space-y-4">
               <p>
-                The redesigned Samples Store leverages Shopify's capabilities while implementing a modern design system. By combining intuitive navigation, product photography, and automated ordering, the new site streamlined the process for users while reducing the sales team's workload.
+                The redesigned Samples Store leverages Shopify&apos;s capabilities while implementing a modern design system. By combining intuitive navigation, product photography, and automated ordering, the new site streamlined the process for users while reducing the sales team&apos;s workload.
               </p>
             </div>
             <div className="flex items-start justify-center lg:justify-end">
@@ -388,7 +388,7 @@ export default function EcommerceCaseStudyPage() {
             <div className="pointer-events-none absolute left-[1.25rem] top-0 bottom-0 w-px bg-zinc-200" />
             <TimelineItem n={1} title="Initial Wireframes" icon={<span role="img" aria-label="wireframes">📐</span>} desc={<><p>Created to demonstrate the value of a redesign and secure leadership approval.</p></>} />
             <TimelineItem n={2} title="Photography & Asset Preparation" icon={<span role="img" aria-label="photography">📸</span>} desc={<><p>Secured budget to hire a photographer and edited hundreds of sample images in Photoshop and Illustrator.</p></>} />
-            <TimelineItem n={3} title="UI Design & Template Customization" icon={<span role="img" aria-label="design">🎨</span>} desc={<><p>Customized a Shopify template to align with Arktura's brand and created a visual design system.</p></>} />
+            <TimelineItem n={3} title="UI Design & Template Customization" icon={<span role="img" aria-label="design">🎨</span>} desc={<><p>Customized a Shopify template to align with Arktura&apos;s brand and created a visual design system.</p></>} />
             <TimelineItem n={4} title="Development & Launch" icon={<span role="img" aria-label="launch">🚀</span>} desc={<><p>Collaborated with developers across teams to implement the checkout system and launch the redesigned store.</p></>} />
           </div>
         </Section>
