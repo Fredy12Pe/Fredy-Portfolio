@@ -359,37 +359,14 @@ export default function TidehausCaseStudyPage() {
                   }
                 }}
               >
-                {/* Temporary placeholder to test if container works */}
-                <div className="w-full h-[500px] bg-zinc-800 flex items-center justify-center">
-                  <div className="text-center text-zinc-400">
-                    <div className="text-lg font-medium mb-2">Video Loading...</div>
-                    <div className="text-sm">Tidehaus Interface Walkthrough</div>
-                    <div className="text-xs mt-2">If this persists, video may not be loading on Vercel</div>
-                  </div>
-                </div>
                 <video
-                  className="w-full h-auto absolute inset-0"
+                  className="w-full h-auto"
                   autoPlay
                   loop
                   muted
                   playsInline
                   preload="metadata"
                   poster="/projects/tidehaus/images/color-palette.png"
-                  onError={(e) => {
-                    console.error('Video failed to load:', e);
-                    console.error('Video src:', '/projects/tidehaus/images/tidehaus-screen-record.mp4');
-                  }}
-                  onLoadStart={() => {
-                    console.log('Video loading started');
-                  }}
-                  onCanPlay={() => {
-                    console.log('Video can play');
-                    // Hide placeholder when video loads
-                    const placeholder = document.querySelector('.bg-zinc-800');
-                    if (placeholder) {
-                      (placeholder as HTMLElement).style.display = 'none';
-                    }
-                  }}
                 >
                   <source src="/projects/tidehaus/images/tidehaus-screen-record.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
