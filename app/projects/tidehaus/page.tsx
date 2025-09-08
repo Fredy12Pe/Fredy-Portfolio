@@ -4,7 +4,7 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { IconShoppingCart, IconPalette, IconCode, IconRocket } from "@tabler/icons-react";
 import ProjectNav from "@/components/layout/ProjectNav";
 
@@ -178,6 +178,23 @@ const ImagePlaceholder = ({ height = 400, label = "Image placeholder", recommend
 );
 
 export default function TidehausCaseStudyPage() {
+  // Hover state for Key Design Elements section
+  const [hoveredElement, setHoveredElement] = useState<string | null>(null);
+
+  const getOpacityClass = (elementId: string) => {
+    // On mobile, always show all elements at full opacity
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return 'opacity-100';
+    }
+    
+    if (hoveredElement === null) {
+      // Default state: video full opacity, others reduced
+      return elementId === 'video' ? 'opacity-100' : 'opacity-20';
+    }
+    // When hovering: only hovered element full opacity, others reduced
+    return hoveredElement === elementId ? 'opacity-100' : 'opacity-20';
+  };
+
   return (
     <div className="min-h-screen bg-black">
       <ProjectNav />
@@ -329,7 +346,19 @@ export default function TidehausCaseStudyPage() {
               </p>
             </div>
             <div className="flex justify-center">
-              <div className="overflow-hidden rounded-3xl w-full max-w-6xl shadow-2xl ring-1 ring-white/10">
+              <div 
+                className={`overflow-hidden rounded-3xl w-full max-w-6xl shadow-2xl ring-1 ring-white/10 transition-opacity duration-300 ${getOpacityClass('video')}`}
+                onMouseEnter={() => {
+                  if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                    setHoveredElement('video');
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                    setHoveredElement(null);
+                  }
+                }}
+              >
                 <video
                   className="w-full h-auto"
                   autoPlay
@@ -345,7 +374,19 @@ export default function TidehausCaseStudyPage() {
             </div>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-4">
-                <div className="overflow-hidden rounded-3xl shadow-2xl ring-1 ring-white/10">
+                <div 
+                  className={`overflow-hidden rounded-3xl shadow-2xl ring-1 ring-white/10 transition-opacity duration-300 ${getOpacityClass('product-cards')}`}
+                  onMouseEnter={() => {
+                    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                      setHoveredElement('product-cards');
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                      setHoveredElement(null);
+                    }
+                  }}
+                >
                   <Image
                     src="/projects/tidehaus/images/product-cards.png"
                     alt="Product card mockups with hover states showing surf gear"
@@ -354,7 +395,7 @@ export default function TidehausCaseStudyPage() {
                     className="w-full h-auto object-contain"
                   />
                 </div>
-                <div className="text-center">
+                <div className="text-left">
                   <h4 className="text-white font-medium mb-2">Product Catalog</h4>
                   <p className="text-zinc-400 text-sm">
                     Clean product grid showcasing surf gear with clear pricing, 
@@ -363,7 +404,19 @@ export default function TidehausCaseStudyPage() {
                 </div>
               </div>
               <div className="space-y-4">
-                <div className="overflow-hidden rounded-3xl shadow-2xl ring-1 ring-white/10">
+                <div 
+                  className={`overflow-hidden rounded-3xl shadow-2xl ring-1 ring-white/10 transition-opacity duration-300 ${getOpacityClass('product-modal')}`}
+                  onMouseEnter={() => {
+                    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                      setHoveredElement('product-modal');
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                      setHoveredElement(null);
+                    }
+                  }}
+                >
                   <Image
                     src="/projects/tidehaus/images/product-detail-modal.png"
                     alt="Product detail modal with size/color selection for surfboard bag"
@@ -372,7 +425,7 @@ export default function TidehausCaseStudyPage() {
                     className="w-full h-auto object-contain"
                   />
                 </div>
-                <div className="text-center">
+                <div className="text-left">
                   <h4 className="text-white font-medium mb-2">Product Detail Modal</h4>
                   <p className="text-zinc-400 text-sm">
                     Detailed product view with specifications, features, 
