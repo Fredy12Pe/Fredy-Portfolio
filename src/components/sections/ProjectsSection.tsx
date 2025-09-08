@@ -28,6 +28,7 @@ const tiles: Tile[] = [
     title: "TIDEHAUS",
     description:
       "Tidehaus is a modern surf e-commerce site built to showcase and sell surfboards and accessories with a clean, coastal aesthetic.",
+    href: "/projects/tidehaus",
     tileClass: "tidehaus",
     backgroundClass: "bg-[linear-gradient(135deg,#0ea5a6,#0b7285)]",
   },
