@@ -58,10 +58,6 @@ const nextConfig: NextConfig = {
   },
   // Enable compression
   compress: true,
-  // Optimize bundle
-  experimental: {
-    optimizeCss: true,
-  },
 };
 
 export default nextConfig;
