@@ -8,7 +8,7 @@ import FavoriteStackSection from "@/components/sections/FavoriteStackSection";
 import ContactSection from "@/components/sections/ContactSection";
 import Footer from "@/components/layout/Footer";
 
-// Dynamically import SplineOverlay with no SSR to avoid webpack issues
+// Dynamically import SplineOverlay with no SSR and lazy loading
 const SplineOverlay = dynamic(() => import("@/components/hero/SplineOverlay"), {
   ssr: false,
   loading: () => (
@@ -29,6 +29,7 @@ const SplineOverlay = dynamic(() => import("@/components/hero/SplineOverlay"), {
 
 export default function Home() {
   const [showSpline, setShowSpline] = useState(false);
+  const [splineLoaded, setSplineLoaded] = useState(false);
 
   useEffect(() => {
     // Check if coming from a project page via referrer
@@ -47,9 +48,20 @@ export default function Home() {
     }
   }, []);
 
+  // Lazy load SplineOverlay only when needed
+  useEffect(() => {
+    if (showSpline && !splineLoaded) {
+      // Add a small delay to ensure main content loads first
+      const timer = setTimeout(() => {
+        setSplineLoaded(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showSpline, splineLoaded]);
+
   return (
     <div className="min-h-screen">
-      {showSpline && <SplineOverlay />}
+      {showSpline && splineLoaded && <SplineOverlay />}
       <div className="relative">
         <Header />
         <main className="w-full px-0 py-8 md:py-16">

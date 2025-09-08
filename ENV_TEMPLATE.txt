@@ -1,0 +1,11 @@
+# EmailJS Configuration
+# Create a file named .env.local in your project root and add these variables:
+
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id_here
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id_here
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key_here
+
+# Instructions:
+# 1. Copy this content to a new file called .env.local
+# 2. Replace the placeholder values with your actual EmailJS credentials
+# 3. Restart your development server after adding the .env.local file

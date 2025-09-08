@@ -606,35 +606,6 @@ export default function TidehausCaseStudyPage() {
           </div>
         </Section>
 
-        {/* CTA */}
-        <Section bg="bg-black">
-          <div className="flex flex-col items-center gap-4 py-10 text-center">
-            <h3 className="text-2xl font-semibold text-white">Interested in more work?</h3>
-            <p className="max-w-xl text-sm text-zinc-300">Explore other case studies or reach out for a walkthrough.</p>
-            <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-              <a 
-                href="https://online-surf-shop-a8b1mqoyh-fredys-projects-8feeb27c.vercel.app/#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black hover:bg-zinc-100"
-              >
-                View Live Project →
-              </a>
-              <Link 
-                href="/"
-                className="inline-flex items-center rounded-full border border-zinc-600 px-5 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800"
-              >
-                Back to Home →
-              </Link>
-              <Link 
-                href="/#contact"
-                className="inline-flex items-center rounded-full border border-zinc-600 px-5 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800"
-              >
-                Get in Touch →
-              </Link>
-            </div>
-          </div>
-        </Section>
 
         <footer className="py-12 bg-black text-zinc-200">
           <Container>

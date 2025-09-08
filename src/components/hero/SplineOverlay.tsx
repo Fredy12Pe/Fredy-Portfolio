@@ -202,6 +202,14 @@ export default function SplineOverlay() {
     return () => clearInterval(interval);
   }, [active]);
 
+  const handleSkip = () => {
+    setActive(false);
+    document.body.classList.remove('overlay-loading');
+    // Force unlock scroll immediately
+    document.documentElement.classList.remove("body-locked");
+    document.body.classList.remove("body-locked");
+  };
+
   return (
     <div
       id="spline-overlay"
@@ -210,7 +218,7 @@ export default function SplineOverlay() {
       aria-hidden
     >
       <Spline
-        scene="https://prod.spline.design/yEhXdeYqw0-tnrZy/scene.splinecode"
+        scene={`https://prod.spline.design/yEhXdeYqw0-tnrZy/scene.splinecode?v=${Date.now()}`}
         onLoad={(app) => { 
           appRef.current = app; 
           setSplineLoaded(true);
@@ -218,6 +226,17 @@ export default function SplineOverlay() {
         }}
         style={{ width: "100%", height: "100%", display: "block", background: "transparent", pointerEvents: "none" }}
       />
+      
+      {/* Skip button - always visible when overlay is active */}
+      {active && (
+        <button
+          onClick={handleSkip}
+          className="absolute top-6 right-6 z-20 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm font-medium hover:bg-white/20 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/30"
+          aria-label="Skip animation"
+        >
+          Skip →
+        </button>
+      )}
       
       {/* Loading screen with gradient background */}
       {!splineLoaded && (

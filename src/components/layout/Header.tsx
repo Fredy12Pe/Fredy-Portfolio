@@ -9,6 +9,8 @@ export default function Header() {
   const [bannerPosition, setBannerPosition] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollOpacity, setScrollOpacity] = useState(0);
 
   // Scroll functions for buttons
   const scrollToAbout = () => {
@@ -64,10 +66,18 @@ export default function Header() {
     };
   }, [isMobile]);
 
-  // Parallax scroll effect
+  // Parallax scroll effect and scroll detection
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      const scrollY = window.scrollY;
+      setScrollY(scrollY);
+      
+      // Jump to 80% opacity immediately when scroll starts, then smooth transition
+      const opacity = scrollY > 0 ? 0.8 : 0;
+      setScrollOpacity(opacity);
+      
+      // Still use binary for other effects
+      setIsScrolled(scrollY > 50);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -92,46 +102,99 @@ export default function Header() {
     };
   }, [isMobileMenuOpen]);
   return (
-    <header
-      id="site-header"
-      className="relative w-full h-[100vh] bg-white overflow-hidden rounded-b-3xl"
-    >
-      {/* Nav */}
-      <nav className="absolute top-0 left-0 right-0 py-6 mobile-menu-container" style={{ zIndex: 40 }}>
+    <>
+      {/* Sticky Navigation */}
+      <nav 
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mobile-menu-container ${
+          isScrolled ? 'py-3' : 'py-5'
+        }`}
+      >
         <div className="mx-auto max-w-[100rem] px-4 md:px-8">
-          <div className="flex items-center justify-between">
-            <div className="text-black text-xl font-bold">FREDY DESIGN</div>
-            <div className="hidden md:flex items-center space-x-10">
-              <a href="#projects" className="text-black/90 hover:text-black text-lg font-medium">Projects</a>
-              <a href="#about" className="text-black/90 hover:text-black text-lg font-medium">About</a>
-              <a href="#favorite-stack" className="text-black/90 hover:text-black text-lg font-medium">Stack</a>
-              <a href="#contact" className="text-black/90 hover:text-black text-lg font-medium">Contact</a>
-            </div>
-            {/* Mobile hamburger menu */}
-            <div className="md:hidden">
-              <button 
-                className="text-black p-2"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                ) : (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                  </svg>
-                )}
-              </button>
+          <div 
+            style={{
+              width: '100%', 
+              height: '100%', 
+              background: scrollOpacity > 0 ? 'rgba(0, 0, 0, 0.80)' : 'transparent', 
+              borderRadius: 20, 
+              border: '1px rgba(255, 255, 255, 0.20) solid',
+              backdropFilter: scrollOpacity > 0 ? 'blur(12px)' : 'none',
+              WebkitBackdropFilter: scrollOpacity > 0 ? 'blur(12px)' : 'none',
+              transition: 'all 0.3s ease-out'
+            }}
+            className="p-5"
+          >
+            <div className="flex items-center justify-between">
+              <div className={`text-xl font-bold transition-colors duration-300 ${
+                isScrolled ? 'text-white' : 'text-black'
+              }`}>
+                FREDY DESIGN
+              </div>
+              <div className="hidden md:flex items-center space-x-10">
+                <a 
+                  href="#projects" 
+                  className={`text-lg font-medium transition-colors duration-300 ${
+                    isScrolled ? 'text-white/90 hover:text-white' : 'text-black/90 hover:text-black'
+                  }`}
+                >
+                  Projects
+                </a>
+                <a 
+                  href="#about" 
+                  className={`text-lg font-medium transition-colors duration-300 ${
+                    isScrolled ? 'text-white/90 hover:text-white' : 'text-black/90 hover:text-black'
+                  }`}
+                >
+                  About
+                </a>
+                <a 
+                  href="#favorite-stack" 
+                  className={`text-lg font-medium transition-colors duration-300 ${
+                    isScrolled ? 'text-white/90 hover:text-white' : 'text-black/90 hover:text-black'
+                  }`}
+                >
+                  Stack
+                </a>
+                <a 
+                  href="#contact" 
+                  className={`text-lg font-medium transition-colors duration-300 ${
+                    isScrolled ? 'text-white/90 hover:text-white' : 'text-black/90 hover:text-black'
+                  }`}
+                >
+                  Contact
+                </a>
+              </div>
+              {/* Mobile hamburger menu */}
+              <div className="md:hidden">
+                <button 
+                  className={`p-2 transition-colors duration-300 ${
+                    isScrolled ? 'text-white' : 'text-black'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                >
+                  {isMobileMenuOpen ? (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  ) : (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="3" y1="6" x2="21" y2="6"></line>
+                      <line x1="3" y1="12" x2="21" y2="12"></line>
+                      <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Mobile Menu Dropdown */}
+      <header
+        id="site-header"
+        className="relative w-full h-[100vh] bg-white overflow-hidden rounded-b-3xl"
+      >
+        {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
         <div className="md:hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50">
           {/* Close button */}
@@ -218,17 +281,25 @@ export default function Header() {
         }}
       >
         {/* Mobile image (art-directed) */}
-        <img
+        <Image
           src="/images/hero/Fredy-header-mobile.png"
           alt="Fredy"
+          width={800}
+          height={600}
+          sizes="(max-width: 768px) 100vw, 0vw"
+          priority
           className="block md:hidden object-center object-cover w-full h-full"
           onLoad={() => console.log('Mobile header image loaded successfully')}
           onError={(e) => console.error('Mobile header image failed to load:', e)}
         />
         {/* Desktop image */}
-        <img
+        <Image
           src="/images/hero/Fredy-header.png"
           alt="Fredy"
+          width={1200}
+          height={800}
+          sizes="(min-width: 768px) 100vw, 0vw"
+          priority
           className="hidden md:block object-bottom object-contain w-full h-full"
           onLoad={() => console.log('Desktop header image loaded successfully')}
           onError={(e) => console.error('Desktop header image failed to load:', e)}
@@ -494,5 +565,6 @@ export default function Header() {
         </div>
       </div>
     </header>
+    </>
   );
 }

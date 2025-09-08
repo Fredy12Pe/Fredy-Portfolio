@@ -27,7 +27,7 @@ const tiles: Tile[] = [
   {
     title: "TIDEHAUS",
     description:
-      "Tidehaus is a modern surf e-commerce site built to showcase and sell surfboards and accessories with a clean, coastal aesthetic.",
+      "A modern surf e-commerce site built to showcase and sell surfboards and accessories with a clean, coastal aesthetic.",
     href: "/projects/tidehaus",
     tileClass: "tidehaus",
     backgroundClass: "bg-[linear-gradient(135deg,#0ea5a6,#0b7285)]",
@@ -246,11 +246,11 @@ export default function ProjectsSection() {
                       href={tile.href}
                       className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[66px] rounded-[1.25rem] bg-white/20 backdrop-blur-md text-white text-base font-medium font-poppins opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 transition-all duration-500 ease-in-out will-change-transform md:group-hover:opacity-100 md:group-hover:translate-y-0 md:hover:bg-white md:hover:text-black"
                     >
-                      Check Out Project
+                      View case study
                     </Link>
                   ) : (
                     <div className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[72px] rounded-[1.25rem] bg-white/20 backdrop-blur-md text-white text-base font-medium font-poppins opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 transition-all duration-500 ease-in-out will-change-transform md:group-hover:opacity-100 md:group-hover:translate-y-0 md:hover:bg-white md:hover:text-black">
-                      Check Out Project
+                      View case study
                     </div>
                   )}
                 </div>
