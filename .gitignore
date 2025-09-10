@@ -83,4 +83,4 @@ next-env.d.ts
 *.gif
 *.webp
 *.eps
-*.pdf
+# Note: PDF files are allowed for resume and documents
