@@ -184,12 +184,21 @@ export default function ContactSection() {
             <div className="w-full md:w-[520px] rounded-2xl border border-white/20 bg-white/5 p-6 md:p-8 backdrop-blur-xl">
               <div className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl">Fredy Pedro</div>
               <div className="mt-3 text-white/85 text-lg">UI/UX Designer &amp; Developer</div>
-              <div className="mt-6">
+              <div className="mt-6 flex gap-3">
                 <a
-                  href="#"
+                  href="/mainPage Assets/Contact/Fredy Pedro - Resume.pdf"
+                  download="Fredy Pedro - Resume.pdf"
                   className="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 text-black font-semibold hover:bg-white/90 transition-colors"
                 >
                   Download Resume
+                </a>
+                <a
+                  href="/mainPage Assets/Contact/Fredy Pedro - Resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/10 px-6 py-4 text-white font-semibold hover:bg-white/20 transition-colors backdrop-blur-md"
+                >
+                  View Resume
                 </a>
               </div>
               {/* In-card socials */}
