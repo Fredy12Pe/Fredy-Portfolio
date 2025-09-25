@@ -306,6 +306,15 @@ export default function Header() {
         />
       </div>
 
+      {/* Gradient overlay for better text visibility */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 25,
+          background: 'linear-gradient(to bottom, transparent 0%, transparent 30%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.7) 100%)'
+        }}
+      />
+
       {/* Text layer with blend mode applied to entire text with parallax */}
       <div 
         className="absolute inset-0 pointer-events-none select-none flex items-center"

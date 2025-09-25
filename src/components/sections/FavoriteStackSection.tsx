@@ -53,12 +53,6 @@ const techStack: TechStackItem[] = [
     image: "/images/tech-stack/Illustrator.png",
     category: "Design",
   },
-  {
-    name: "Spline",
-    description: "3D design tool for interactive visuals and product mockups.",
-    image: "/images/tech-stack/Spline.png",
-    category: "Design",
-  },
 ];
 
 export default function FavoriteStackSection() {

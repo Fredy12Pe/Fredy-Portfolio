@@ -244,12 +244,12 @@ export default function ProjectsSection() {
                   {tile.href ? (
                     <Link
                       href={tile.href}
-                      className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[66px] rounded-[1.25rem] bg-white/20 backdrop-blur-md text-white text-base font-medium font-poppins opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 transition-all duration-500 ease-in-out will-change-transform md:group-hover:opacity-100 md:group-hover:translate-y-0 md:hover:bg-white md:hover:text-black"
+                      className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[66px] rounded-[1.25rem] bg-white text-black text-base font-medium font-poppins opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 transition-all duration-500 ease-in-out will-change-transform md:group-hover:opacity-100 md:group-hover:translate-y-0 md:hover:bg-gray-100"
                     >
                       View case study
                     </Link>
                   ) : (
-                    <div className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[72px] rounded-[1.25rem] bg-white/20 backdrop-blur-md text-white text-base font-medium font-poppins opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 transition-all duration-500 ease-in-out will-change-transform md:group-hover:opacity-100 md:group-hover:translate-y-0 md:hover:bg-white md:hover:text-black">
+                    <div className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[72px] rounded-[1.25rem] bg-white text-black text-base font-medium font-poppins opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 transition-all duration-500 ease-in-out will-change-transform md:group-hover:opacity-100 md:group-hover:translate-y-0 md:hover:bg-gray-100">
                       View case study
                     </div>
                   )}
