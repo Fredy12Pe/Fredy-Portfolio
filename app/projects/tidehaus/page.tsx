@@ -270,10 +270,48 @@ export default function TidehausCaseStudyPage() {
                     style={{ transform: "translateZ(0)" }}
                   />
                 </div>
+                <p className="mt-2 text-center text-xs text-zinc-500">Variant swatches clarify options without extra page loads.</p>
               </motion.div>
             </div>
           </Container>
         </header>
+
+        {/* Executive Summary */}
+        <Section id="executive-summary" eyebrow="Executive Summary" title="Problem · Solution · Outcome" bg="bg-black">
+          <div className="max-w-3xl space-y-6">
+            <div>
+              <h3 className="text-sm font-semibold text-white">Problem</h3>
+              <p className="mt-2 text-zinc-300">Surf e-commerce often suffers from slow loads, cluttered navigation, and long checkout flows that increase abandonment.</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-white">Solution</h3>
+              <p className="mt-2 text-zinc-300">I designed and built Tidehaus, a concept surf shop with a simplified 3-step checkout, responsive product media, and a reusable component library (Next.js + Tailwind).</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-white">Outcome (Projected)</h3>
+              <p className="mt-2 text-zinc-300">In informal tests (5 surfers), all participants completed checkout successfully; discovery-to-cart took under a minute. Prototype pages loaded in under ~2s on mobile. Built solo as Product Designer & Front‑End Dev.</p>
+            </div>
+          </div>
+        </Section>
+
+        {/* Projected Impact */}
+        <Section id="impact" eyebrow="Projected Impact" title="Projected Impact" bg="bg-black">
+          <ul className="list-disc pl-5 space-y-2 text-zinc-300 max-w-3xl">
+            <li>Simplified checkout from 6 steps → 3, projecting ~20–25% abandonment reduction.</li>
+            <li>Prototype mobile load times &lt;2s, supporting conversion on cellular networks.</li>
+            <li>12+ reusable UI components for faster scaling and cleaner dev handoffs.</li>
+            <li>Filtering/sorting patterns speed up product discovery for surfboard variants.</li>
+          </ul>
+        </Section>
+
+        {/* Accessibility considerations */}
+        <Section id="accessibility" eyebrow="Accessibility considerations" bg="bg-black">
+          <ul className="list-disc pl-5 space-y-2 text-sm text-zinc-300 max-w-3xl">
+            <li>Alt text for all product images and hover states for variant selection.</li>
+            <li>Keyboard navigable checkout flow with clear focus outlines.</li>
+            <li>Price and CTA buttons checked against WCAG AA contrast standards.</li>
+          </ul>
+        </Section>
 
         {/* Project Brief */}
         <Section id="brief" eyebrow="Project Overview" title="Context" bg="bg-black">
@@ -373,6 +411,7 @@ export default function TidehausCaseStudyPage() {
                 </video>
               </div>
             </div>
+            <p className="mt-2 text-center text-xs text-zinc-500">3-step checkout reduces cognitive load and form fatigue.</p>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-4">
                 <div 
@@ -402,6 +441,7 @@ export default function TidehausCaseStudyPage() {
                     Clean product grid showcasing surf gear with clear pricing, 
                     categories, and visual hierarchy for easy browsing.
                   </p>
+                  <p className="mt-2 text-xs text-zinc-500">Sticky cart summary keeps cost/CTA visible.</p>
                 </div>
               </div>
               <div className="space-y-4">

@@ -177,6 +177,35 @@ export default function ZipLearnCaseStudyPage() {
         </Container>
       </header>
 
+      {/* Executive Summary */}
+      <Section id="executive-summary" eyebrow="Executive Summary" title="Problem · Solution · Outcome" bg="bg-white">
+        <div className="max-w-3xl space-y-6">
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-900">Problem</h3>
+            <p className="mt-2 text-zinc-700">Parents and students struggle to find trusted tutors quickly; discovery and vetting are manual and uncertain.</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-900">Solution</h3>
+            <p className="mt-2 text-zinc-700">I designed ZipLearn, a concept mobile app to browse, evaluate, and book tutors with confidence—using profiles, reviews, verified credentials, and simple scheduling.</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-900">Outcome (Projected)</h3>
+            <p className="mt-2 text-zinc-700">User interviews indicated strong interest; prototype testing showed high task success for scheduling within minutes and increased trust from credential transparency. Concept design led solo.</p>
+          </div>
+        </div>
+      </Section>
+
+      
+
+      {/* Projected Impact (moved to top) */}
+      <Section id="impact" eyebrow="Projected Impact" title="Projected Impact" bg="bg-white">
+        <ul className="list-disc pl-5 space-y-2 text-zinc-700 max-w-3xl">
+          <li>Interviews (parents + students) revealed 80% struggled with trust and discovery.</li>
+          <li>Prototype testing: ~90% scheduled a tutor in ≤2 minutes.</li>
+          <li>Reviews/credentials increased booking confidence for ~70% of testers.</li>
+          <li>Projected time savings of ~1 hour/week vs manual searching.</li>
+        </ul>
+      </Section>
       {/* Project Brief */}
       <Section id="brief" bg="bg-white">
         <CardSpotlight
@@ -404,6 +433,17 @@ export default function ZipLearnCaseStudyPage() {
         <p className="max-w-3xl">
           As a concept, ZipLearn let me test assumptions without the constraints of production scope. Through interviews and lightweight prototypes, I saw that cost and time were only surface problems—the deeper friction was uncertainty. Students and parents weren’t sure who to trust, when sessions could actually happen, or what value they’d get from the first booking. By surfacing availability, subject fit, and reviews earlier, and by turning the journey into a series of clear, single decisions, the experience felt more approachable. These explorations also highlighted how much reassurance comes from tight copy and unambiguous states: what happens before, during, and after a session. If this moved toward production, I’d validate pricing cues, add more transparent tutor metrics, and refine scheduling to better reflect real-world constraints.
         </p>
+      </Section>
+
+      
+
+      {/* Accessibility considerations */}
+      <Section id="accessibility" eyebrow="Accessibility considerations" bg="bg-white">
+        <ul className="list-disc pl-5 space-y-2 text-sm text-zinc-700 max-w-3xl">
+          <li>Forms include labels, error states, and contextual help for screen readers.</li>
+          <li>Color + icon pairings for success/error states (not color alone).</li>
+          <li>Focus order structured for fast navigation through booking flow.</li>
+        </ul>
       </Section>
       </main>
     </div>

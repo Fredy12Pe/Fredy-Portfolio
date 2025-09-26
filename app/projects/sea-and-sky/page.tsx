@@ -258,6 +258,44 @@ export default function SeaSkyCaseStudyPage() {
         </Container>
       </header>
 
+      {/* Executive Summary */}
+      <Section id="executive-summary" eyebrow="Executive Summary" title="Problem · Solution · Outcome" bg="bg-white">
+        <div className="max-w-3xl space-y-6">
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-900">Problem</h3>
+            <p className="mt-2 text-zinc-700">
+              First-generation and international students struggled to find reliable resources (scholarships, legal aid, campus services) scattered across multiple platforms, making it hard to get help or build community.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-900">Solution</h3>
+            <p className="mt-2 text-zinc-700">
+              I designed Sea & Sky, a mobile concept that centralizes resources, peer groups, and curated media into one intuitive interface—reducing search overhead and enabling supportive connections.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-900">Outcome (Projected)</h3>
+            <p className="mt-2 text-zinc-700">
+              Prototype reviews showed strong enthusiasm and stated intent to sign up if launched. Testers believed the unified design would significantly cut search time and help them connect with peers. This was a solo product design effort.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      
+
+      {/* Projected Impact (moved to top) */}
+      <Section id="impact" eyebrow="Projected Impact" title="Projected Impact" bg="bg-white">
+        <div className="max-w-3xl">
+          <ul className="list-disc pl-5 space-y-2 text-zinc-700">
+            <li>Validated desirability during prototype reviews; students expressed eagerness to join.</li>
+            <li>Projected to reduce resource discovery time by 60%+ by consolidating search into one app.</li>
+            <li>Community groups designed to increase peer connections and on-campus support.</li>
+            <li>Demonstrated end-to-end design process across research, flows, and UI.</li>
+          </ul>
+        </div>
+      </Section>
+
       {/* Project Brief */}
       <Section id="brief" eyebrow="Project Brief" title="Context" bg="bg-white">
         <div className="max-w-3xl space-y-4">
@@ -392,6 +430,9 @@ export default function SeaSkyCaseStudyPage() {
                 className="block w-full h-auto object-cover"
                 style={{ transform: "translateZ(0) scale(1.06)" }}
               />
+              <p className="mt-2 text-center text-xs text-zinc-500">
+                Unified hub: resources, groups, and media in one place to cut search time.
+              </p>
             </div>
           </div>
         </div>
@@ -420,6 +461,7 @@ export default function SeaSkyCaseStudyPage() {
               priority
             />
           </div>
+        <p className="mt-2 text-center text-xs text-zinc-500">Onboarding clarifies value props quickly to reduce drop-off.</p>
         </div>
       </Section>
 
@@ -448,6 +490,7 @@ export default function SeaSkyCaseStudyPage() {
               priority
             />
           </div>
+        <p className="mt-2 text-center text-xs text-zinc-500">Bottom-nav patterns support one-hand mobile use.</p>
         </div>
       </Section>
 
@@ -480,6 +523,17 @@ export default function SeaSkyCaseStudyPage() {
             There was a lot of learning from this project—and as the saying goes: you learn and grow from your mistakes. Thanks for reading this case study!
           </p>
         </div>
+      </Section>
+
+      
+
+      {/* Accessibility considerations */}
+      <Section id="accessibility" eyebrow="Accessibility considerations" bg="bg-white">
+        <ul className="list-disc pl-5 space-y-2 text-sm text-zinc-700 max-w-3xl">
+          <li>Designed high-contrast resource cards to ensure readability across light/dark modes.</li>
+          <li>Large tap targets and bottom-nav for one-hand mobile use.</li>
+          <li>Simple onboarding flow with plain-language copy for ESL/international students.</li>
+        </ul>
       </Section>
       {/* CTA */}
       <Section bg="bg-white">

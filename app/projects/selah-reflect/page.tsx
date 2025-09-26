@@ -489,6 +489,36 @@ export default function SelahCaseStudyPage() {
         </Container>
       </header>
 
+      {/* Executive Summary */}
+      <Section id="executive-summary" eyebrow="Executive Summary" title="Problem · Solution · Outcome" bg="bg-white">
+        <div className="max-w-3xl space-y-6">
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-900">Problem</h3>
+            <p className="mt-2 text-zinc-700">Daily devotionals were split across PDFs, paper journals, and multiple apps—creating friction and lowering consistency.</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-900">Solution</h3>
+            <p className="mt-2 text-zinc-700">I designed Selah Reflect, a concept mobile app that unifies scripture reading, guided reflection, journaling, and optional AI insights into one streamlined flow.</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-900">Outcome (Projected)</h3>
+            <p className="mt-2 text-zinc-700">Prototype testing achieved high task success for completing a daily devotional. Testers described the flow as faster and more motivating than working from PDFs. Designed and executed solo.</p>
+          </div>
+        </div>
+      </Section>
+
+      
+
+      {/* Projected Impact (moved to top) */}
+      <Section id="impact" eyebrow="Projected Impact" title="Projected Impact" bg="bg-white">
+        <ul className="list-disc pl-5 space-y-2 text-zinc-700 max-w-3xl">
+          <li>~92% prototype task success for starting and completing a daily devotional.</li>
+          <li>Reduced setup from minutes to seconds by consolidating content and journaling.</li>
+          <li>Designed to increase weekly devotional completion and journaling consistency.</li>
+          <li>Focused typography and layouts to reduce cognitive load during reflection.</li>
+        </ul>
+      </Section>
+
       {/* Problem */}
       <Section
         id="problem"
@@ -562,6 +592,7 @@ export default function SelahCaseStudyPage() {
               <Carousel index={solutionSlideIndex} onChange={setSolutionSlideIndex} />
             </div>
           </div>
+          <p className="mt-2 text-center text-xs text-zinc-500">Daily flow: scripture → guided prompts → journal, without app-switching.</p>
         </div>
       </Section>
 
@@ -684,6 +715,7 @@ export default function SelahCaseStudyPage() {
             />
           </div>
         </div>
+        <p className="mt-2 text-center text-xs text-zinc-500">Optional AI assistant provides context without overwhelming the UI.</p>
       </Section>
 
       {/* Outcome */}
@@ -730,6 +762,17 @@ export default function SelahCaseStudyPage() {
             </div>
           </div>
         </div>
+      </Section>
+
+      
+
+      {/* Accessibility considerations */}
+      <Section id="accessibility" eyebrow="Accessibility considerations" bg="bg-white">
+        <ul className="list-disc pl-5 space-y-2 text-sm text-zinc-700 max-w-3xl">
+          <li>Minimum 16px base font and generous line spacing for devotional reading.</li>
+          <li>Semantic headings and clear focus order for assistive tech.</li>
+          <li>Calming color palette with AA contrast for scripture text.</li>
+        </ul>
       </Section>
 
       {/* CTA */}
