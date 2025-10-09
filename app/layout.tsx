@@ -25,10 +25,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         
         {/* Preload critical images */}
-        <link rel="preload" as="image" href="/images/hero/Fredy-header.png" />
-        <link rel="preload" as="image" href="/images/hero/Fredy-header-mobile.png" />
+        <link rel="preload" as="image" href="/images/hero/Fredy-header.png?v=2" />
+        <link rel="preload" as="image" href="/images/hero/Fredy-header-mobile.png?v=6" />
       </head>
-      <body className="bg-black text-zinc-100 antialiased">{children}</body>
+      <body className="bg-[#080808] text-zinc-100 antialiased">{children}</body>
     </html>
   );
 }

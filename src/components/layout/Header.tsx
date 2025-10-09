@@ -116,7 +116,8 @@ export default function Header() {
               height: '100%', 
               background: scrollOpacity > 0 ? 'rgba(0, 0, 0, 0.80)' : 'transparent', 
               borderRadius: 20, 
-              border: '1px rgba(255, 255, 255, 0.20) solid',
+              // Mobile/desktop: show border only after scrolling starts
+              border: scrollOpacity > 0 ? '1px rgba(255, 255, 255, 0.20) solid' : 'none',
               backdropFilter: scrollOpacity > 0 ? 'blur(12px)' : 'none',
               WebkitBackdropFilter: scrollOpacity > 0 ? 'blur(12px)' : 'none',
               transition: 'all 0.3s ease-out'
@@ -125,39 +126,39 @@ export default function Header() {
           >
             <div className="flex items-center justify-between">
               <div className={`text-xl font-bold transition-colors duration-300 ${
-                isScrolled ? 'text-white' : 'text-black'
+                'text-white'
               }`}>
                 FREDY DESIGN
               </div>
               <div className="hidden md:flex items-center space-x-10">
                 <a 
                   href="#projects" 
-                  className={`text-lg font-medium transition-colors duration-300 ${
-                    isScrolled ? 'text-white/90 hover:text-white' : 'text-black/90 hover:text-black'
+                  className={`relative text-lg font-medium transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 after:ease-out hover:after:w-full ${
+                    'text-white/90 hover:text-white'
                   }`}
                 >
                   Projects
                 </a>
                 <a 
                   href="#about" 
-                  className={`text-lg font-medium transition-colors duration-300 ${
-                    isScrolled ? 'text-white/90 hover:text-white' : 'text-black/90 hover:text-black'
+                  className={`relative text-lg font-medium transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 after:ease-out hover:after:w-full ${
+                    'text-white/90 hover:text-white'
                   }`}
                 >
                   About
                 </a>
                 <a 
                   href="#favorite-stack" 
-                  className={`text-lg font-medium transition-colors duration-300 ${
-                    isScrolled ? 'text-white/90 hover:text-white' : 'text-black/90 hover:text-black'
+                  className={`relative text-lg font-medium transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 after:ease-out hover:after:w-full ${
+                    'text-white/90 hover:text-white'
                   }`}
                 >
                   Stack
                 </a>
                 <a 
                   href="#contact" 
-                  className={`text-lg font-medium transition-colors duration-300 ${
-                    isScrolled ? 'text-white/90 hover:text-white' : 'text-black/90 hover:text-black'
+                  className={`relative text-lg font-medium transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 after:ease-out hover:after:w-full ${
+                    'text-white/90 hover:text-white'
                   }`}
                 >
                   Contact
@@ -167,7 +168,7 @@ export default function Header() {
               <div className="md:hidden">
                 <button 
                   className={`p-2 transition-colors duration-300 ${
-                    isScrolled ? 'text-white' : 'text-black'
+                    isMobile ? 'text-white' : (isScrolled ? 'text-white' : 'text-black')
                   }`}
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
@@ -192,7 +193,12 @@ export default function Header() {
 
       <header
         id="site-header"
-        className="relative w-full h-[100vh] bg-white overflow-hidden rounded-b-3xl"
+        className="relative w-full h-[100vh] overflow-hidden rounded-b-3xl"
+        style={{
+          background: 'linear-gradient(180deg, #690414 0%, #800417 24%, #7C0416 44%, #660314 65%, #4E0311 82%, #490410 100%)',
+          // Mobile-only outer border along left/right/bottom when scrolled
+          borderBottom: isMobile && scrollOpacity > 0 ? '0.5px rgba(255, 255, 255, 0.10) solid' : undefined
+        }}
       >
         {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
@@ -260,7 +266,7 @@ export default function Header() {
           style={{
             position: 'absolute',
             fontWeight: 1000,
-            color: '#F5F5F5',
+            color: 'rgba(186.56, 0, 30.53, 0.16)',
             fontFamily: 'Arial, sans-serif',
             whiteSpace: 'nowrap',
             top: isMobile ? '30%' : '50%',
@@ -282,31 +288,34 @@ export default function Header() {
       >
         {/* Mobile image (art-directed) */}
         <Image
-          src="/images/hero/Fredy-header-mobile.png"
+          src="/images/hero/Fredy-header-mobile.png?v=6"
           alt="Fredy"
           width={800}
           height={600}
           sizes="(max-width: 768px) 100vw, 0vw"
           priority
           className="block md:hidden object-center object-cover w-full h-full"
+          style={{ transform: 'translateZ(0) scale(1.06)' }}
           onLoad={() => console.log('Mobile header image loaded successfully')}
           onError={(e) => console.error('Mobile header image failed to load:', e)}
         />
         {/* Desktop image */}
         <Image
-          src="/images/hero/Fredy-header.png"
+          src="/images/hero/Fredy-header.png?v=2"
           alt="Fredy"
           width={1200}
           height={800}
           sizes="(min-width: 768px) 100vw, 0vw"
           priority
           className="hidden md:block object-bottom object-contain w-full h-full"
+          style={{ transform: 'translateZ(0) scale(1.08)' }}
           onLoad={() => console.log('Desktop header image loaded successfully')}
           onError={(e) => console.error('Desktop header image failed to load:', e)}
         />
       </div>
 
-      {/* Gradient overlay for better text visibility */}
+      {/* Gradient overlay for better text visibility - disabled */}
+      {/**
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -314,6 +323,7 @@ export default function Header() {
           background: 'linear-gradient(to bottom, transparent 0%, transparent 30%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.7) 100%)'
         }}
       />
+      */}
 
       {/* Text layer with blend mode applied to entire text with parallax */}
       <div 
@@ -321,8 +331,12 @@ export default function Header() {
         style={{
           zIndex: 30,
           mixBlendMode: 'difference',
-          transform: `${isMobile ? 'translateY(300px)' : 'translateY(-160px)'} translateX(${mousePosition.x * 16}px) translateY(${mousePosition.y * 10}px) translateY(${scrollY * 0.018}px)`,
-          transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+          transform: isMobile
+            ? 'translateY(0)'
+            : `translateY(40px) translateX(${mousePosition.x * 16}px) translateY(${mousePosition.y * 10}px) translateY(${scrollY * 0.018}px)`,
+          transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+          alignItems: isMobile ? 'flex-end' : 'center',
+          paddingBottom: isMobile ? '3.5rem' : 0
         }}
       >
         <div 
@@ -334,17 +348,19 @@ export default function Header() {
           }}
         >
           <h1 
+            className="hidden md:block"
             style={{
               width: '100%',
-              fontSize: isMobile ? 'clamp(2.75rem, 12vw, 15rem)' : 'clamp(10rem, 15vw, 15.4rem)',
+              fontSize: isMobile ? 'clamp(2.6rem, 13vw, 5.6rem)' : '140px',
               fontWeight: 700,
               textTransform: 'uppercase',
-              letterSpacing: '-0.02em',
+              letterSpacing: isMobile ? '0.25em' : '0.4em',
               lineHeight: 0.85,
-              whiteSpace: 'nowrap',
+              whiteSpace: isMobile ? 'normal' : 'nowrap',
               color: '#FFFFFF',
               fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
               margin: 0,
+              marginBottom: isMobile ? '1rem' : 0,
               padding: 0,
               textAlign: isMobile ? 'center' : 'left'
             }}
@@ -352,15 +368,34 @@ export default function Header() {
             FREDY PEDRO
           </h1>
 
-          {/* Centered description and buttons (like reference) */}
-          <div className="block md:hidden" style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+          {/* Centered description (mobile) */}
+          {isMobile && (
+          <div className="block md:hidden" style={{ textAlign: 'center', marginTop: '0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem' }}>
+            <h1
+              style={{
+                width: '100%',
+                fontSize: 'clamp(2.9rem, 16vw, 6.2rem)',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.28em',
+                lineHeight: 0.92,
+                color: '#FFFFFF',
+                fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
+                margin: 0,
+                marginBottom: '0.4rem',
+                padding: 0,
+                textAlign: 'center'
+              }}
+            >
+              FREDY PEDRO
+            </h1>
             <p 
               style={{
                 fontSize: 'clamp(1rem, 3.6vw, 1.25rem)',
-                lineHeight: 1.4,
+                lineHeight: 1.55,
                 color: '#FFFFFF',
                 fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-                margin: '0 0 1.5rem 0',
+                margin: '0 0 2rem 0',
                 maxWidth: '700px',
                 marginLeft: 'auto',
                 marginRight: 'auto'
@@ -369,69 +404,48 @@ export default function Header() {
               I am a UI/UX Designer & front-end Developer, <br />creating intuitive digital experiences.
             </p>
 
+            {/* Mobile scroll indicator below text */}
             <div 
-              style={{ 
-                display: 'flex', 
-                gap: '1rem', 
-                justifyContent: 'center', 
-                flexWrap: 'wrap',
-                pointerEvents: 'auto',
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.5rem',
               }}
             >
-              <button 
-                onClick={scrollToAbout}
+              <span 
                 style={{
-                  padding: '1rem 2rem',
-                  backgroundColor: '#FFFFFF',
-                  color: '#000000',
-                  border: 'none',
-                  borderRadius: '12px',
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
+                  fontSize: '0.875rem',
+                  color: 'rgba(255,255,255,0.9)',
+                  fontFamily: 'Poppins, system-ui, -apple-system, sans-serif'
                 }}
               >
-                About Me
-              </button>
-              <button 
-                onClick={scrollToContact}
+                Scroll to explore projects
+              </span>
+              <div 
                 style={{
-                  padding: '1rem 2rem',
-                  backgroundColor: 'transparent',
-                  color: '#FFFFFF',
-                  border: '2px solid #FFFFFF',
-                  borderRadius: '12px',
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.backgroundColor = '#FFFFFF';
-                  e.currentTarget.style.color = '#000000';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = '#FFFFFF';
+                  width: '22px',
+                  height: '36px',
+                  border: '2px solid rgba(255, 255, 255, 0.6)',
+                  borderRadius: '18px',
+                  display: 'flex',
+                  justifyContent: 'center'
                 }}
               >
-                Get In Touch
-              </button>
+                <div 
+                  style={{
+                    width: '3px',
+                    height: '10px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    borderRadius: '2px',
+                    marginTop: '6px',
+                    animation: 'bounce 1s infinite'
+                  }}
+                />
+              </div>
             </div>
           </div>
+          )}
         </div>
       </div>
 
@@ -452,7 +466,7 @@ export default function Header() {
           }}
         >
           <div style={{ textAlign: 'center' }}>
-            {/* Desktop-only description + buttons */}
+            {/* Desktop-only description */}
             <div className="hidden md:block" style={{ marginBottom: '3rem' }}>
               <p 
                 style={{
@@ -468,70 +482,8 @@ export default function Header() {
               >
                 I am a UI/UX Designer & front-end Developer, <br />creating intuitive digital experiences.
               </p>
-              <div 
-                style={{ 
-                  display: 'flex', 
-                  gap: '1rem', 
-                  justifyContent: 'center', 
-                  flexWrap: 'wrap',
-                  pointerEvents: 'auto'
-                }}
-              >
-                <button 
-                  onClick={scrollToAbout}
-                  style={{
-                    padding: '1rem 2rem',
-                    backgroundColor: '#FFFFFF',
-                    color: '#000000',
-                    border: 'none',
-                    borderRadius: '12px',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  About Me
-                </button>
-                <button 
-                  onClick={scrollToContact}
-                  style={{
-                    padding: '1rem 2rem',
-                    backgroundColor: 'transparent',
-                    color: '#FFFFFF',
-                    border: '2px solid #FFFFFF',
-                    borderRadius: '12px',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.backgroundColor = '#FFFFFF';
-                    e.currentTarget.style.color = '#000000';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = '#FFFFFF';
-                  }}
-                >
-                  Get In Touch
-                </button>
-              </div>
             </div>
-            {/* Scroll Indicator removed on mobile */}
+            {/* Scroll Indicator visible on desktop (mobile has its own above) */}
             <div className="hidden md:flex"
               style={{
                 flexDirection: 'column',
@@ -546,7 +498,7 @@ export default function Header() {
                   fontFamily: 'Poppins, system-ui, -apple-system, sans-serif'
                 }}
               >
-                Scroll to explore
+                Scroll to explore projects
               </span>
               <div 
                 style={{
