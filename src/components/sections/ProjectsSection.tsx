@@ -1,334 +1,517 @@
 "use client";
+
+/**
+ * Projects-section images: ASSETS, CASE_BG, PROJECTS, spin overlay.
+ * Full cassettes: one filmstrip (row-reverse) behind the player; miniCassettes on the controller.
+ */
 import Link from "next/link";
-import Image from "next/image";
-import { useEffect, useRef } from "react";
+import {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import styles from "./ProjectsSection.module.css";
 
-// Import images statically - using public folder paths
+const ASSETS = {
+  player:
+    "/images/projects-section/cassettePlayer/Cassette%20Player.png",
+  spin1: "/images/projects-section/cassettePlayer/cassette-spin-1.png",
+  spin2: "/images/projects-section/cassettePlayer/cassette-spin-2.png",
+  multiController:
+    "/images/projects-section/mediaPlayer/multiMedia-controller.png",
+  caseStudiesBg:
+    "/images/projects-section/caseStudies/case-Studies/case-Studies-BG.png",
+  btn: {
+    play: "/images/projects-section/mediaPlayer/button-states/Play.png",
+    playPressed:
+      "/images/projects-section/mediaPlayer/button-states/Play%20-%20Pressed.png",
+    prev: "/images/projects-section/mediaPlayer/button-states/Previous.png",
+    prevPressed:
+      "/images/projects-section/mediaPlayer/button-states/Previous%20-%20Pressed.png",
+    next: "/images/projects-section/mediaPlayer/button-states/Next.png",
+    nextPressed:
+      "/images/projects-section/mediaPlayer/button-states/Next%20-%20Pressesd.png",
+    mute: "/images/projects-section/mediaPlayer/button-states/Mute.png",
+    mutePressed:
+      "/images/projects-section/mediaPlayer/button-states/Mute%20-%20Pressed.png",
+    volume: "/images/projects-section/mediaPlayer/button-states/Volume.png",
+    volumePressed:
+      "/images/projects-section/mediaPlayer/button-states/Volume%20-%20Pressed.png",
+  },
+} as const;
 
-type Tile = {
+const CASE_BG = ASSETS.caseStudiesBg;
+
+/** Slightly longer than `.cassetteStrip` transition (0.38s) so reels resume after the slide settles */
+const CASSETTE_STRIP_TRANSITION_MS = 400;
+
+type Project = {
+  id: string;
   title: string;
+  category: string;
   description: string;
-  href?: string;
-  tileClass: string; // explicit grid placement at lg (col/row start and spans)
-  backgroundClass: string;
+  cassette: string;
+  miniCassette: string;
+  caseStudy: string;
+  href: string;
 };
 
-const tiles: Tile[] = [
+const PROJECTS: Project[] = [
   {
+    id: "sea-sky",
     title: "SEA & SKY",
+    category: "WEBSITE",
     description:
       "Online community built to empower underrepresented students in higher education.",
+    cassette:
+      "/images/projects-section/cassettes/seaSky-Cassette-3.png",
+    miniCassette:
+      "/images/projects-section/miniCassettes/mini-seaSky-Cassette-3.png",
+    caseStudy:
+      "/images/projects-section/caseStudies/case-Studies/seaSky-caseStudy.png",
     href: "/projects/sea-and-sky",
-    tileClass: "sea",
-    backgroundClass:
-      "bg-[linear-gradient(135deg,#1e90ff,#0a66c2)]",
   },
   {
-    title: "TIDEHAUS",
-    description:
-      "A modern surf e-commerce site built to showcase and sell surfboards and accessories with a clean, coastal aesthetic.",
-    href: "/projects/tidehaus",
-    tileClass: "tidehaus",
-    backgroundClass: "bg-[linear-gradient(135deg,#0ea5a6,#0b7285)]",
-  },
-  {
+    id: "selah",
     title: "SELAH",
+    category: "APP",
     description:
       "A devotional app that guides users through scripture, reflection, and journaling.",
+    cassette:
+      "/images/projects-section/cassettes/selah-Cassette-2.png",
+    miniCassette:
+      "/images/projects-section/miniCassettes/mini-selah-Cassette-2.png",
+    caseStudy:
+      "/images/projects-section/caseStudies/case-Studies/selah-caseStudy.png",
     href: "/projects/selah-reflect",
-    tileClass: "selah",
-    backgroundClass:
-      "bg-[linear-gradient(135deg,#1f766e,#2c8f7a)]",
   },
   {
+    id: "grove",
+    title: "GROVE",
+    category: "WEBSITE",
+    description:
+      "Community-forward design exploring nature, gathering spaces, and calm digital storytelling.",
+    cassette:
+      "/images/projects-section/cassettes/grove-Cassette-1.png",
+    miniCassette:
+      "/images/projects-section/miniCassettes/mini-grove-Cassette-1.png",
+    caseStudy: CASE_BG,
+    href: "/#contact",
+  },
+  {
+    id: "ecommerce",
+    title: "E‑COMMERCE",
+    category: "WEBSITE",
+    description:
+      "Redesign of the Samples Store—Shopify template craft for a streamlined, friendly shopping journey.",
+    cassette:
+      "/images/projects-section/cassettes/eCommerce-Cassette-4.png",
+    miniCassette:
+      "/images/projects-section/miniCassettes/mini-eCommerce-Cassette-4.png",
+    caseStudy: CASE_BG,
+    href: "/projects/ecommerce",
+  },
+  {
+    id: "ziplearn",
     title: "ZIPLEARN",
+    category: "APP",
     description:
       "An intuitive tutoring app that makes learning faster, simpler, and accessible.",
+    cassette:
+      "/images/projects-section/cassettes/zipLearn-Cassette-5.png",
+    miniCassette:
+      "/images/projects-section/miniCassettes/mini-zipLearn-Cassette-5.png",
+    caseStudy:
+      "/images/projects-section/caseStudies/case-Studies/ziplearn-caseStudy.png",
     href: "/projects/ziplearn",
-    tileClass: "ziplearn",
-    backgroundClass: "bg-[linear-gradient(135deg,#6d28d9,#7c3aed)]",
   },
   {
-    title: "E‑COMMERCE",
+    id: "tidehaus",
+    title: "TIDEHAUS",
+    category: "WEBSITE",
     description:
-      "Led the redesign of the Samples Store, leveraging a Shopify template to create a streamlined and user-friendly shopping journey.",
-    href: "/projects/ecommerce",
-    tileClass: "ecommerce",
-    backgroundClass: "bg-[linear-gradient(135deg,#1f2937,#0b0f14)]",
+      "A modern surf e-commerce site built to showcase gear with a clean, coastal aesthetic.",
+    cassette:
+      "/images/projects-section/cassettes/tideHaus-Cassette-6.png",
+    miniCassette:
+      "/images/projects-section/miniCassettes/mini-tideHaus-Cassette-6.png",
+    caseStudy:
+      "/images/projects-section/caseStudies/case-Studies/tidehaus-caseStudy.png",
+    href: "/projects/tidehaus",
   },
 ];
 
-export default function ProjectsSection() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const isSmall = window.innerWidth < 768;
-      const elements = document.querySelectorAll<HTMLElement>(".js-parallax");
-      elements.forEach((el) => {
-        if (isSmall) {
-          el.style.transform = "translateY(0px)";
-          return;
-        }
-        const rect = el.getBoundingClientRect();
-        const viewportH = window.innerHeight || 800;
-        const progress = Math.min(Math.max((viewportH - rect.top) / (viewportH + rect.height), 0), 1);
-        const translate = (progress - 0.5) * 40; // ~10% of typical card
-        el.style.willChange = "transform";
-        el.style.transform = `translateY(${translate.toFixed(2)}px)`;
-      });
-    };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
-
-    const parents = Array.from(document.querySelectorAll<HTMLElement>(".js-tilt-parent, .js-tilt-parent-all"));
-    const move = (parent: HTMLElement, e: MouseEvent) => {
-      // Disable tilt effect on mobile devices
-      if (window.innerWidth < 768) {
-        return;
-      }
-      const rect = parent.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width; // 0..1
-      const y = (e.clientY - rect.top) / rect.height;
-      const rotateY = (x - 0.2) * 4; // ~-4..4 deg (reduced)
-      const rotateX = (0.2 - y) * 4; // ~-4..4 deg (reduced)
-      parent.style.transform = `perspective(1200px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
-    };
-    const leave = (parent: HTMLElement) => {
-      parent.style.transform = "perspective(1200px) rotateX(0deg) rotateY(0deg)";
-    };
-    parents.forEach((p) => {
-      const onMove = (e: Event) => move(p, e as MouseEvent);
-      const onLeave = () => leave(p);
-      p.style.transformStyle = "preserve-3d";
-      p.style.willChange = "transform";
-      p.style.transition = "transform 250ms ease-out";
-      p.addEventListener("mousemove", onMove);
-      p.addEventListener("mouseleave", onLeave);
-      (p as any)._tiltHandlers = { onMove, onLeave };
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
-      parents.forEach((p) => {
-        const h = (p as any)._tiltHandlers;
-        if (h) {
-          p.removeEventListener("mousemove", h.onMove);
-          p.removeEventListener("mouseleave", h.onLeave);
-        }
-      });
-    };
-  }, []);
-
-  useEffect(() => {
-    // Local reveal for Featured Projects section
-    const revealItems = Array.from(sectionRef.current?.querySelectorAll<HTMLElement>('[data-reveal]') || []);
-
-    revealItems.forEach((el, idx) => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(28px)';
-      el.style.transition = 'opacity 650ms ease, transform 650ms cubic-bezier(0.22,1,0.36,1)';
-      el.style.transitionDelay = `${idx * 110}ms`;
-    });
-    
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const el = entry.target as HTMLElement;
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
-          io.unobserve(el);
-        }
-      });
-    }, { threshold: 0.1 });
-    
-    revealItems.forEach((el) => io.observe(el));
-    
-    return () => {
-      io.disconnect();
-    };
-  }, []);
-
+function PressableIcon({
+  normalSrc,
+  pressedSrc,
+  width,
+  height,
+  isDown,
+}: {
+  normalSrc: string;
+  pressedSrc: string;
+  width: number;
+  height: number;
+  isDown: boolean;
+}) {
   return (
-    <section ref={sectionRef} id="projects" className="mx-auto mt-12 md:mt-16 max-w-[100rem] px-4 md:px-8">
-      <h2 data-reveal className="whitespace-nowrap text-[36px] sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px] font-black tracking-tight text-white uppercase text-center md:text-left">
-        Featured Projects
-      </h2>
-
-      <div className={"mt-8 mx-auto w-full max-w-[100rem] px-0 " + styles.portfolioGrid}>
-        {tiles.map((tile) => {
-          const images: Record<string, any> = {
-            sea: "/images/projects/seaSky-thumbnail.png",
-            tidehaus: "/images/projects/tidehaus-thumbnail.png",
-            selah: "/images/projects/selah-Thumbnail.png",
-            ziplearn: "/images/projects/ziplearn-thumbnail.png",
-            ecommerce: "/images/projects/ecommerce-bg.png",
-          };
-          const imgSrc = images[tile.tileClass];
-          const isCover = tile.tileClass === "tidehaus" || tile.tileClass === "ecommerce";
-          const wrapperPadding =
-            tile.tileClass === "selah"
-              ? "px-1 md:px-32 pt-16 md:pt-48 pb-0" // further increased image size on mobile only, bottom aligned
-              : tile.tileClass === "ziplearn"
-              ? "px-24 md:px-60 pt-28 md:pt-60 pb-0" // slightly smaller image size on mobile for ziplearn
-              : isCover
-              ? "p-0" // cover entire container
-              : tile.tileClass === "sea"
-              ? "px-0 md:px-8 pt-0 md:pt-8 pb-0" // maximum image size on mobile, bottom aligned
-              : "p-6 md:p-8"; // default
-          const objectFitClass = isCover ? "object-cover" : "object-contain";
-          const objectPositionClass =
-            tile.tileClass === "sea" || tile.tileClass === "selah" || tile.tileClass === "ziplearn"
-              ? "object-bottom"
-              : "object-center";
-          const containerPadding = 
-            tile.tileClass === "sea" || tile.tileClass === "selah" || tile.tileClass === "ziplearn"
-              ? "px-6 pt-6 pb-0" // no bottom padding for bottom-aligned images
-              : "p-6"; // normal padding for others
-          const showHoverButton = ["sea", "selah", "ziplearn", "ecommerce", "tidehaus"].includes(tile.tileClass);
-          const enableImageScale = ["sea", "selah", "ziplearn"].includes(tile.tileClass);
-          const content = (
-            <div className={
-              "group js-tilt-parent relative h-full w-full overflow-hidden ring-1 ring-inset ring-white/10 transition-transform duration-300 " +
-              containerPadding +
-              " " + styles.cardBase + " " + (tile.tileClass === "ecommerce" ? styles.ecommerceMobile : "") + " " + tile.backgroundClass
-            }>
-              {imgSrc ? (
-                isCover ? (
-                  <div className="pointer-events-none absolute inset-0 p-0">
-                    <img
-                      src={imgSrc}
-                      alt={tile.title}
-                      className="h-full w-full object-cover object-center"
-                    />
-                  </div>
-                ) : (
-                  <div className={`pointer-events-none absolute inset-0 flex ${tile.tileClass === "sea" ? "items-end justify-center md:items-end" : "items-end"} js-tilt-parent-all ${wrapperPadding}`}>
-                    <div className={`js-parallax relative w-full ${tile.tileClass === "sea" ? "h-3/5 md:h-auto" : "h-auto"} will-change-transform`}>
-                      <div className={`relative w-full ${tile.tileClass === "sea" ? "h-full md:h-auto" : "h-auto"} ${enableImageScale ? "transition-transform duration-500 ease-in-out md:group-hover:scale-[1.10]" : ""}`}>
-                        <img
-                          src={imgSrc}
-                          alt={tile.title}
-                          className={`w-full ${tile.tileClass === "sea" ? "h-full md:h-auto object-cover md:object-contain" : "h-auto object-contain"}`}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )
-              ) : null}
-              {tile.tileClass === "tidehaus" ? (
-                <>
-                  <div
-                    className="pointer-events-none absolute inset-0 z-10 rounded-[1.25rem] opacity-0 transition-all duration-500 ease-in-out md:group-hover:opacity-100"
-                    style={{ background: "rgba(0, 0, 0, 0.10)", backdropFilter: "blur(90px)" }}
-                  />
-                  <div
-                    className="pointer-events-none absolute left-0 right-0 z-10 opacity-0 translate-y-2 transition-all duration-500 ease-in-out md:group-hover:opacity-100 md:group-hover:translate-y-0 flex items-start justify-center"
-                    style={{ top: "14rem", bottom: "2rem" }}
-                  >
-                    <div className="relative w-5/6 h-5/6 transform scale-95 transition-transform duration-500 ease-in-out md:group-hover:scale-100">
-                      <img
-                        src="/images/projects/Tidehaus-imgOverlay.png"
-                        alt="Tidehaus overlay"
-                        className="object-contain w-full h-full"
-                      />
-                    </div>
-                  </div>
-                </>
-              ) : null}
-              {showHoverButton ? (
-                <div className="pointer-events-none absolute inset-x-0 bottom-5 z-20 flex justify-center">
-                  {tile.href ? (
-                    <Link
-                      href={tile.href}
-                      className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[66px] rounded-[1.25rem] bg-white text-black text-base font-medium font-poppins transition-all duration-300 ease-out will-change-transform md:bg-white/20 md:text-white/60 md:hover:bg-white md:hover:text-black focus:outline-none focus:ring-0 focus-visible:outline-none"
-                    >
-                      View case study
-                    </Link>
-                  ) : (
-                    <div className="pointer-events-auto inline-flex items-center justify-center gap-2 w-[300px] h-[72px] rounded-[1.25rem] bg-white text-black text-base font-medium font-poppins transition-all duration-300 ease-out will-change-transform md:bg-white/20 md:text-white/60 md:hover:bg-white md:hover:text-black focus:outline-none focus:ring-0 focus-visible:outline-none">
-                      View case study
-                    </div>
-                  )}
-                </div>
-              ) : null}
-              {(() => {
-                let overlayStyle: React.CSSProperties | undefined;
-                if (tile.tileClass === "sea") {
-                  overlayStyle = {
-                    width: "100%",
-                    height: "100%",
-                    background: "linear-gradient(0deg, #003B76 0%, rgba(11, 114, 216, 0) 100%)",
-                    borderRadius: "1.25rem",
-                  };
-                } else if (tile.tileClass === "selah") {
-                  overlayStyle = {
-                    width: "100%",
-                    height: "100%",
-                    background: "linear-gradient(0deg, #172528 0%, rgba(56.17, 107.84, 118.72, 0) 100%)",
-                    borderRadius: "1.25rem",
-                  };
-                } else if (tile.tileClass === "ziplearn") {
-                  overlayStyle = {
-                    width: "100%",
-                    height: "100%",
-                    background: "linear-gradient(180deg, rgba(69.27, 36.40, 145, 0) 19%, #2D0096 100%)",
-                    borderRadius: "1.25rem",
-                  };
-                } else if (tile.tileClass === "ecommerce") {
-                  overlayStyle = {
-                    width: "100%",
-                    height: "100%",
-                    background: "rgba(0, 0, 0, 0.86)",
-                    borderRadius: "1.25rem",
-                  };
-                }
-                return overlayStyle ? (
-                  <div className="pointer-events-none absolute inset-0 z-10" style={overlayStyle} />
-                ) : null;
-              })()}
-              {tile.tileClass === "tidehaus" ? (
-                <div className={"absolute inset-0 z-0 hidden md:block " + styles.tideRegion}>
-                  <div className={styles.bubble + " " + styles.delayNeg1 + " " + styles.speed2} style={{ top: "0rem", left: "0rem" }}>E-Commerce</div>
-                  <div className={styles.bubble + " " + styles.delay3 + " " + styles.speed3 + " " + styles.variant2} style={{ top: "0rem", right: "0rem" }}>Responsive</div>
-                  <div className={styles.bubble + " " + styles.delay7 + " " + styles.speed1} style={{ top: "9rem", left: "0rem" }}>User-Friendly</div>
-                  <div className={styles.bubble + " " + styles.delay2 + " " + styles.speed2} style={{ top: "9rem", right: "0rem" }}>Modern Design</div>
-                  <div className={styles.bubble + " " + styles.delay5 + " " + styles.speed3 + " " + styles.variant2} style={{ bottom: "20rem", left: "0rem" }}>Surf Gear</div>
-                  <div className={styles.bubble + " " + styles.delay8 + " " + styles.speed1} style={{ bottom: "20rem", right: "0rem" }}>Wetsuits</div>
-                </div>
-              ) : null}
-              {(() => {
-                const textContainerClass = `relative z-20 ${isCover ? (tile.tileClass === "ecommerce" ? "text-center pt-6 px-6 md:text-left md:pt-10 md:px-10" : "text-left pt-3 pl-3 pr-32 md:pt-10 md:px-10") : "text-center pt-10 px-10"}`;
-                const titleClass = "text-3xl md:text-4xl font-bold uppercase tracking-tight text-white font-poppins";
-                const paragraphClass = `mt-2 max-w-[40ch] text-sm md:text-lg leading-6 md:leading-7 text-white/85 font-poppins ${isCover ? "" : "mx-auto"}`;
-                return (
-                  <div className={textContainerClass}>
-                    <div className={titleClass}>{tile.title}</div>
-                    <p className={paragraphClass}>{tile.description}</p>
-                  </div>
-                );
-              })()}
-
-              
-            </div>
-          );
-
-          const wrapperClasses = `block ${styles[tile.tileClass as keyof typeof styles] || ""} ${tile.tileClass?.includes("tide") ? styles.tideTall : ""}`;
-
-          return (
-            <div key={tile.title} data-reveal className={wrapperClasses}>
-              {content}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Bottom button temporarily removed until more projects are added */}
-    </section>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={isDown ? pressedSrc : normalSrc}
+      alt=""
+      width={width}
+      height={height}
+      draggable={false}
+    />
   );
 }
 
+export default function ProjectsSection() {
+  const [selected, setSelected] = useState(0);
+  const [muted, setMuted] = useState(false);
+  const [cassetteTransitioning, setCassetteTransitioning] = useState(false);
+  const skipCassetteTransitionRef = useRef(true);
 
+  const [playDown, setPlayDown] = useState(false);
+  const [prevDown, setPrevDown] = useState(false);
+  const [nextDown, setNextDown] = useState(false);
+  const [muteDown, setMuteDown] = useState(false);
+
+  const n = PROJECTS.length;
+  const current = PROJECTS[selected];
+  const canGoPrev = selected > 0;
+  const canGoNext = selected < n - 1;
+
+  const goPrev = useCallback(() => {
+    setSelected((i) => (i > 0 ? i - 1 : i));
+  }, []);
+
+  const goNext = useCallback(() => {
+    setSelected((i) => (i < n - 1 ? i + 1 : i));
+  }, [n]);
+
+  useLayoutEffect(() => {
+    if (skipCassetteTransitionRef.current) {
+      skipCassetteTransitionRef.current = false;
+      return;
+    }
+    setCassetteTransitioning(true);
+    const id = window.setTimeout(() => {
+      setCassetteTransitioning(false);
+    }, CASSETTE_STRIP_TRANSITION_MS);
+    return () => window.clearTimeout(id);
+  }, [selected]);
+
+  const onPlay = useCallback(() => {}, []);
+
+  const muteNormal = muted ? ASSETS.btn.mute : ASSETS.btn.volume;
+  const mutePressed = muted
+    ? ASSETS.btn.mutePressed
+    : ASSETS.btn.volumePressed;
+
+  /** Whether the current project has a unique case study image (not just the BG placeholder) */
+  const hasCaseStudy = current.caseStudy !== CASE_BG;
+
+  return (
+    <section
+      id="projects"
+      className={styles.section}
+      aria-label="Projects"
+    >
+      <div className={styles.stripes} aria-hidden />
+      <div className={styles.inner}>
+        <header>
+          <div className={styles.headerBar} aria-hidden>
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+          <h2 className={styles.title}>PROJECTS</h2>
+          <p className={styles.subtitle}>
+            Select a cassette. Explore the craft.
+          </p>
+        </header>
+
+        <div className={styles.mainRow}>
+          <div className={styles.walkmanCol}>
+            <div className={styles.walkmanStack}>
+              <div className={styles.walkmanClip}>
+                {/* Filmstrip: mount = one cassette wide; strip = all cassettes; slides on selection */}
+                <div className={styles.cassetteMount} aria-hidden>
+                  <div
+                    className={styles.cassetteStrip}
+                    style={
+                      {
+                        "--count": n,
+                        "--idx": selected,
+                      } as CSSProperties
+                    }
+                  >
+                    {PROJECTS.map((p) => (
+                      <div key={p.id} className={styles.cassetteCell}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          className={styles.cassetteTape}
+                          src={p.cassette}
+                          alt=""
+                          width={400}
+                          height={300}
+                          decoding="async"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Reels between cassette (z-index 1) and player art (3); same clip as filmstrip */}
+                <div className={styles.cassetteSpinSlot} aria-hidden>
+                  <div
+                    className={`${styles.spinReelPair}${
+                      cassetteTransitioning ? "" : ` ${styles.reelsRunning}`
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      className={styles.spinReel}
+                      src={ASSETS.spin1}
+                      alt=""
+                      width={200}
+                      height={200}
+                      decoding="async"
+                    />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      className={styles.spinReel}
+                      src={ASSETS.spin1}
+                      alt=""
+                      width={200}
+                      height={200}
+                      decoding="async"
+                    />
+                  </div>
+                </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  className={styles.walkmanBase}
+                  src={ASSETS.player}
+                  alt=""
+                  width={800}
+                  height={800}
+                  decoding="async"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.displayCol}>
+            <div
+              className={styles.displayPanel}
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {/* Dark frame background */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className={styles.casePanelBg}
+                src={CASE_BG}
+                alt=""
+                width={1120}
+                height={720}
+                decoding="async"
+                draggable={false}
+              />
+
+              <div className={styles.displayText}>
+                <span className={styles.nowPlaying}>Now playing</span>
+                <p className={styles.displayTitle}>{current.title}</p>
+                <div className={styles.progressTrack} aria-hidden>
+                  <div
+                    className={styles.progressFill}
+                    style={
+                      {
+                        width: `${((selected + 1) / n) * 100}%`,
+                      } as CSSProperties
+                    }
+                  />
+                </div>
+                <span className={styles.category}>{current.category}</span>
+                <p className={styles.description}>{current.description}</p>
+                <Link className={styles.viewLink} href={current.href}>
+                  View project
+                  <span aria-hidden> →</span>
+                </Link>
+              </div>
+
+              <div className={styles.displayThumb}>
+                {hasCaseStudy && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={current.id}
+                    className={styles.caseStudyImg}
+                    src={current.caseStudy}
+                    alt={`${current.title} case study`}
+                    width={560}
+                    height={720}
+                    decoding="async"
+                    draggable={false}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.controlsDeck}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className={styles.controlsDeckArt}
+            src={ASSETS.multiController}
+            alt=""
+            width={1200}
+            height={280}
+            decoding="async"
+          />
+          <div
+            className={styles.cassetteStripViewport}
+            aria-hidden
+          >
+            {/* Fixed in viewport; minis slide on the track above */}
+            <div className={styles.cassetteStripHighlight} />
+            <div
+              className={styles.cassetteStripTrack}
+              style={
+                {
+                  "--cassette-index": selected,
+                } as CSSProperties
+              }
+            >
+              {PROJECTS.map((p) => (
+                <div key={p.id} className={styles.cassetteStripCell}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className={styles.cassetteStripMini}
+                    src={p.miniCassette}
+                    alt=""
+                    width={312}
+                    height={200}
+                    draggable={false}
+                    decoding="async"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={styles.controlsBar}>
+            <div className={styles.transport}>
+              <button
+                type="button"
+                className={styles.transportBtn}
+                onPointerDown={() => setPlayDown(true)}
+                onPointerUp={() => setPlayDown(false)}
+                onPointerLeave={(e) => {
+                  if (e.buttons === 0) setPlayDown(false);
+                }}
+                onPointerCancel={() => setPlayDown(false)}
+                onClick={onPlay}
+                aria-label="Play animation"
+              >
+                <PressableIcon
+                  normalSrc={ASSETS.btn.play}
+                  pressedSrc={ASSETS.btn.playPressed}
+                  width={48}
+                  height={48}
+                  isDown={playDown}
+                />
+                <span className={styles.transportLabel}>Play</span>
+              </button>
+              <button
+                type="button"
+                className={styles.transportBtn}
+                disabled={!canGoPrev}
+                onPointerDown={() => {
+                  if (!canGoPrev) return;
+                  setPrevDown(true);
+                }}
+                onPointerUp={() => setPrevDown(false)}
+                onPointerLeave={(e) => {
+                  if (e.buttons === 0) setPrevDown(false);
+                }}
+                onPointerCancel={() => setPrevDown(false)}
+                onClick={goPrev}
+                aria-label={
+                  canGoPrev
+                    ? "Previous project"
+                    : "Previous project (already on first project)"
+                }
+              >
+                <PressableIcon
+                  normalSrc={ASSETS.btn.prev}
+                  pressedSrc={ASSETS.btn.prevPressed}
+                  width={48}
+                  height={48}
+                  isDown={canGoPrev && prevDown}
+                />
+                <span className={styles.transportLabel}>Prev</span>
+              </button>
+              <button
+                type="button"
+                className={styles.transportBtn}
+                disabled={!canGoNext}
+                onPointerDown={() => {
+                  if (!canGoNext) return;
+                  setNextDown(true);
+                }}
+                onPointerUp={() => setNextDown(false)}
+                onPointerLeave={(e) => {
+                  if (e.buttons === 0) setNextDown(false);
+                }}
+                onPointerCancel={() => setNextDown(false)}
+                onClick={goNext}
+                aria-label={
+                  canGoNext
+                    ? "Next project"
+                    : "Next project (already on last project)"
+                }
+              >
+                <PressableIcon
+                  normalSrc={ASSETS.btn.next}
+                  pressedSrc={ASSETS.btn.nextPressed}
+                  width={48}
+                  height={48}
+                  isDown={canGoNext && nextDown}
+                />
+                <span className={styles.transportLabel}>Next</span>
+              </button>
+              <button
+                type="button"
+                className={styles.transportBtn}
+                onPointerDown={() => setMuteDown(true)}
+                onPointerUp={() => setMuteDown(false)}
+                onPointerLeave={(e) => {
+                  if (e.buttons === 0) setMuteDown(false);
+                }}
+                onPointerCancel={() => setMuteDown(false)}
+                onClick={() => setMuted((m) => !m)}
+                aria-label={muted ? "Unmute" : "Mute"}
+                aria-pressed={muted}
+              >
+                <PressableIcon
+                  normalSrc={muteNormal}
+                  pressedSrc={mutePressed}
+                  width={48}
+                  height={48}
+                  isDown={muteDown}
+                />
+                <span className={styles.transportLabel}>
+                  {muted ? "Mute" : "Vol"}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

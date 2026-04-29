@@ -41,9 +41,6 @@ export default function ProjectNav() {
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-10">
-              <Link href="/#projects" className="text-black/90 hover:text-black text-lg font-medium transition-colors">
-                Projects
-              </Link>
               <Link href="/#about" className="text-black/90 hover:text-black text-lg font-medium transition-colors">
                 About
               </Link>
@@ -94,13 +91,6 @@ export default function ProjectNav() {
           </button>
           
           <div className="flex flex-col items-center justify-center h-full space-y-8 px-4">
-            <Link 
-              href="/#projects" 
-              className="text-white hover:text-white/80 text-2xl font-medium transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Projects
-            </Link>
             <Link 
               href="/#about" 
               className="text-white hover:text-white/80 text-2xl font-medium transition-colors"

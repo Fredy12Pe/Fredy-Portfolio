@@ -132,14 +132,6 @@ export default function Header() {
               </div>
               <div className="hidden md:flex items-center space-x-10">
                 <a 
-                  href="#projects" 
-                  className={`relative text-lg font-medium transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 after:ease-out hover:after:w-full ${
-                    'text-white/90 hover:text-white'
-                  }`}
-                >
-                  Projects
-                </a>
-                <a 
                   href="#about" 
                   className={`relative text-lg font-medium transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 after:ease-out hover:after:w-full ${
                     'text-white/90 hover:text-white'
@@ -215,13 +207,6 @@ export default function Header() {
           </button>
           
           <div className="flex flex-col items-center justify-center h-full space-y-8">
-            <a 
-              href="#projects" 
-              className="text-white hover:text-white/80 text-2xl font-medium transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Projects
-            </a>
             <a 
               href="#about" 
               className="text-white hover:text-white/80 text-2xl font-medium transition-colors"
@@ -420,7 +405,7 @@ export default function Header() {
                   fontFamily: 'Poppins, system-ui, -apple-system, sans-serif'
                 }}
               >
-                Scroll to explore projects
+                Scroll to explore
               </span>
               <div 
                 style={{
@@ -498,7 +483,7 @@ export default function Header() {
                   fontFamily: 'Poppins, system-ui, -apple-system, sans-serif'
                 }}
               >
-                Scroll to explore projects
+                Scroll to explore
               </span>
               <div 
                 style={{

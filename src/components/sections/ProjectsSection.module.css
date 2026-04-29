@@ -1,116 +1,673 @@
-.portfolioGrid {
+.section {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: #edb620;
+  color: #0a0a0a;
+  font-family: Poppins, system-ui, sans-serif;
+}
+
+.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.stripes {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(42vw, 520px);
+  height: min(48vh, 380px);
+  pointer-events: none;
+  z-index: 0;
+  background: repeating-linear-gradient(
+    125deg,
+    #e85d2d 0px,
+    #e85d2d 28px,
+    #c62828 28px,
+    #c62828 56px,
+    #7b4cbf 56px,
+    #7b4cbf 84px,
+    #4a148c 84px,
+    #4a148c 112px
+  );
+  clip-path: polygon(18% 0%, 100% 0%, 100% 100%, 0% 65%);
+  opacity: 0.95;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+  max-width: 112rem;
+  padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1.25rem, 5vw, 3rem)
+    clamp(1rem, 2vw, 1.75rem);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.headerBar {
+  display: flex;
+  gap: 0;
+  width: 148px;
+  height: 6px;
+  margin-bottom: 0.65rem;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.headerBar span {
+  flex: 1;
+}
+
+.headerBar span:nth-child(1) {
+  background: #e85d2d;
+}
+.headerBar span:nth-child(2) {
+  background: #c62828;
+}
+.headerBar span:nth-child(3) {
+  background: #7b4cbf;
+}
+.headerBar span:nth-child(4) {
+  background: #4a148c;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.subtitle {
+  margin: 0.5rem 0 0;
+  font-size: clamp(0.95rem, 1.8vw, 1.125rem);
+  font-weight: 400;
+  max-width: 40ch;
+}
+
+.mainRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  flex: 1;
+  padding: clamp(0.5rem, 2vh, 1.5rem) 0;
+}
+
+.walkmanCol {
+  flex: 0 1 auto;
+  width: 100%;
+  max-width: min(440px, 90vw);
+  overflow-x: visible;
+}
+
+.walkmanStack {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+  overflow-x: visible;
+}
+
+/* Clip filmstrip + reels + player to the walkman bounds */
+.walkmanClip {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  line-height: 0;
+  clip-path: inset(0 1.4% 0 -120%);
+}
+
+.walkmanBase {
+  width: 100%;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 3;
+}
+
+/* ── Cassette filmstrip ─────────────────────────────────────────────────────
+   Mount = exactly one cassette wide (96 % of walkman), centered in the window.
+   Strip = n cassettes wide; slides by one mount-width per selection step.
+   row-reverse: NEXT cassette (higher index) lives to the LEFT of the window,
+                so pressing Next slides it in from the left (natural direction).
+   ─────────────────────────────────────────────────────────────────────────── */
+.cassetteMount {
+  position: absolute;
+  z-index: 1;
+  left: 122%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  width: 96%;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+}
+
+.cassetteStrip {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  align-items: center;
+  /* Strip = n × mount width (100% = one mount width) */
+  width: calc(var(--count, 6) * 100%);
+  /*
+   * Gap between cells. Each slide step advances by (cell-width + gap):
+   *   step = -100%/n  - gap
+   * Total offset = steps × (n - 1 - idx)
+   */
+  --gap: clamp(2rem, 8vw, 4rem);
+  gap: var(--gap);
+  transform: translateX(
+    calc(
+      (var(--count, 6) - 1 - var(--idx, 0)) *
+        (-100% / var(--count, 6) - var(--gap))
+    )
+  );
+  transition: transform 0.38s ease;
+  will-change: transform;
+}
+
+.cassetteCell {
+  flex: 0 0 calc(100% / var(--count, 6));
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.cassetteTape {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cassetteSpinSlot {
+  position: absolute;
+  /* Above cassette (1), below player chrome (3) — visible through the clear window */
+  z-index: 2;
+  left: 60.5%;
+  top: 56.4%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Left + right hub (no transform scale — layout size = visual size) */
+@keyframes reelSpinSupply {
+  from {
+    transform: translateX(clamp(-100px, -9.15vw, -20px)) rotate(0deg);
+  }
+  to {
+    transform: translateX(clamp(-100px, -9.15vw, -20px)) rotate(360deg);
+  }
+}
+
+@keyframes reelSpinTakeup {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinReelPair {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(20px, 10.5%, 46px);
+}
+
+.spinReel {
+  display: block;
+  width: clamp(56px, 32%, 142px);
+  height: auto;
+  flex-shrink: 0;
+  pointer-events: none;
+  transform-origin: center center;
+  animation: reelSpinTakeup 1s linear infinite;
+  animation-play-state: paused;
+  filter: none;
+  transition: filter 0.2s ease-out;
+}
+
+.spinReelPair .spinReel:first-of-type {
+  animation-name: reelSpinSupply;
+}
+
+.spinReelPair.reelsRunning .spinReel {
+  animation-play-state: running;
+  filter: blur(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinReel {
+    animation: none;
+    filter: none;
+    transition: none;
+  }
+
+  .progressFill {
+    transition: none;
+  }
+
+  .caseCarouselViewport {
+    scroll-behavior: auto;
+  }
+}
+
+.displayCol {
+  flex: 1 1 420px;
+  max-width: min(640px, 100%);
+  min-width: 280px;
+}
+
+.displayPanel {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  /* Locked to the BG image's native 848×570 proportions — never resizes on content change */
+  aspect-ratio: 848 / 570;
+  width: 100%;
+  background: #111010;
+}
+
+/* BG frame image — covers the whole panel */
+.casePanelBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.displayText {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 clamp(220px, 45%, 340px);
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1.25rem, 3vw, 2rem) clamp(1.25rem, 3vw, 2rem) clamp(1.5rem, 3.5vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.nowPlaying {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6b6b6b;
+  font-weight: 600;
+}
+
+.displayTitle {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.8vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.progressTrack {
+  width: 100%;
+  max-width: 200px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.22);
+  margin: 0.45rem 0 0.3rem;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5eb8e8, #a8daf8);
+  transition: width 0.35s ease;
+}
+
+.category {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7ec8e3;
+  font-weight: 600;
+}
+
+.description {
+  margin: 0.35rem 0 0;
+  font-size: clamp(0.8rem, 1.4vw, 0.95rem);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 36ch;
+}
+
+.viewLink {
+  margin-top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  padding: 0.55rem 1.15rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(126, 200, 227, 0.95);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.viewLink:hover {
+  background: rgba(255, 255, 255, 0.98);
+  color: #0f4982;
+  border-color: rgba(255, 255, 255, 0.98);
+}
+
+.viewLink:focus-visible {
+  outline: 2px solid #7ec8e3;
+  outline-offset: 3px;
+}
+
+.displayThumb {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  /* Fixed height comes from the panel min-height; the image is absolute so it never drives layout */
+  align-self: stretch;
+  overflow: hidden;
+}
+
+@keyframes fadeInCase {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.caseStudyImg {
+  position: absolute;
+  inset: clamp(1.5rem, 4vh, 2.5rem) clamp(1rem, 3vw, 2rem);
+  width: calc(100% - clamp(2rem, 6vw, 4rem));
+  height: calc(100% - clamp(3rem, 8vh, 5rem));
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  animation: fadeInCase 0.4s ease forwards;
+  transform-origin: center;
+}
+
+.controlsDeck {
+  position: relative;
+  margin-top: auto;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: min(680px, 72vw);
+  border-radius: 0.75rem;
+  overflow: visible;
+  background-color: #edb620;
+}
+
+.controlsDeckArt {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  vertical-align: top;
+  pointer-events: none;
+  user-select: none;
+  border-radius: 0.75rem;
+  filter: drop-shadow(0 3px 12px rgba(0, 0, 0, 0.1));
+}
+
+/* Right “SELECT CASSETTE” window: three visible slots, six minis on a horizontal track */
+.cassetteStripViewport {
+  position: absolute;
+  /* Inset to the recessed three-slot row (between chevrons) on controller art */
+  left: 47.5%;
+  right: 6.25%;
+  top: 30%;
+  bottom: 16%;
+  overflow: hidden;
+  pointer-events: none;
+  /* Block layout so the track keeps a predictable full width (flex was shrinking quirks) */
+  display: block;
+}
+
+/* Mustard panel fixed in the left slot; track + minis animate above it */
+.cassetteStripHighlight {
+  position: absolute;
+  /* Slightly right of first-slot center so panel sits closer to middle column */
+  left: calc(100% / 6 + 1.1%);
+  top: clamp(0.08rem, 0.7vw, 0.28rem);
+  bottom: clamp(0.08rem, 0.7vw, 0.28rem);
+  width: min(34%, 5.02em);
+  transform: translateX(-50%);
+  z-index: 0;
+  border-radius: clamp(0.18rem, 0.5vw, 0.4rem);
+  background-color: #7a6b32;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+}
+
+.cassetteStripTrack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  /* stretch so each cell has a real height; % max-height on imgs was collapsing with center */
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  width: 200%;
+  min-width: 200%;
+  height: 100%;
+  /* Align selected mini to left visible slot (was center-slot, read as “middle”) */
+  transform: translateX(
+    calc(
+      8.3333333333% - (var(--cassette-index, 0) + 0.5) / 6 * 100%
+    )
+  );
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+.cassetteStripCell {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
   display: grid;
-  gap: 1.25rem; /* 20px */
-  grid-template-columns: 1fr;
-  padding-left: 0;
-  padding-right: 0;
+  place-items: center;
+  place-content: center;
+  box-sizing: border-box;
+  padding: clamp(0.08rem, 0.7vw, 0.28rem) clamp(0.2rem, 1.25vw, 0.55rem);
+  border-radius: clamp(0.2rem, 0.55vw, 0.45rem);
 }
 
-@media (min-width: 640px) {
-  .portfolioGrid {
-    grid-template-columns: 1fr 1fr;
-  }
+.cassetteStripMini {
+  width: auto;
+  height: auto;
+  max-height: clamp(1.75rem, 64%, 7.35rem);
+  max-width: 98%;
+  object-fit: contain;
+  object-position: center;
+  justify-self: center;
+  align-self: center;
+  display: block;
+  user-select: none;
+  pointer-events: none;
 }
 
-@media (min-width: 1024px) {
-  .portfolioGrid {
-    grid-template-columns: 699px 819px;
-    grid-template-rows: auto auto auto;
-    grid-template-areas:
-      "sea tidehaus"
-      "selah tidehaus"
-      "ziplearn ecommerce";
-    align-items: stretch;
-    justify-content: center;
-  }
-
-  .sea { grid-area: sea; }
-  .selah { grid-area: selah; }
-  .ziplearn { grid-area: ziplearn; }
-  .tidehaus { grid-area: tidehaus; }
-  .ecommerce { grid-area: ecommerce; }
+.controlsBar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: clamp(0.35rem, 2.2vw, 1.15rem);
+  background: transparent;
+  pointer-events: none;
 }
 
-.cardBase {
-  min-height: 506px;
-  border-radius: 1.25rem; /* ~20px */
+.transport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.3rem, 1.4vw, 0.55rem);
+  padding: 0;
+  flex: 0 0 auto;
+  max-width: min(46%, 420px);
+  pointer-events: auto;
+  transform: translateY(-0.35rem);
+}
+
+.transportBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  background: none;
+  border: none;
+  padding: 0.15rem;
+  cursor: pointer;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.transportLabel {
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+  opacity: 0.4;
+  transition: opacity 0.18s ease;
+}
+
+.transportBtn:not(:disabled):hover .transportLabel,
+.transportBtn:not(:disabled):focus-visible .transportLabel {
+  opacity: 1;
+}
+
+.transportBtn:not(:disabled):active .transportLabel {
+  opacity: 1;
+}
+
+.transportBtn img {
+  width: clamp(38px, 7vw, 48px);
+  height: auto;
+  display: block;
+  transition: transform 0.12s ease;
+}
+
+.transportBtn:not(:disabled):active img {
+  transform: scale(0.94);
+}
+
+.transportBtn:not(:disabled):focus-visible {
+  outline: 2px solid #edb620;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.transportBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.transportBtn:disabled .transportLabel {
+  opacity: 0.35;
 }
 
 @media (max-width: 767px) {
-  .ecommerceMobile {
-    min-height: 350px;
+  .stripes {
+    width: 70vw;
+    height: 28vh;
+    opacity: 0.75;
+  }
+
+  .displayPanel {
+    flex-wrap: wrap;
+    aspect-ratio: unset;
+    min-height: 320px;
+  }
+
+  .displayText {
+    flex: 1 1 100%;
+    padding: 1.25rem 1.25rem 0.75rem;
+  }
+
+  .displayThumb {
+    flex: 1 1 100%;
+    min-height: min(260px, 50vw);
+  }
+
+  .controlsBar {
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    padding-left: 0;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .transport {
+    max-width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .cassetteStripViewport {
+    left: 45.5%;
+    right: 4.5%;
+    top: 28%;
+    bottom: 14%;
+  }
+
+  .cassetteStripCell {
+    padding: 0 clamp(0.14rem, 1.5vw, 0.42rem);
   }
 }
-
-@media (min-width: 1024px) {
-  .tideTall { min-height: 1039px; }
-}
-
-
-/* Animated info bubbles for Tidehaus */
-@keyframes bubbleFloat {
-  0% { opacity: 0; transform: translateX(-40%) scale(0.98); }
-  15% { opacity: 1; }
-  45% { opacity: 1; transform: translateX(0) scale(1); }
-  85% { opacity: 0; transform: translateX(25%) scale(1); }
-  100% { opacity: 0; }
-}
-
-@keyframes bubbleFloatAlt {
-  0% { opacity: 0; transform: translateX(-55%) translateY(-6%) scale(0.96); }
-  20% { opacity: 1; }
-  50% { opacity: 1; transform: translateX(3%) translateY(0) scale(1); }
-  90% { opacity: 0; transform: translateX(30%) translateY(4%) scale(1.02); }
-  100% { opacity: 0; }
-}
-
-.bubble {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding-left: 1.25rem; /* 20px */
-  padding-right: 1.25rem; /* 20px */
-  height: 3.25rem; /* ~52px */
-  border-radius: 9999px;
-  background: rgba(255,255,255,0.20);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  color: #fff;
-  font-family: Poppins, sans-serif;
-  font-weight: 500;
-  font-size: 1rem; /* 16px */
-  line-height: 1;
-  animation: bubbleFloat 7s ease-in-out infinite both;
-}
-
-/* Staggered delays (more spaced out to feel less synced) */
-.delay1 { animation-delay: 0s; }
-.delay2 { animation-delay: 0.6s; }
-.delay3 { animation-delay: 1.2s; }
-.delay4 { animation-delay: 1.8s; }
-.delay5 { animation-delay: 2.4s; }
-.delay6 { animation-delay: 3.1s; }
-.delay7 { animation-delay: 3.7s; }
-.delay8 { animation-delay: 4.3s; }
-.delayNeg1 { animation-delay: -1.1s; }
-.delayNeg2 { animation-delay: -2.2s; }
-
-/* Slight duration variations to further desync the loop */
-.speed1 { animation-duration: 6.8s; }
-.speed2 { animation-duration: 7.6s; }
-.speed3 { animation-duration: 8.4s; }
-
-/* Alternate path variant for extra desync */
-.variant2 { animation-name: bubbleFloatAlt; }
-
-.tideRegion {
-  position: absolute;
-  left: 2rem;
-  right: auto;
-  width: min(560px, 44%);
-  top: 16rem; /* pushed below text */
-  bottom: 8rem;
-}
-
-

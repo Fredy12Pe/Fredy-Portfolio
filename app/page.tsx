@@ -12,8 +12,8 @@ export default function Home() {
     <div className="min-h-screen">
       <div className="relative">
         <Header />
+        <ProjectsSection />
         <main className="w-full px-0 py-8 md:py-16">
-          <ProjectsSection />
           <AboutSection />
           <FavoriteStackSection />
           <ContactSection />

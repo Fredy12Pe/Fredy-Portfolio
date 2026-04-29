@@ -6,7 +6,6 @@ export default function Footer() {
           © {new Date().getFullYear()} Fredy Pedro. All rights reserved.
         </div>
         <nav className="flex items-center gap-6 text-white/80 text-sm">
-          <a href="#projects" className="hover:text-white">Projects</a>
           <a href="#about" className="hover:text-white">About</a>
           <a href="#favorite-stack" className="hover:text-white">Stack</a>
           <a href="#contact" className="hover:text-white">Contact</a>
