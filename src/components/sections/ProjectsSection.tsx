@@ -178,6 +178,7 @@ export default function ProjectsSection() {
   const [prevDown, setPrevDown] = useState(false);
   const [nextDown, setNextDown] = useState(false);
   const [muteDown, setMuteDown] = useState(false);
+  const [nextEverClicked, setNextEverClicked] = useState(false);
 
   const n = PROJECTS.length;
   const current = PROJECTS[selected];
@@ -220,25 +221,35 @@ export default function ProjectsSection() {
       className={styles.section}
       aria-label="Projects"
     >
-      <div className={styles.stripes} aria-hidden />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        className={styles.linesDecor}
+        src="/images/projects-section/80s-lines/80s-lines.svg"
+        alt=""
+        aria-hidden
+        draggable={false}
+      />
       <div className={styles.inner}>
-        <header>
-          <div className={styles.headerBar} aria-hidden>
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
+        <header className={styles.headlineGroup}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className={styles.headerBar}
+            src="/images/projects-section/80s-lines/80s-lines-2.svg"
+            alt=""
+            aria-hidden
+            draggable={false}
+          />
           <h2 className={styles.title}>PROJECTS</h2>
           <p className={styles.subtitle}>
-            Select a cassette. Explore the craft.
+            Select a cassette, press play, and dive into the project
           </p>
         </header>
 
         <div className={styles.mainRow}>
-          <div className={styles.walkmanCol}>
-            <div className={styles.walkmanStack}>
-              <div className={styles.walkmanClip}>
+          <div className={styles.projectsTopRow}>
+            <div className={styles.walkmanCol}>
+              <div className={styles.walkmanStack}>
+                <div className={styles.walkmanClip}>
                 {/* Filmstrip: mount = one cassette wide; strip = all cassettes; slides on selection */}
                 <div className={styles.cassetteMount} aria-hidden>
                   <div
@@ -250,8 +261,8 @@ export default function ProjectsSection() {
                       } as CSSProperties
                     }
                   >
-                    {PROJECTS.map((p) => (
-                      <div key={p.id} className={styles.cassetteCell}>
+                    {PROJECTS.map((p, i) => (
+                      <div key={p.id} className={`${styles.cassetteCell}${i === selected ? ` ${styles.cassetteCellActive}` : ""}`}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           className={styles.cassetteTape}
@@ -303,9 +314,9 @@ export default function ProjectsSection() {
                 />
               </div>
             </div>
-          </div>
+            </div>
 
-          <div className={styles.displayCol}>
+            <div className={styles.displayCol}>
             <div
               className={styles.displayPanel}
               aria-live="polite"
@@ -361,153 +372,153 @@ export default function ProjectsSection() {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className={styles.controlsDeck}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className={styles.controlsDeckArt}
-            src={ASSETS.multiController}
-            alt=""
-            width={1200}
-            height={280}
-            decoding="async"
-          />
-          <div
-            className={styles.cassetteStripViewport}
-            aria-hidden
-          >
-            {/* Fixed in viewport; minis slide on the track above */}
-            <div className={styles.cassetteStripHighlight} />
-            <div
-              className={styles.cassetteStripTrack}
-              style={
-                {
-                  "--cassette-index": selected,
-                } as CSSProperties
-              }
-            >
-              {PROJECTS.map((p) => (
-                <div key={p.id} className={styles.cassetteStripCell}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    className={styles.cassetteStripMini}
-                    src={p.miniCassette}
-                    alt=""
-                    width={312}
-                    height={200}
-                    draggable={false}
-                    decoding="async"
-                  />
-                </div>
-              ))}
-            </div>
           </div>
-          <div className={styles.controlsBar}>
-            <div className={styles.transport}>
-              <button
-                type="button"
-                className={styles.transportBtn}
-                onPointerDown={() => setPlayDown(true)}
-                onPointerUp={() => setPlayDown(false)}
-                onPointerLeave={(e) => {
-                  if (e.buttons === 0) setPlayDown(false);
-                }}
-                onPointerCancel={() => setPlayDown(false)}
-                onClick={onPlay}
-                aria-label="Play animation"
-              >
-                <PressableIcon
-                  normalSrc={ASSETS.btn.play}
-                  pressedSrc={ASSETS.btn.playPressed}
-                  width={48}
-                  height={48}
-                  isDown={playDown}
-                />
-                <span className={styles.transportLabel}>Play</span>
-              </button>
-              <button
-                type="button"
-                className={styles.transportBtn}
-                disabled={!canGoPrev}
-                onPointerDown={() => {
-                  if (!canGoPrev) return;
-                  setPrevDown(true);
-                }}
-                onPointerUp={() => setPrevDown(false)}
-                onPointerLeave={(e) => {
-                  if (e.buttons === 0) setPrevDown(false);
-                }}
-                onPointerCancel={() => setPrevDown(false)}
-                onClick={goPrev}
-                aria-label={
-                  canGoPrev
-                    ? "Previous project"
-                    : "Previous project (already on first project)"
+
+          <div className={styles.controlsDeck}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className={styles.controlsDeckArt}
+              src={ASSETS.multiController}
+              alt=""
+              width={1200}
+              height={280}
+              decoding="async"
+            />
+            <div
+              className={styles.cassetteStripViewport}
+              aria-hidden
+            >
+              <div className={styles.cassetteStripHighlight} />
+              <div
+                className={styles.cassetteStripTrack}
+                style={
+                  {
+                    "--cassette-index": selected,
+                  } as CSSProperties
                 }
               >
-                <PressableIcon
-                  normalSrc={ASSETS.btn.prev}
-                  pressedSrc={ASSETS.btn.prevPressed}
-                  width={48}
-                  height={48}
-                  isDown={canGoPrev && prevDown}
-                />
-                <span className={styles.transportLabel}>Prev</span>
-              </button>
-              <button
-                type="button"
-                className={styles.transportBtn}
-                disabled={!canGoNext}
-                onPointerDown={() => {
-                  if (!canGoNext) return;
-                  setNextDown(true);
-                }}
-                onPointerUp={() => setNextDown(false)}
-                onPointerLeave={(e) => {
-                  if (e.buttons === 0) setNextDown(false);
-                }}
-                onPointerCancel={() => setNextDown(false)}
-                onClick={goNext}
-                aria-label={
-                  canGoNext
-                    ? "Next project"
-                    : "Next project (already on last project)"
-                }
-              >
-                <PressableIcon
-                  normalSrc={ASSETS.btn.next}
-                  pressedSrc={ASSETS.btn.nextPressed}
-                  width={48}
-                  height={48}
-                  isDown={canGoNext && nextDown}
-                />
-                <span className={styles.transportLabel}>Next</span>
-              </button>
-              <button
-                type="button"
-                className={styles.transportBtn}
-                onPointerDown={() => setMuteDown(true)}
-                onPointerUp={() => setMuteDown(false)}
-                onPointerLeave={(e) => {
-                  if (e.buttons === 0) setMuteDown(false);
-                }}
-                onPointerCancel={() => setMuteDown(false)}
-                onClick={() => setMuted((m) => !m)}
-                aria-label={muted ? "Unmute" : "Mute"}
-                aria-pressed={muted}
-              >
-                <PressableIcon
-                  normalSrc={muteNormal}
-                  pressedSrc={mutePressed}
-                  width={48}
-                  height={48}
-                  isDown={muteDown}
-                />
-                <span className={styles.transportLabel}>
-                  {muted ? "Mute" : "Vol"}
-                </span>
-              </button>
+                {PROJECTS.map((p) => (
+                  <div key={p.id} className={styles.cassetteStripCell}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      className={styles.cassetteStripMini}
+                      src={p.miniCassette}
+                      alt=""
+                      width={312}
+                      height={200}
+                      draggable={false}
+                      decoding="async"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className={styles.controlsBar}>
+              <div className={styles.transport}>
+                <button
+                  type="button"
+                  className={styles.transportBtn}
+                  onPointerDown={() => setPlayDown(true)}
+                  onPointerUp={() => setPlayDown(false)}
+                  onPointerLeave={(e) => {
+                    if (e.buttons === 0) setPlayDown(false);
+                  }}
+                  onPointerCancel={() => setPlayDown(false)}
+                  onClick={onPlay}
+                  aria-label="Play animation"
+                >
+                  <PressableIcon
+                    normalSrc={ASSETS.btn.play}
+                    pressedSrc={ASSETS.btn.playPressed}
+                    width={48}
+                    height={48}
+                    isDown={playDown}
+                  />
+                  <span className={styles.transportLabel}>Play</span>
+                </button>
+                <button
+                  type="button"
+                  className={styles.transportBtn}
+                  disabled={!canGoPrev}
+                  onPointerDown={() => {
+                    if (!canGoPrev) return;
+                    setPrevDown(true);
+                  }}
+                  onPointerUp={() => setPrevDown(false)}
+                  onPointerLeave={(e) => {
+                    if (e.buttons === 0) setPrevDown(false);
+                  }}
+                  onPointerCancel={() => setPrevDown(false)}
+                  onClick={goPrev}
+                  aria-label={
+                    canGoPrev
+                      ? "Previous project"
+                      : "Previous project (already on first project)"
+                  }
+                >
+                  <PressableIcon
+                    normalSrc={ASSETS.btn.prev}
+                    pressedSrc={ASSETS.btn.prevPressed}
+                    width={48}
+                    height={48}
+                    isDown={canGoPrev && prevDown}
+                  />
+                  <span className={styles.transportLabel}>Prev</span>
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.transportBtn}${!nextEverClicked ? ` ${styles.nextBtn}` : ""}`}
+                  disabled={!canGoNext}
+                  onPointerDown={() => {
+                    if (!canGoNext) return;
+                    setNextDown(true);
+                  }}
+                  onPointerUp={() => setNextDown(false)}
+                  onPointerLeave={(e) => {
+                    if (e.buttons === 0) setNextDown(false);
+                  }}
+                  onPointerCancel={() => setNextDown(false)}
+                  onClick={() => { goNext(); setNextEverClicked(true); }}
+                  aria-label={
+                    canGoNext
+                      ? "Next project"
+                      : "Next project (already on last project)"
+                  }
+                >
+                  <PressableIcon
+                    normalSrc={ASSETS.btn.next}
+                    pressedSrc={ASSETS.btn.nextPressed}
+                    width={48}
+                    height={48}
+                    isDown={canGoNext && nextDown}
+                  />
+                  <span className={styles.transportLabel}>Next</span>
+                </button>
+                <button
+                  type="button"
+                  className={styles.transportBtn}
+                  onPointerDown={() => setMuteDown(true)}
+                  onPointerUp={() => setMuteDown(false)}
+                  onPointerLeave={(e) => {
+                    if (e.buttons === 0) setMuteDown(false);
+                  }}
+                  onPointerCancel={() => setMuteDown(false)}
+                  onClick={() => setMuted((m) => !m)}
+                  aria-label={muted ? "Unmute" : "Mute"}
+                  aria-pressed={muted}
+                >
+                  <PressableIcon
+                    normalSrc={muteNormal}
+                    pressedSrc={mutePressed}
+                    width={48}
+                    height={48}
+                    isDown={muteDown}
+                  />
+                  <span className={styles.transportLabel}>
+                    {muted ? "Mute" : "Vol"}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
