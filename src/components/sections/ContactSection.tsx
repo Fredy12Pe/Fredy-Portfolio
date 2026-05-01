@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { useState } from "react";
 import emailjs from '@emailjs/browser';
 
@@ -79,8 +78,12 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="mx-auto mt-12 md:mt-24 max-w-[100rem] px-4 md:px-8">
-      <div className="relative overflow-hidden rounded-[20px] ring-1 ring-white/10 group">
+    <section
+      id="contact"
+      className="w-full bg-[#FFF4D5] pt-8 pb-16 md:pt-12 md:pb-24"
+    >
+      <div className="mx-auto max-w-[100rem] px-4 md:px-8">
+        <div className="group relative overflow-hidden rounded-[20px] ring-1 ring-white/10">
         {/* Background image */}
         <img
           src="/images/projects/tidehaus-thumbnail.png"
@@ -228,6 +231,7 @@ export default function ContactSection() {
           </div>
 
           {/* Bottom-right socials removed as requested */}
+        </div>
         </div>
       </div>
     </section>

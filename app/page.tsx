@@ -13,7 +13,7 @@ export default function Home() {
       <div className="relative">
         <Header />
         <ProjectsSection />
-        <main className="w-full px-0 py-8 md:py-16">
+        <main className="w-full px-0 pb-8 pt-0 md:pb-16">
           <AboutSection />
           <FavoriteStackSection />
           <ContactSection />

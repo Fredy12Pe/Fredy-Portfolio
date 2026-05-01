@@ -55,21 +55,29 @@ export default function AboutSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="mx-auto mt-12 md:mt-24 max-w-[100rem] px-4 md:px-8">
-      <h2 className="whitespace-nowrap text-[36px] sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px] font-black tracking-tight text-white uppercase text-left">About Me</h2>
+    <section
+      ref={sectionRef}
+      id="about"
+      className="w-full min-h-[92svh] rounded-t-3xl bg-[#FFF4D5] py-20 md:min-h-[95svh] md:rounded-t-[2.5rem] md:py-24 lg:min-h-[100svh] lg:rounded-t-[3rem] lg:py-32"
+    >
+      <div className="mx-auto max-w-[100rem] px-4 md:px-8">
+        <h2 className="whitespace-nowrap text-left font-bebas text-[36px] font-normal uppercase tracking-wide text-zinc-900 sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px]">
+          About Me
+        </h2>
 
-      <div data-reveal>
-        <div data-parallax data-speed="0.18" className="mt-6 md:mt-0 w-full md:w-4/6">
-          <p className="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#828282]">
-            I am a passionate <span className="font-semibold text-white">UI/UX designer</span> focused on creating clear, intuitive, and visually engaging, unique digital experiences. With a strong foundation in design and a growing skill set in development, <span className="font-semibold text-white">I blend creativity with functionality to turn ideas into real, working products.</span> My work emphasizes usability and detail, ensuring that every interaction feels seamless and purposeful.
-          </p>
-          <p className="mt-8 text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#6C6C6C]">
-            Outside of design, I enjoy surfing, running, and producing music. These simple passions keep me inspired and balanced.
-          </p>
+        <div data-reveal>
+          <div data-parallax data-speed="0.18" className="mt-6 md:mt-0 w-full md:w-4/6">
+            <p className="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#828282]">
+              I am a passionate <span className="font-semibold text-zinc-900">UI/UX designer</span> focused on creating clear, intuitive, and visually engaging, unique digital experiences. With a strong foundation in design and a growing skill set in development, <span className="font-semibold text-zinc-900">I blend creativity with functionality to turn ideas into real, working products.</span> My work emphasizes usability and detail, ensuring that every interaction feels seamless and purposeful.
+            </p>
+            <p className="mt-8 text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#6C6C6C]">
+              Outside of design, I enjoy surfing, running, and producing music. These simple passions keep me inspired and balanced.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <Carousel />
+        <Carousel />
+      </div>
     </section>
   );
 }
@@ -120,7 +128,7 @@ function Carousel() {
   return (
     <div className="mt-6 md:mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
       <div data-reveal>
-        <div data-parallax data-speed="0.3" className="relative overflow-hidden rounded-2xl ring-1 ring-white/10 bg-white/5 mt-2 md:mt-8 h-[500px] md:h-[580px] lg:h-[660px]">
+        <div data-parallax data-speed="0.3" className="relative overflow-hidden rounded-2xl ring-1 ring-black/10 bg-black/[0.04] mt-2 md:mt-8 h-[500px] md:h-[580px] lg:h-[660px]">
           <div className="relative h-full w-full">
             <div
               className={`flex h-full w-full will-change-transform ${enableTransition ? "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" : ""}`}
@@ -217,7 +225,7 @@ function Carousel() {
       </div>
 
       <div data-reveal className="hidden md:block">
-        <div data-parallax data-speed="0.22" className="relative overflow-hidden rounded-2xl ring-1 ring-white/10 bg-white/5 mt-8 h-[500px] md:h-[580px] lg:h-[660px]">
+        <div data-parallax data-speed="0.22" className="relative overflow-hidden rounded-2xl ring-1 ring-black/10 bg-black/[0.04] mt-8 h-[500px] md:h-[580px] lg:h-[660px]">
           {(() => {
             const s = slides[nextIndex];
             return s.type === "image" ? (

@@ -14,21 +14,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
         {/* Preload critical fonts */}
-        <link 
-          rel="preload" 
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" 
-          as="style" 
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800;900&display=swap"
+          as="style"
         />
-        <link 
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" 
-          rel="stylesheet" 
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
         />
         
         {/* Preload critical images */}
         <link rel="preload" as="image" href="/images/hero/Fredy-header.png?v=2" />
-        <link rel="preload" as="image" href="/images/hero/Fredy-header-mobile.png?v=6" />
+        <link rel="preload" as="image" href="/images/hero/Circle-BG.svg" />
       </head>
-      <body className="bg-[#080808] text-zinc-100 antialiased">{children}</body>
+      <body className="bg-[#FFDE82] text-zinc-900 antialiased">{children}</body>
     </html>
   );
 }

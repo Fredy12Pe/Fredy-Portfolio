@@ -1,516 +1,266 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+
+const PINK = "#F83D7C";
+const CREAM = "#FFF4D5";
 
 export default function Header() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [bannerPosition, setBannerPosition] = useState(0);
-  const [scrollY, setScrollY] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [scrollOpacity, setScrollOpacity] = useState(0);
-
-  // Scroll functions for buttons
-  const scrollToAbout = () => {
-    const aboutSection = document.getElementById('about');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const scrollToContact = () => {
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
-      
-      // Calculate position as percentage from center (-1 to 1)
-      const x = (clientX / innerWidth - 0.5) * 2;
-      const y = (clientY / innerHeight - 0.5) * 2;
-      
-      setMousePosition({ x, y });
+    const onScroll = () => {
+      setScrolled(window.scrollY > 0);
+      setIsScrolled(window.scrollY > 50);
     };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Banner animation
   useEffect(() => {
-    const updateIsMobile = () => setIsMobile(window.innerWidth < 768);
-    updateIsMobile();
-    window.addEventListener('resize', updateIsMobile);
-
-    const animateBanner = () => {
-      setBannerPosition(prev => {
-        if (prev <= -200) {
-          return 100; // Reset to start position for seamless loop
-        }
-        const speed = isMobile ? 0.01 : 0.02; // Slower on mobile only
-        return prev - speed;
-      });
-    };
-
-    const interval = setInterval(animateBanner, 60);
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('resize', updateIsMobile);
-    };
-  }, [isMobile]);
-
-  // Parallax scroll effect and scroll detection
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setScrollY(scrollY);
-      
-      // Jump to 80% opacity immediately when scroll starts, then smooth transition
-      const opacity = scrollY > 0 ? 0.8 : 0;
-      setScrollOpacity(opacity);
-      
-      // Still use binary for other effects
-      setIsScrolled(scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Close mobile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (isMobileMenuOpen && !target.closest('.mobile-menu-container')) {
+    if (!isMobileMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest(".nav-container")) {
         setIsMobileMenuOpen(false);
       }
     };
-
-    if (isMobileMenuOpen) {
-      document.addEventListener('click', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
   }, [isMobileMenuOpen]);
+
+  const navTextColor = scrolled ? "text-white" : "text-black";
+  const linkBase =
+    "relative font-poppins font-medium transition-colors duration-200 " +
+    "after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 " +
+    "after:content-[''] after:transition-all after:duration-300 hover:after:w-full";
+  const linkColor = scrolled
+    ? "text-white/90 hover:text-white after:bg-white"
+    : "text-black/90 hover:text-black after:bg-black";
+
   return (
     <>
-      {/* Sticky Navigation */}
-      <nav 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mobile-menu-container ${
-          isScrolled ? 'py-3' : 'py-5'
+      {/* ── Fixed nav ── */}
+      <nav
+        className={`nav-container fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
+          isScrolled ? "py-3" : "py-5"
         }`}
       >
         <div className="mx-auto max-w-[100rem] px-4 md:px-8">
-          <div 
+          <div
+            className="px-5 py-4"
             style={{
-              width: '100%', 
-              height: '100%', 
-              background: scrollOpacity > 0 ? 'rgba(0, 0, 0, 0.80)' : 'transparent', 
-              borderRadius: 20, 
-              // Mobile/desktop: show border only after scrolling starts
-              border: scrollOpacity > 0 ? '1px rgba(255, 255, 255, 0.20) solid' : 'none',
-              backdropFilter: scrollOpacity > 0 ? 'blur(12px)' : 'none',
-              WebkitBackdropFilter: scrollOpacity > 0 ? 'blur(12px)' : 'none',
-              transition: 'all 0.3s ease-out'
+              background: scrolled ? "rgba(0,0,0,0.80)" : "transparent",
+              borderRadius: 20,
+              border: scrolled ? "1px rgba(255,255,255,0.20) solid" : "none",
+              backdropFilter: scrolled ? "blur(12px)" : "none",
+              WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
+              transition: "all 0.3s ease-out",
             }}
-            className="p-5"
           >
             <div className="flex items-center justify-between">
-              <div className={`text-xl font-bold transition-colors duration-300 ${
-                'text-white'
-              }`}>
+              <span className={`font-poppins text-sm font-bold uppercase tracking-[0.2em] transition-colors md:text-base ${navTextColor}`}>
                 FREDY DESIGN
+              </span>
+
+              {/* Desktop links */}
+              <div className="hidden items-center gap-8 lg:gap-10 md:flex">
+                <a href="#about"          className={`${linkBase} ${linkColor} text-base md:text-lg`}>About</a>
+                <a href="#projects"       className={`${linkBase} ${linkColor} text-base md:text-lg`}>Projects</a>
+                <a href="#favorite-stack" className={`${linkBase} ${linkColor} text-base md:text-lg`}>Stack</a>
+                <div className="flex items-center gap-4 lg:gap-5">
+                  <a href="#contact" className={`${linkBase} ${linkColor} text-base md:text-lg`}>Contact</a>
+                  <a
+                    href="#contact"
+                    className="inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-2.5 font-poppins text-sm font-semibold uppercase tracking-[0.12em] text-white transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: PINK }}
+                  >
+                    Leave a message
+                  </a>
+                </div>
               </div>
-              <div className="hidden md:flex items-center space-x-10">
-                <a 
-                  href="#about" 
-                  className={`relative text-lg font-medium transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 after:ease-out hover:after:w-full ${
-                    'text-white/90 hover:text-white'
-                  }`}
-                >
-                  About
-                </a>
-                <a 
-                  href="#favorite-stack" 
-                  className={`relative text-lg font-medium transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 after:ease-out hover:after:w-full ${
-                    'text-white/90 hover:text-white'
-                  }`}
-                >
-                  Stack
-                </a>
-                <a 
-                  href="#contact" 
-                  className={`relative text-lg font-medium transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 after:ease-out hover:after:w-full ${
-                    'text-white/90 hover:text-white'
-                  }`}
-                >
-                  Contact
-                </a>
-              </div>
-              {/* Mobile hamburger menu */}
-              <div className="md:hidden">
-                <button 
-                  className={`p-2 transition-colors duration-300 ${
-                    isMobile ? 'text-white' : (isScrolled ? 'text-white' : 'text-black')
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                >
-                  {isMobileMenuOpen ? (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  ) : (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="3" y1="6" x2="21" y2="6"></line>
-                      <line x1="3" y1="12" x2="21" y2="12"></line>
-                      <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                  )}
-                </button>
-              </div>
+
+              {/* Hamburger */}
+              <button
+                type="button"
+                className={`p-2 transition-colors md:hidden ${
+                  isMobileMenuOpen || scrolled ? "text-white" : "text-black"
+                }`}
+                onClick={() => setIsMobileMenuOpen((v) => !v)}
+                aria-label="Toggle menu"
+              >
+                {isMobileMenuOpen ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
-      <header
-        id="site-header"
-        className="relative w-full h-[100vh] overflow-hidden rounded-b-3xl"
-        style={{
-          background: 'linear-gradient(180deg, #690414 0%, #800417 24%, #7C0416 44%, #660314 65%, #4E0311 82%, #490410 100%)',
-          // Mobile-only outer border along left/right/bottom when scrolled
-          borderBottom: isMobile && scrollOpacity > 0 ? '0.5px rgba(255, 255, 255, 0.10) solid' : undefined
-        }}
-      >
-        {/* Mobile Menu Dropdown */}
+      {/* Mobile full-screen menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50">
-          {/* Close button */}
-          <button 
-            className="absolute top-6 right-6 text-white hover:text-white/80 transition-colors p-2"
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-10 bg-black/95 backdrop-blur-sm md:hidden">
+          <button
+            type="button"
+            className="absolute right-6 top-6 p-2 text-white"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
-          
-          <div className="flex flex-col items-center justify-center h-full space-y-8">
-            <a 
-              href="#about" 
-              className="text-white hover:text-white/80 text-2xl font-medium transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              About
-            </a>
-            <a 
-              href="#favorite-stack" 
-              className="text-white hover:text-white/80 text-2xl font-medium transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Stack
-            </a>
-            <a 
-              href="#contact" 
-              className="text-white hover:text-white/80 text-2xl font-medium transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Contact
-            </a>
-          </div>
+          {[["#about","About"],["#projects","Projects"],["#favorite-stack","Stack"],["#contact","Contact"]].map(([href, label]) => (
+            <a key={href + label} href={href} className="font-poppins text-3xl font-medium text-white hover:text-white/80"
+              onClick={() => setIsMobileMenuOpen(false)}>{label}</a>
+          ))}
+          <a
+            href="#contact"
+            className="inline-flex items-center justify-center rounded-xl px-8 py-4 font-poppins text-base font-semibold uppercase tracking-[0.12em] text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: PINK }}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Leave a message
+          </a>
         </div>
       )}
 
-      {/* Scrolling Banner - behind image - JavaScript animated with parallax */}
-      <div 
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: 0,
-          right: 0,
-          zIndex: 15,
-          overflow: 'hidden',
-          pointerEvents: 'none',
-          transform: `translateY(-50%) translateY(${scrollY * 0.06}px)`, // Reduced parallax for banner
-          height: '1000px'
-        }}
+      {/* ── Hero ── */}
+      <header
+        id="site-header"
+        className="relative w-full overflow-hidden rounded-b-[clamp(2.5rem,8vw,4.75rem)]"
+        style={{ height: "100svh", background: CREAM }}
       >
-        <div 
-          className="text-[600px]"
-          style={{
-            position: 'absolute',
-            fontWeight: 1000,
-            color: 'rgba(186.56, 0, 30.53, 0.16)',
-            fontFamily: 'Arial, sans-serif',
-            whiteSpace: 'nowrap',
-            top: isMobile ? '30%' : '50%',
-            transform: isMobile ? `translateY(-40%) translateX(${bannerPosition}%)` : `translateY(-50%) translateX(${bannerPosition}%)`,
-            transition: 'none' // No CSS transitions, pure JS animation
-          }}
-        >
-          UI/UX • REACT • NEXT.JS • SPLINE • AI • UI/UX • REACT • NEXT.JS • SPLINE • AI • UI/UX • REACT • NEXT.JS • SPLINE • AI • UI/UX • REACT • NEXT.JS • SPLINE • AI • UI/UX • REACT • NEXT.JS • SPLINE • AI • UI/UX • REACT • NEXT.JS • SPLINE • AI • 
-        </div>
-      </div>
-
-      {/* Image layer - middle layer above banner with parallax */}
-      <div 
-        className="absolute inset-0" 
-        style={{ 
-          zIndex: 20,
-          transform: `translateY(${scrollY * 0.08}px)` // Reduced parallax for image
-        }}
-      >
-        {/* Mobile image (art-directed) */}
-        <Image
-          src="/images/hero/Fredy-header-mobile.png?v=6"
-          alt="Fredy"
-          width={800}
-          height={600}
-          sizes="(max-width: 768px) 100vw, 0vw"
-          priority
-          className="block md:hidden object-center object-cover w-full h-full"
-          style={{ transform: 'translateZ(0) scale(1.06)' }}
-          onLoad={() => console.log('Mobile header image loaded successfully')}
-          onError={(e) => console.error('Mobile header image failed to load:', e)}
-        />
-        {/* Desktop image */}
-        <Image
-          src="/images/hero/Fredy-header.png?v=2"
-          alt="Fredy"
-          width={1200}
-          height={800}
-          sizes="(min-width: 768px) 100vw, 0vw"
-          priority
-          className="hidden md:block object-bottom object-contain w-full h-full"
-          style={{ transform: 'translateZ(0) scale(1.08)' }}
-          onLoad={() => console.log('Desktop header image loaded successfully')}
-          onError={(e) => console.error('Desktop header image failed to load:', e)}
-        />
-      </div>
-
-      {/* Gradient overlay for better text visibility - disabled */}
-      {/**
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          zIndex: 25,
-          background: 'linear-gradient(to bottom, transparent 0%, transparent 30%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.7) 100%)'
-        }}
-      />
-      */}
-
-      {/* Text layer with blend mode applied to entire text with parallax */}
-      <div 
-        className="absolute inset-0 pointer-events-none select-none flex items-center"
-        style={{
-          zIndex: 30,
-          mixBlendMode: 'difference',
-          transform: isMobile
-            ? 'translateY(0)'
-            : `translateY(40px) translateX(${mousePosition.x * 16}px) translateY(${mousePosition.y * 10}px) translateY(${scrollY * 0.018}px)`,
-          transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-          alignItems: isMobile ? 'flex-end' : 'center',
-          paddingBottom: isMobile ? '3.5rem' : 0
-        }}
-      >
-        <div 
-          className="mx-auto w-full"
-          style={{
-            maxWidth: '100rem',
-            paddingLeft: '1rem',
-            paddingRight: '1rem'
-          }}
-        >
-          <h1 
-            className="hidden md:block"
-            style={{
-              width: '100%',
-              fontSize: isMobile ? 'clamp(2.6rem, 13vw, 5.6rem)' : '140px',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: isMobile ? '0.25em' : '0.4em',
-              lineHeight: 0.85,
-              whiteSpace: isMobile ? 'normal' : 'nowrap',
-              color: '#FFFFFF',
-              fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-              margin: 0,
-              marginBottom: isMobile ? '1rem' : 0,
-              padding: 0,
-              textAlign: isMobile ? 'center' : 'left'
-            }}
-          >
-            FREDY PEDRO
-          </h1>
-
-          {/* Centered description (mobile) */}
-          {isMobile && (
-          <div className="block md:hidden" style={{ textAlign: 'center', marginTop: '0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem' }}>
-            <h1
-              style={{
-                width: '100%',
-                fontSize: 'clamp(2.9rem, 16vw, 6.2rem)',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.28em',
-                lineHeight: 0.92,
-                color: '#FFFFFF',
-                fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-                margin: 0,
-                marginBottom: '0.4rem',
-                padding: 0,
-                textAlign: 'center'
-              }}
-            >
-              FREDY PEDRO
-            </h1>
-            <p 
-              style={{
-                fontSize: 'clamp(1rem, 3.6vw, 1.25rem)',
-                lineHeight: 1.55,
-                color: '#FFFFFF',
-                fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-                margin: '0 0 2rem 0',
-                maxWidth: '700px',
-                marginLeft: 'auto',
-                marginRight: 'auto'
-              }}
-            >
-              I am a UI/UX Designer & front-end Developer, <br />creating intuitive digital experiences.
-            </p>
-
-            {/* Mobile scroll indicator below text */}
-            <div 
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              <span 
+        {/* ── Desktop: art stays 50vw; text column capped so block centers + shorter intro measure ── */}
+        <div className="absolute inset-0 hidden min-h-0 md:flex md:items-stretch md:justify-center">
+          <div className="flex h-full min-h-0 min-w-0 max-w-full flex-nowrap">
+            {/* Left — explicit half viewport so % circle matches original grid */}
+            <div className="relative w-[50vw] shrink-0 min-h-0">
+              <div
+                className="pointer-events-none absolute z-0"
                 style={{
-                  fontSize: '0.875rem',
-                  color: 'rgba(255,255,255,0.9)',
-                  fontFamily: 'Poppins, system-ui, -apple-system, sans-serif'
+                  bottom: "10%",
+                  left: "48%",
+                  transform: "translateX(-50%)",
+                  width: "78%",
+                  aspectRatio: "1",
                 }}
               >
-                Scroll to explore
-              </span>
-              <div 
-                style={{
-                  width: '22px',
-                  height: '36px',
-                  border: '2px solid rgba(255, 255, 255, 0.6)',
-                  borderRadius: '18px',
-                  display: 'flex',
-                  justifyContent: 'center'
-                }}
-              >
-                <div 
-                  style={{
-                    width: '3px',
-                    height: '10px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    borderRadius: '2px',
-                    marginTop: '6px',
-                    animation: 'bounce 1s infinite'
-                  }}
+                <div
+                  className="pointer-events-auto relative h-full w-full origin-center transition-[transform,filter] duration-300 ease-out hover:scale-[1.06] hover:drop-shadow-[0_0_40px_rgba(248,61,124,0.55)]"
+                >
+                  <Image src="/images/hero/Circle-BG.svg" alt="" fill className="object-contain" sizes="35vw" priority />
+                </div>
+              </div>
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-center" style={{ height: "65svh" }}>
+                <Image
+                  src="/images/hero/Fredy-header.png"
+                  alt="Fredy Pedro"
+                  width={1200}
+                  height={1500}
+                  className="pointer-events-none h-full w-auto object-contain object-bottom"
+                  priority
+                  sizes="50vw"
                 />
               </div>
             </div>
-          </div>
-          )}
-        </div>
-      </div>
 
-      {/* Bottom: desktop description + buttons; mobile keeps content above */}
-      <div 
-        className="absolute bottom-0 left-0 right-0 pointer-events-none select-none"
-        style={{
-          zIndex: 40,
-          paddingBottom: '4rem'
-        }}
-      >
-        <div 
-          className="mx-auto w-full"
-          style={{
-            maxWidth: '100rem',
-            paddingLeft: '1rem',
-            paddingRight: '1rem'
-          }}
-        >
-          <div style={{ textAlign: 'center' }}>
-            {/* Desktop-only description */}
-            <div className="hidden md:block" style={{ marginBottom: '3rem' }}>
-              <p 
+            {/* Right — width capped (never full remaining half); nudged left toward art */}
+            <div
+              className="box-border flex w-[min(36rem,calc(50vw-2rem))] shrink-0 flex-col justify-center pr-8 pl-4 md:-ml-6 md:pl-4 md:pr-10 lg:-ml-10 lg:pl-2 lg:pr-12"
+              style={{ paddingTop: "5rem" }}
+            >
+              <h1
+                className="font-bebas uppercase leading-[0.88] tracking-[0.02em]"
                 style={{
-                  fontSize: 'clamp(1rem, 3.6vw, 1.25rem)',
-                  lineHeight: 1.4,
-                  color: '#FFFFFF',
-                  fontFamily: 'Poppins, system-ui, -apple-system, sans-serif',
-                  margin: '0 0 2rem 0',
-                  maxWidth: '600px',
-                  marginLeft: 'auto',
-                  marginRight: 'auto'
+                  color: PINK,
+                  fontSize: "clamp(6.25rem, 9vw, 14rem)",
+                  fontWeight: 900,
+                  WebkitTextStroke: `2.75px ${PINK}`,
+                  paintOrder: "stroke fill",
                 }}
               >
-                I am a UI/UX Designer & front-end Developer, <br />creating intuitive digital experiences.
+                Hi, I&apos;m
+                <br />
+                Fredy
+              </h1>
+              <p className="mt-5 font-poppins text-xl font-bold uppercase tracking-[0.14em] text-black md:text-2xl">
+                Designer &amp; Developer
               </p>
-            </div>
-            {/* Scroll Indicator visible on desktop (mobile has its own above) */}
-            <div className="hidden md:flex"
-              style={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                color: '#FFFFFF'
-              }}
-            >
-              <span 
-                style={{
-                  fontSize: '0.875rem',
-                  marginBottom: '0.5rem',
-                  fontFamily: 'Poppins, system-ui, -apple-system, sans-serif'
-                }}
+              <p className="mt-5 max-w-md font-poppins text-lg leading-relaxed text-black md:text-xl">
+                I design and build digital experiences that are useful, interactive, and memorable.
+              </p>
+              <a
+                href="#contact"
+                className="mt-20 inline-flex w-fit items-center justify-center rounded-xl border-2 border-solid bg-transparent px-10 py-4 font-poppins text-base font-semibold uppercase tracking-[0.12em] text-[#F83D7C] transition-colors duration-200 hover:bg-[#F83D7C] hover:text-white md:text-lg"
+                style={{ borderColor: PINK }}
               >
-                Scroll to explore
-              </span>
-              <div 
-                style={{
-                  width: '24px',
-                  height: '40px',
-                  border: '2px solid rgba(255, 255, 255, 0.6)',
-                  borderRadius: '20px',
-                  display: 'flex',
-                  justifyContent: 'center'
-                }}
-              >
-                <div 
-                  style={{
-                    width: '4px',
-                    height: '12px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    borderRadius: '2px',
-                    marginTop: '8px',
-                    animation: 'bounce 1s infinite'
-                  }}
-                />
-              </div>
+                Get in contact
+              </a>
             </div>
           </div>
         </div>
-      </div>
-    </header>
+
+        {/* ── Mobile: stacked layout ── */}
+        <div className="flex h-full flex-col px-6 pt-24 md:hidden">
+          <div className="flex flex-col justify-center">
+            <h1
+              className="font-bebas uppercase leading-[0.88] tracking-[0.02em]"
+              style={{
+                color: PINK,
+                fontSize: "clamp(4.5rem, 18vw, 7.25rem)",
+                fontWeight: 900,
+                WebkitTextStroke: `2px ${PINK}`,
+                paintOrder: "stroke fill",
+              }}
+            >
+              Hi, I&apos;m<br />Fredy
+            </h1>
+            <p className="mt-4 font-poppins text-lg font-bold uppercase tracking-[0.14em] text-black">
+              Designer &amp; Developer
+            </p>
+            <p className="mt-4 font-poppins text-base leading-relaxed text-black">
+              I design and build digital experiences that are useful, interactive, and memorable.
+            </p>
+            <a
+              href="#contact"
+              className="mt-6 inline-flex w-fit items-center justify-center rounded-xl border-2 border-solid bg-transparent px-8 py-3.5 font-poppins text-sm font-semibold uppercase tracking-[0.12em] text-[#F83D7C] transition-colors duration-200 hover:bg-[#F83D7C] hover:text-white"
+              style={{ borderColor: PINK }}
+            >
+              Get in contact
+            </a>
+          </div>
+          {/* Mobile portrait */}
+          <div className="relative mt-6 flex flex-1 items-end justify-center">
+            <div
+              className="pointer-events-none absolute left-1/2 -translate-x-1/2"
+              style={{ bottom: 0, width: "67%", aspectRatio: "1" }}
+            >
+              <div className="pointer-events-auto relative h-full w-full origin-center transition-[transform,filter] duration-300 ease-out hover:scale-[1.06] hover:drop-shadow-[0_0_40px_rgba(248,61,124,0.55)]">
+                <Image src="/images/hero/Circle-BG.svg" alt="" fill className="object-contain object-bottom" sizes="65vw" priority />
+              </div>
+            </div>
+            <Image
+              src="/images/hero/Fredy-header.png"
+              alt="Fredy Pedro"
+              width={600}
+              height={750}
+              className="pointer-events-none relative z-10 h-full w-auto object-contain object-bottom"
+              priority
+              sizes="100vw"
+            />
+          </div>
+        </div>
+
+      </header>
     </>
   );
 }

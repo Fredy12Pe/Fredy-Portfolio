@@ -7,7 +7,7 @@ html, body {
 }
 
 body { 
-  @apply bg-black text-zinc-100 antialiased; 
+  @apply bg-[#FFDE82] text-zinc-900 antialiased; 
   overflow-x: hidden;
 }
 

@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { useEffect, useRef } from "react";
 
 // Tech Stack Images - using public folder paths
@@ -114,66 +113,72 @@ export default function FavoriteStackSection() {
   const designTools = techStack.filter(item => item.category === "Design");
 
   return (
-    <section ref={sectionRef} id="favorite-stack" className="mx-auto mt-12 md:mt-24 max-w-[100rem] px-4 md:px-8">
-      <h2 className="whitespace-nowrap text-[36px] sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px] font-black tracking-tight text-white uppercase text-left">
-        Favorite Stack
-      </h2>
+    <section
+      ref={sectionRef}
+      id="favorite-stack"
+      className="w-full bg-[#FFF4D5] pt-8 pb-16 md:pt-12 md:pb-24"
+    >
+      <div className="mx-auto max-w-[100rem] px-4 md:px-8">
+        <h2 className="whitespace-nowrap text-left text-[36px] font-black uppercase tracking-tight text-zinc-900 sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px]">
+          Favorite Stack
+        </h2>
 
-      <div data-reveal>
-        <div data-parallax data-speed="0.18" className="mt-6 md:mt-0 w-full md:w-4/6">
-          <p className="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#828282]">
-            These are the <span className="font-semibold text-white">tools and technologies</span> that power my creative process. From design to development, each tool in my stack serves a specific purpose in bringing ideas to life with precision and efficiency.
-          </p>
+        <div data-reveal>
+          <div data-parallax data-speed="0.18" className="mt-6 w-full md:mt-0 md:w-4/6">
+            <p className="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#828282]">
+              These are the <span className="font-semibold text-zinc-900">tools and technologies</span> that power my creative process. From design to development, each tool in my stack serves a specific purpose in bringing ideas to life with precision and efficiency.
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Tech Stack Grid */}
-      <div className="mt-8 md:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-        {techStack.map((tech, index) => (
-          <div key={tech.name} data-reveal>
-            <div 
-              data-parallax 
-              data-speed="0.15" 
-              className="group relative overflow-hidden rounded-2xl bg-[#1A1A1A] md:border md:border-white/10 md:hover:border-white/20 transition-all duration-300 aspect-[4/5] md:aspect-square p-4 md:p-8 flex flex-col items-center justify-center md:hover:bg-[#222222]"
-            >
-              {/* Hover overlay background */}
+        {/* Tech Stack Grid */}
+        <div className="mt-8 grid grid-cols-2 gap-4 md:mt-16 md:grid-cols-4 md:gap-8">
+          {techStack.map((tech, index) => (
+            <div key={tech.name} data-reveal>
               <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 opacity-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  background: '#121212',
-                  boxShadow: '0px 0px 60px 10px rgba(67, 128, 255, 0.20) inset',
-                  borderRadius: 20,
-                  border: '1px rgba(162, 89, 255, 0.40) solid',
-                  zIndex: 0,
-                }}
-              />
+                data-parallax
+                data-speed="0.15"
+                className="group relative flex aspect-[4/5] flex-col items-center justify-center overflow-hidden rounded-2xl bg-[#1A1A1A] p-4 transition-all duration-300 md:aspect-square md:border md:border-white/10 md:p-8 md:hover:border-white/20 md:hover:bg-[#222222]"
+              >
+                {/* Hover overlay background */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    background: "#121212",
+                    boxShadow: "0px 0px 60px 10px rgba(67, 128, 255, 0.20) inset",
+                    borderRadius: 20,
+                    border: "1px rgba(162, 89, 255, 0.40) solid",
+                    zIndex: 0,
+                  }}
+                />
 
-              <div className="relative z-10 flex flex-col items-center justify-center h-full w-full transition-all duration-300">
-                <div className="w-16 h-16 md:w-36 md:h-36 transition-transform duration-300 md:group-hover:scale-110 md:group-hover:-translate-y-2 flex items-center justify-center">
-                  <img
-                    src={tech.image}
-                    alt={tech.name}
-                    className="object-contain w-full h-full"
-                  />
-                </div>
-                <div className="mt-4 max-h-24 opacity-100 overflow-hidden transition-all duration-300 md:mt-0 md:max-h-0 md:opacity-0 md:group-hover:max-h-24 md:group-hover:opacity-100 md:group-hover:mt-4 text-center">
-                  <h3 className="text-white font-semibold tracking-wide text-sm md:text-base">
-                    {tech.name}
-                  </h3>
-                  <p className="text-[#CFCFCF] text-[12px] md:text-sm leading-relaxed mt-1">
-                    {tech.description}
-                  </p>
+                <div className="relative z-10 flex h-full w-full flex-col items-center justify-center transition-all duration-300">
+                  <div className="flex h-16 w-16 items-center justify-center transition-transform duration-300 md:h-36 md:w-36 md:group-hover:-translate-y-2 md:group-hover:scale-110">
+                    <img
+                      src={tech.image}
+                      alt={tech.name}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                  <div className="mt-4 max-h-24 overflow-hidden text-center opacity-100 transition-all duration-300 md:mt-0 md:max-h-0 md:opacity-0 md:group-hover:mt-4 md:group-hover:max-h-24 md:group-hover:opacity-100">
+                    <h3 className="text-sm font-semibold tracking-wide text-zinc-100 md:text-base">
+                      {tech.name}
+                    </h3>
+                    <p className="mt-1 text-[12px] leading-relaxed text-[#CFCFCF] md:text-sm">
+                      {tech.description}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Categories removed as requested */}
+        {/* Categories removed as requested */}
+      </div>
     </section>
   );
 }
