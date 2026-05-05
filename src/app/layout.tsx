@@ -15,7 +15,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Fredy Design",
   description: "Designer & Developer — Fredy Pedro",
-  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -29,6 +28,20 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
       >
         {children}
+        {/* Fixed sentinel Safari 26 samples to color the URL bar — must be ≥80% wide, ≥3px tall, within 3px of bottom */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: "10%",
+            width: "80%",
+            height: "3px",
+            background: "#000000",
+            pointerEvents: "none",
+            zIndex: 9999,
+          }}
+        />
       </body>
     </html>
   );
