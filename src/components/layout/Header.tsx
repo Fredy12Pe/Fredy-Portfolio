@@ -285,7 +285,7 @@ export default function Header() {
 
         {/* ── Mobile: stacked layout ── */}
         <div className="flex h-full flex-col px-6 pt-28 md:hidden">
-          <div className="flex flex-col justify-center">
+          <div className="relative z-20 flex flex-col justify-center">
             <h1
               className="font-bebas uppercase leading-[0.88] tracking-[0.06em]"
               style={{
