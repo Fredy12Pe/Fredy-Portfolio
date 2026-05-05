@@ -184,7 +184,6 @@ export default function Header() {
         className="relative w-full overflow-hidden rounded-b-[1.25rem] md:rounded-b-[clamp(2.5rem,8vw,4.75rem)]"
         style={{
           height: "100lvh",
-          paddingBottom: "calc(100lvh - 100dvh)",
           background: heroIsPink ? PINK : CREAM,
           transition: "background 0.4s ease",
         }}
