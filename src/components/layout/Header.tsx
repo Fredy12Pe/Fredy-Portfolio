@@ -183,7 +183,7 @@ export default function Header() {
         id="site-header"
         className="relative w-full overflow-hidden rounded-b-[1.25rem] md:rounded-b-[clamp(2.5rem,8vw,4.75rem)]"
         style={{
-          height: "100svh",
+          height: "100lvh",
           background: heroIsPink ? PINK : CREAM,
           transition: "background 0.4s ease",
         }}
