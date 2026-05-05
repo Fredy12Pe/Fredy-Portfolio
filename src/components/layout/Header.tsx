@@ -23,20 +23,6 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Force theme-color to black always so Safari's URL bar never picks up the cream/pink hero
-  useEffect(() => {
-    const setThemeBlack = () => {
-      document.querySelectorAll('meta[name="theme-color"]').forEach((el) => el.remove());
-      const meta = document.createElement("meta");
-      meta.name = "theme-color";
-      meta.content = "#000000";
-      document.head.prepend(meta);
-    };
-    setThemeBlack();
-    // Re-apply after any potential browser reset
-    const id = setTimeout(setThemeBlack, 300);
-    return () => clearTimeout(id);
-  }, [scrolled, isMobileMenuOpen, isMobileThemePink]);
 
   useEffect(() => {
     if (!isMobileMenuOpen) return;
@@ -203,6 +189,11 @@ export default function Header() {
           transition: "background 0.4s ease",
         }}
       >
+        {/* Black strip covering the URL-bar region on mobile — prevents cream from showing through Safari's URL bar */}
+        <div
+          className="pointer-events-none absolute bottom-0 left-0 right-0 z-50 md:hidden"
+          style={{ height: "calc(100lvh - 100svh)", background: "#000000" }}
+        />
         {/* ── Desktop: art stays 50vw; text column capped so block centers + shorter intro measure ── */}
         <div className="absolute inset-0 hidden min-h-0 md:flex md:items-stretch md:justify-center">
           <div className="flex h-full min-h-0 min-w-0 max-w-full flex-nowrap">
