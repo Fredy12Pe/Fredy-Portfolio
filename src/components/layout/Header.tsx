@@ -285,7 +285,7 @@ export default function Header() {
         </div>
 
         {/* ── Mobile: stacked layout ── */}
-        <div className="flex h-full flex-col px-6 pt-28 md:hidden">
+        <div className="flex h-full flex-col px-6 pt-36 md:hidden">
           <div className="relative z-20 flex flex-col justify-center">
             <h1
               className="font-bebas uppercase leading-[0.88] tracking-[0.06em]"
@@ -358,7 +358,7 @@ export default function Header() {
           <div className="relative mt-1 flex flex-1 items-end justify-center">
             <div
               className="pointer-events-none absolute left-1/2 -translate-x-1/2"
-              style={{ bottom: "-38%", width: "135%", aspectRatio: "1" }}
+              style={{ bottom: "0%", width: "118%", aspectRatio: "1" }}
             >
               <div
                 className="relative h-full w-full origin-center"
@@ -378,7 +378,7 @@ export default function Header() {
               alt="Fredy Pedro"
               width={600}
               height={750}
-              className="pointer-events-none relative z-10 h-auto max-h-full w-auto max-w-[78%] translate-y-[8%] object-contain object-bottom"
+              className="pointer-events-none relative z-10 h-auto max-h-full w-auto max-w-[78%] object-contain object-bottom"
               priority
               sizes="80vw"
             />
