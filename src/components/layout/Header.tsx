@@ -23,15 +23,19 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Dynamically update theme-color so Safari's URL bar is always dark on mobile
+  // Force theme-color to black always so Safari's URL bar never picks up the cream/pink hero
   useEffect(() => {
-    let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
-    if (!meta) {
-      meta = document.createElement("meta");
+    const setThemeBlack = () => {
+      document.querySelectorAll('meta[name="theme-color"]').forEach((el) => el.remove());
+      const meta = document.createElement("meta");
       meta.name = "theme-color";
-      document.head.appendChild(meta);
-    }
-    meta.content = "#000000";
+      meta.content = "#000000";
+      document.head.prepend(meta);
+    };
+    setThemeBlack();
+    // Re-apply after any potential browser reset
+    const id = setTimeout(setThemeBlack, 300);
+    return () => clearTimeout(id);
   }, [scrolled, isMobileMenuOpen, isMobileThemePink]);
 
   useEffect(() => {
