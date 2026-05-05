@@ -355,10 +355,10 @@ export default function Header() {
             </div>
           </div>
           {/* Mobile portrait */}
-          <div className="relative mt-1 flex flex-1 items-end justify-center pb-4">
+          <div className="relative mt-1 flex flex-1 items-end justify-center">
             <div
               className="pointer-events-none absolute left-1/2 -translate-x-1/2"
-              style={{ bottom: "-6%", width: "108%", aspectRatio: "1" }}
+              style={{ bottom: "-18%", width: "108%", aspectRatio: "1" }}
             >
               <div
                 className="relative h-full w-full origin-center"
@@ -378,7 +378,7 @@ export default function Header() {
               alt="Fredy Pedro"
               width={600}
               height={750}
-              className="pointer-events-none relative z-10 h-auto max-h-full w-auto max-w-[78%] object-contain object-bottom"
+              className="pointer-events-none relative z-10 h-auto max-h-full w-auto max-w-[78%] translate-y-[8%] object-contain object-bottom"
               priority
               sizes="80vw"
             />
