@@ -37,7 +37,7 @@ export default function RootLayout({
             left: "10%",
             width: "80%",
             height: "3px",
-            background: "#000000",
+            background: "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%)",
             pointerEvents: "none",
             zIndex: 9999,
           }}
