@@ -357,7 +357,7 @@ export default function Header() {
           <div className="relative mt-1 flex flex-1 items-end justify-center">
             <div
               className="pointer-events-none absolute left-1/2 -translate-x-1/2"
-              style={{ bottom: "-32%", width: "148%", aspectRatio: "1" }}
+              style={{ bottom: "-42%", width: "130%", aspectRatio: "1" }}
             >
               <div
                 className="relative h-full w-full origin-center"
