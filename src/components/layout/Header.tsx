@@ -183,7 +183,8 @@ export default function Header() {
         id="site-header"
         className="relative w-full overflow-hidden rounded-b-[1.25rem] md:rounded-b-[clamp(2.5rem,8vw,4.75rem)]"
         style={{
-          height: "100lvh",
+          height: "100dvh",
+          minHeight: "100svh",
           background: heroIsPink ? PINK : CREAM,
           transition: "background 0.4s ease",
         }}
@@ -354,10 +355,10 @@ export default function Header() {
             </div>
           </div>
           {/* Mobile portrait */}
-          <div className="relative mt-1 flex flex-1 items-end justify-center">
+          <div className="relative mt-1 flex flex-1 items-end justify-center pb-4">
             <div
               className="pointer-events-none absolute left-1/2 -translate-x-1/2"
-              style={{ bottom: "-22%", width: "140%", aspectRatio: "1" }}
+              style={{ bottom: "-6%", width: "108%", aspectRatio: "1" }}
             >
               <div
                 className="relative h-full w-full origin-center"
@@ -369,7 +370,7 @@ export default function Header() {
                   transition: "transform 0.3s ease-out, filter 0.4s ease",
                 }}
               >
-                <Image src="/images/hero/Circle-BG.svg" alt="" fill className="object-contain object-bottom" sizes="65vw" priority />
+                <Image src="/images/hero/Circle-BG.svg" alt="" fill className="object-contain object-bottom" sizes="55vw" priority />
               </div>
             </div>
             <Image
@@ -377,9 +378,9 @@ export default function Header() {
               alt="Fredy Pedro"
               width={600}
               height={750}
-              className="pointer-events-none relative z-10 h-full w-auto translate-y-[3%] object-contain object-bottom"
+              className="pointer-events-none relative z-10 h-auto max-h-full w-auto max-w-[78%] object-contain object-bottom"
               priority
-              sizes="100vw"
+              sizes="80vw"
             />
           </div>
         </div>
