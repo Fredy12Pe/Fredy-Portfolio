@@ -183,8 +183,7 @@ export default function Header() {
         id="site-header"
         className="relative w-full overflow-hidden rounded-b-[1.25rem] md:rounded-b-[clamp(2.5rem,8vw,4.75rem)]"
         style={{
-          height: "100dvh",
-          minHeight: "100svh",
+          height: "100svh",
           background: heroIsPink ? PINK : CREAM,
           transition: "background 0.4s ease",
         }}
@@ -358,7 +357,7 @@ export default function Header() {
           <div className="relative mt-1 flex flex-1 items-end justify-center">
             <div
               className="pointer-events-none absolute left-1/2 -translate-x-1/2"
-              style={{ bottom: "-18%", width: "108%", aspectRatio: "1" }}
+              style={{ bottom: "-38%", width: "135%", aspectRatio: "1" }}
             >
               <div
                 className="relative h-full w-full origin-center"
