@@ -180,15 +180,21 @@ export default function Header() {
       )}
 
       {/* ── Hero ── */}
+      {/* Outer shell: 100lvh keeps page layout correct, background is transparent so black body shows in URL-bar region */}
       <header
         id="site-header"
-        className="relative w-full overflow-hidden rounded-b-[1.25rem] md:rounded-b-[clamp(2.5rem,8vw,4.75rem)]"
-        style={{
-          height: "100lvh",
-          background: heroIsPink ? PINK : CREAM,
-          transition: "background 0.4s ease",
-        }}
+        className="relative w-full"
+        style={{ height: "100lvh", background: "transparent" }}
       >
+        {/* Inner shell: cream/pink background stops at 100svh so it never reaches the URL-bar area */}
+        <div
+          className="absolute inset-x-0 top-0 overflow-hidden rounded-b-[1.25rem] md:rounded-b-[clamp(2.5rem,8vw,4.75rem)]"
+          style={{
+            height: "100svh",
+            background: heroIsPink ? PINK : CREAM,
+            transition: "background 0.4s ease",
+          }}
+        >
         {/* ── Desktop: art stays 50vw; text column capped so block centers + shorter intro measure ── */}
         <div className="absolute inset-0 hidden min-h-0 md:flex md:items-stretch md:justify-center">
           <div className="flex h-full min-h-0 min-w-0 max-w-full flex-nowrap">
@@ -385,6 +391,7 @@ export default function Header() {
           </div>
         </div>
 
+        </div>{/* end inner cream/pink shell */}
       </header>
     </>
   );

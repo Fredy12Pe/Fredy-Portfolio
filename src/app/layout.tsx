@@ -28,7 +28,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
       >
         {children}
-        {/* Fixed sentinel Safari 26 samples to color the URL bar — must be ≥80% wide, ≥3px tall, within 3px of bottom */}
+        {/* Fixed sentinel: Safari 26 samples background-color of fixed elements ≥80% wide, ≥3px tall, within 3px of bottom */}
         <div
           aria-hidden="true"
           style={{
@@ -37,7 +37,7 @@ export default function RootLayout({
             left: "10%",
             width: "80%",
             height: "3px",
-            background: "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%)",
+            backgroundColor: "#000000",
             pointerEvents: "none",
             zIndex: 9999,
           }}
