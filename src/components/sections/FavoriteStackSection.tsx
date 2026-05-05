@@ -124,7 +124,7 @@ export default function FavoriteStackSection() {
           Favorite Stack
         </h2>
 
-        <div data-reveal>
+        <div data-reveal className="hidden md:block">
           <div data-parallax data-speed="0.18" className="mt-6 w-full md:mt-0 md:w-4/6">
             <p className="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#828282]">
               These are the <span className="font-semibold text-zinc-900">tools and technologies</span> that power my creative process. From design to development, each tool in my stack serves a specific purpose in bringing ideas to life with precision and efficiency.
@@ -133,7 +133,7 @@ export default function FavoriteStackSection() {
         </div>
 
         {/* Tech Stack Grid */}
-        <div className="mt-8 grid grid-cols-2 gap-5 md:mt-16 md:grid-cols-4 md:gap-10">
+        <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-8 md:mt-16 md:grid-cols-4 md:gap-10">
           {techStack.map((tech, index) => (
             <div
               key={tech.name}

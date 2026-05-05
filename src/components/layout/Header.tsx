@@ -181,7 +181,7 @@ export default function Header() {
       {/* ── Hero ── */}
       <header
         id="site-header"
-        className="relative w-full overflow-hidden rounded-b-[clamp(2.5rem,8vw,4.75rem)]"
+        className="relative w-full overflow-hidden rounded-b-[1.25rem] md:rounded-b-[clamp(2.5rem,8vw,4.75rem)]"
         style={{
           height: "100svh",
           background: heroIsPink ? PINK : CREAM,
@@ -287,7 +287,7 @@ export default function Header() {
         <div className="flex h-full flex-col px-6 pt-28 md:hidden">
           <div className="flex flex-col justify-center">
             <h1
-              className="font-bebas uppercase leading-[0.88] tracking-[0.02em]"
+              className="font-bebas uppercase leading-[0.88] tracking-[0.06em]"
               style={{
                 color: heroIsPink ? "white" : PINK,
                 fontSize: "clamp(4.2rem, 17.5vw, 6.8rem)",

@@ -122,7 +122,7 @@ export default function ContactSection() {
         />
 
         {/* Foreground content */}
-        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_auto] gap-8 p-6 md:p-10 lg:p-16">
+        <div className="relative z-10 grid grid-cols-1 gap-8 px-6 pb-6 pt-10 md:grid-cols-2 md:grid-rows-[auto_auto] md:p-10 lg:p-16">
           {/* Left: Heading + Description */}
           <div className="md:col-start-1 md:row-start-1">
             <h2 className="text-white uppercase font-black tracking-tight text-[36px] sm:text-[56px] md:text-[64px] lg:text-[72px] leading-[0.95]">

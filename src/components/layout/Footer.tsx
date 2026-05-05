@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="mt-24 border-t border-black/10">
+    <footer className="mt-0 border-t border-black/10">
       <div className="mx-auto max-w-[100rem] px-4 md:px-8 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="text-black/70 text-sm">
           © {new Date().getFullYear()} Fredy Pedro. All rights reserved.

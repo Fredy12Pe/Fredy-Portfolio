@@ -100,10 +100,10 @@ export default function AboutSection() {
     <section
       ref={sectionRef}
       id="about"
-      className="relative w-full bg-[#FFDC79]"
+      className="relative w-full scroll-mt-[max(5.5rem,calc(env(safe-area-inset-top,0px)+5.25rem))] bg-[#FFDC79]"
     >
-      {/* Scroll track: 350svh gives ~250svh of animation travel — slow, deliberate */}
-      <div className="relative h-[350svh]" data-squares-track="">
+      {/* Slightly extended track on mobile for readability without over-stretching */}
+      <div className="relative h-[370svh] md:h-[350svh]" data-squares-track="">
         {/* Sticky stage: clipped full-screen, stays pinned for the full track */}
         <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-[#FFDC79]" data-squares-stage="">
 
@@ -136,11 +136,11 @@ export default function AboutSection() {
             ))}
           </div>
 
-          {/* Foreground content */}
-          <div className="relative z-10 mx-auto flex h-full w-full max-w-[110rem] flex-col justify-center overflow-y-auto px-4 py-10 md:px-8 md:py-14">
+          {/* Foreground content — mobile: start below fixed nav; desktop: vertically centered */}
+          <div className="relative z-10 mx-auto flex h-full min-h-0 w-full max-w-[100rem] flex-col justify-start overflow-y-auto px-4 pb-11 pt-[max(6.4rem,calc(env(safe-area-inset-top,0px)+5.85rem))] md:justify-center md:px-8 md:py-14 md:pt-14">
             <h2
               data-about-heading=""
-              className="font-bebas text-[3.6rem] uppercase leading-none tracking-wide text-black sm:text-[5rem] md:text-[7rem] lg:text-[9rem]"
+              className="font-bebas text-[3.2rem] uppercase leading-none tracking-wide text-black sm:text-[5rem] md:text-[7rem] lg:text-[9rem]"
               style={{ opacity: 0 }}
             >
               About Me
@@ -151,22 +151,22 @@ export default function AboutSection() {
               className="mt-4 max-w-3xl text-black/90 md:mt-6"
               style={{ opacity: 0 }}
             >
-              <p className="text-[1.05rem] leading-relaxed md:text-[1.2rem] md:leading-[1.65]">
+              <p className="text-[0.98rem] leading-relaxed sm:text-[1.03rem] md:text-[1.2rem] md:leading-[1.65]">
                 I am a passionate <span className="font-semibold">UI/UX designer</span> focused on creating clear, intuitive, and visually engaging digital experiences. With a strong foundation in design and a growing skill set in development,{" "}
                 <span className="font-semibold">I blend creativity with functionality to turn ideas into real, working products.</span>{" "}
                 My work emphasizes usability and detail, ensuring that every interaction feels seamless and purposeful.
               </p>
-              <p className="mt-6 text-[1rem] leading-relaxed text-black/75 md:mt-8 md:text-[1.1rem] md:leading-[1.6]">
+              <p className="mt-5 hidden text-[0.95rem] leading-relaxed text-black/75 sm:text-[1rem] md:mt-8 md:block md:text-[1.1rem] md:leading-[1.6]">
                 This portfolio takes on the identity of what a modern 80s/90s inspired design experience could be; an era defined by vibrant color, playful energy, and a willingness to break convention. While modern design often leans toward simplicity, this explores how reintroducing character and personality can create more engaging, memorable experiences that connect with users.
               </p>
-              <p className="mt-6 text-[1rem] leading-relaxed text-black/75 md:mt-8 md:text-[1.1rem] md:leading-[1.6]">
+              <p className="mt-5 text-[0.95rem] leading-relaxed text-black/75 sm:text-[1rem] md:mt-8 md:text-[1.1rem] md:leading-[1.6]">
                 Outside of design, I enjoy surfing, running, and producing music. These simple passions keep me inspired and balanced.
               </p>
             </div>
 
             <div
               data-about-images=""
-              className="mt-6 opacity-0 md:mt-8"
+              className="mt-10 opacity-0 sm:mt-6 md:mt-8"
             >
               <Carousel />
             </div>
@@ -217,10 +217,10 @@ function Carousel() {
 
   return (
     <div className="max-w-3xl">
-      {/* Two-up image grid */}
+      {/* Two-up image grid — mobile: shorter image so copy + carousel fit comfortably */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
         {/* Primary slide */}
-        <div className="relative aspect-square overflow-hidden rounded-2xl">
+        <div className="relative mx-0 aspect-[5/4] w-full max-w-[min(100%,19rem)] overflow-hidden rounded-2xl sm:max-w-[min(100%,22rem)] md:aspect-square md:max-w-none">
           <div className="relative h-full w-full">
             <div
               className={`flex h-full w-full will-change-transform ${
