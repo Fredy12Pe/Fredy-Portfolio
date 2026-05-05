@@ -23,6 +23,17 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Dynamically update theme-color so Safari's URL bar is always dark on mobile
+  useEffect(() => {
+    let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.name = "theme-color";
+      document.head.appendChild(meta);
+    }
+    meta.content = "#000000";
+  }, [scrolled, isMobileMenuOpen, isMobileThemePink]);
+
   useEffect(() => {
     if (!isMobileMenuOpen) return;
     const handler = (e: MouseEvent) => {
