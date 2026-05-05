@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Tech Stack Images - using public folder paths
 interface TechStackItem {
@@ -56,6 +56,8 @@ const techStack: TechStackItem[] = [
 
 export default function FavoriteStackSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const cardShadowColors = ["#4DA8A1", "#E66B6B", "#E5B548", "#7D65BD"];
 
   useEffect(() => {
     const onScroll = () => {
@@ -69,9 +71,8 @@ export default function FavoriteStackSection() {
         const speedAttr = el.getAttribute('data-speed');
         const speed = speedAttr ? parseFloat(speedAttr) : 0.25;
         const translate = (0.5 - progress) * speed * 180;
-        el.style.willChange = 'transform, opacity';
+        el.style.willChange = 'transform';
         el.style.transform = `translateY(${translate.toFixed(2)}px)`;
-        el.style.opacity = (0.6 + progress * 0.4).toFixed(2);
       });
     };
     
@@ -132,44 +133,34 @@ export default function FavoriteStackSection() {
         </div>
 
         {/* Tech Stack Grid */}
-        <div className="mt-8 grid grid-cols-2 gap-4 md:mt-16 md:grid-cols-4 md:gap-8">
+        <div className="mt-8 grid grid-cols-2 gap-5 md:mt-16 md:grid-cols-4 md:gap-10">
           {techStack.map((tech, index) => (
-            <div key={tech.name} data-reveal>
+            <div
+              key={tech.name}
+              data-reveal
+              className="favorite-stack-card-breathe"
+              style={{ animationDelay: `${index * 180}ms` }}
+            >
               <div
-                data-parallax
-                data-speed="0.15"
-                className="group relative flex aspect-[4/5] flex-col items-center justify-center overflow-hidden rounded-2xl bg-[#1A1A1A] p-4 transition-all duration-300 md:aspect-square md:border md:border-white/10 md:p-8 md:hover:border-white/20 md:hover:bg-[#222222]"
+                onMouseEnter={() => setHoveredCard(tech.name)}
+                onMouseLeave={() => setHoveredCard((active) => (active === tech.name ? null : active))}
+                className={`group relative flex aspect-[5/4] items-center justify-center border-2 border-zinc-200 bg-[#121212] p-4 transition-transform duration-300 ease-out md:p-8 ${
+                  hoveredCard === tech.name ? "z-20 scale-[1.05]" : "scale-100"
+                }`}
+                style={{ boxShadow: `8px 8px 0 ${cardShadowColors[index % cardShadowColors.length]}` }}
               >
-                {/* Hover overlay background */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    background: "#121212",
-                    boxShadow: "0px 0px 60px 10px rgba(67, 128, 255, 0.20) inset",
-                    borderRadius: 20,
-                    border: "1px rgba(162, 89, 255, 0.40) solid",
-                    zIndex: 0,
-                  }}
-                />
-
-                <div className="relative z-10 flex h-full w-full flex-col items-center justify-center transition-all duration-300">
-                  <div className="flex h-16 w-16 items-center justify-center transition-transform duration-300 md:h-36 md:w-36 md:group-hover:-translate-y-2 md:group-hover:scale-110">
+                <div className="relative z-10 flex h-full w-full flex-col items-center justify-center">
+                  <div className="flex h-16 w-16 items-center justify-center transition-transform duration-300 group-hover:scale-110 md:h-28 md:w-28">
                     <img
                       src={tech.image}
                       alt={tech.name}
                       className="h-full w-full object-contain"
                     />
                   </div>
-                  <div className="mt-4 max-h-24 overflow-hidden text-center opacity-100 transition-all duration-300 md:mt-0 md:max-h-0 md:opacity-0 md:group-hover:mt-4 md:group-hover:max-h-24 md:group-hover:opacity-100">
-                    <h3 className="text-sm font-semibold tracking-wide text-zinc-100 md:text-base">
+                  <div className="mt-3 text-center">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-100 md:text-sm">
                       {tech.name}
                     </h3>
-                    <p className="mt-1 text-[12px] leading-relaxed text-[#CFCFCF] md:text-sm">
-                      {tech.description}
-                    </p>
                   </div>
                 </div>
               </div>
@@ -179,6 +170,27 @@ export default function FavoriteStackSection() {
 
         {/* Categories removed as requested */}
       </div>
+      <style jsx>{`
+        @keyframes cardBreathe {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-7px);
+          }
+        }
+
+        .favorite-stack-card-breathe {
+          animation: cardBreathe 4.8s ease-in-out infinite;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .favorite-stack-card-breathe {
+            animation: none;
+          }
+        }
+      `}</style>
     </section>
   );
 }

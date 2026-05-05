@@ -1,56 +1,98 @@
 "use client";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-
-// Local assets - using public folder paths
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
+    const clamp = (v: number) => Math.min(Math.max(v, 0), 1);
+    const mixHex = (from: string, to: string, t: number) => {
+      const value = clamp(t);
+      const a = from.replace("#", "");
+      const b = to.replace("#", "");
+      const ar = parseInt(a.slice(0, 2), 16);
+      const ag = parseInt(a.slice(2, 4), 16);
+      const ab = parseInt(a.slice(4, 6), 16);
+      const br = parseInt(b.slice(0, 2), 16);
+      const bg = parseInt(b.slice(2, 4), 16);
+      const bb = parseInt(b.slice(4, 6), 16);
+      const rr = Math.round(ar + (br - ar) * value);
+      const rg = Math.round(ag + (bg - ag) * value);
+      const rb = Math.round(ab + (bb - ab) * value);
+      return `rgb(${rr}, ${rg}, ${rb})`;
+    };
+
+    const applyProgress = (progress: number) => {
+      const section = sectionRef.current;
+      if (!section) return;
+
+      const stage = section.querySelector<HTMLElement>("[data-squares-stage]");
+      const endTint = clamp((progress - 0.56) / 0.44);
+      if (stage) {
+        stage.style.backgroundColor = mixHex("#FFDC79", "#FFF4D5", Math.pow(endTint, 1.08));
+      }
+
+      const layers = section.querySelectorAll<HTMLElement>("[data-squares-layer]");
+      layers.forEach((layer) => {
+        const depth = Number(layer.dataset.depth || 0);
+        const lag = depth * 0.06;
+        const local = clamp((progress - lag) / (1 - lag));
+        const eased = 1 - Math.pow(1 - local, 1.8);
+        const scale = 0.04 + eased * 1.32;
+        // Outer layer (depth=0) reaches full opacity so it completely covers the stage
+        const opacity = clamp(0.14 + local * (1.0 - 0.14 - depth * 0.055));
+        // All layers converge to the stage end color so no seams are visible
+        const fill = mixHex("#C89B1F", "#FFF4D5", local);
+        const borderAlpha = Math.max(0, 0.18 - depth * 0.02) * (1 - local * 0.8);
+
+        layer.style.opacity = opacity.toFixed(3);
+        layer.style.backgroundColor = fill;
+        layer.style.boxShadow = borderAlpha > 0.01 ? `inset 0 0 0 1px rgba(0,0,0,${borderAlpha.toFixed(3)})` : "none";
+        layer.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
+      });
+
+      const heading = section.querySelector<HTMLElement>("[data-about-heading]");
+      const copy = section.querySelector<HTMLElement>("[data-about-copy]");
+      const images = section.querySelector<HTMLElement>("[data-about-images]");
+
+      if (heading) {
+        const inView = clamp((progress - 0.12) / 0.2);
+        const out = clamp((progress - 0.9) / 0.1);
+        heading.style.opacity = (inView * (1 - out * 0.4)).toFixed(2);
+        heading.style.transform = `translateY(${((1 - inView) * 22).toFixed(1)}px)`;
+      }
+      if (copy) {
+        const reveal = clamp((progress - 0.34) / 0.24);
+        copy.style.opacity = (reveal * 0.98).toFixed(2);
+        copy.style.transform = `translateY(${((1 - reveal) * 24).toFixed(1)}px)`;
+      }
+      if (images) {
+        const reveal = clamp((progress - 0.52) / 0.2);
+        images.style.opacity = reveal.toFixed(2);
+        images.style.transform = `translateY(${((1 - reveal) * 26).toFixed(1)}px)`;
+      }
+    };
+
     const onScroll = () => {
       const section = sectionRef.current;
       if (!section) return;
-      const items = section.querySelectorAll<HTMLElement>('[data-parallax]');
+      const track = section.querySelector<HTMLElement>("[data-squares-track]");
+      if (!track) return;
       const vh = window.innerHeight || 800;
-      items.forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        const progress = Math.min(Math.max((vh - rect.top) / (vh + rect.height), 0), 1);
-        const speedAttr = el.getAttribute('data-speed');
-        const speed = speedAttr ? parseFloat(speedAttr) : 0.25;
-        const translate = (0.5 - progress) * speed * 180; // stronger vertical drift
-        el.style.willChange = 'transform, opacity';
-        el.style.transform = `translateY(${translate.toFixed(2)}px)`;
-        el.style.opacity = (0.6 + progress * 0.4).toFixed(2);
-      });
+      const rect = track.getBoundingClientRect();
+      // progress = 0 when track top hits viewport top (sticky begins)
+      // progress = 1 when track bottom hits viewport bottom (sticky ends) — no leftover space
+      const travel = Math.max(rect.height - vh, 1);
+      const progress = clamp(-rect.top / travel);
+      applyProgress(progress);
     };
-    onScroll();
-    // Local reveal for About section
-    const revealItems = Array.from(sectionRef.current?.querySelectorAll<HTMLElement>('[data-reveal]') || []);
 
-    revealItems.forEach((el, idx) => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(28px)';
-      el.style.transition = 'opacity 650ms ease, transform 650ms cubic-bezier(0.22,1,0.36,1)';
-      el.style.transitionDelay = `${idx * 110}ms`;
-    });
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const el = entry.target as HTMLElement;
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
-          io.unobserve(el);
-        }
-      });
-    }, { threshold: 0.1 });
-    revealItems.forEach((el) => io.observe(el));
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, []);
 
@@ -58,63 +100,113 @@ export default function AboutSection() {
     <section
       ref={sectionRef}
       id="about"
-      className="w-full min-h-[92svh] rounded-t-3xl bg-[#FFF4D5] py-20 md:min-h-[95svh] md:rounded-t-[2.5rem] md:py-24 lg:min-h-[100svh] lg:rounded-t-[3rem] lg:py-32"
+      className="relative w-full bg-[#FFDC79]"
     >
-      <div className="mx-auto max-w-[100rem] px-4 md:px-8">
-        <h2 className="whitespace-nowrap text-left font-bebas text-[36px] font-normal uppercase tracking-wide text-zinc-900 sm:text-[56px] md:text-[72px] lg:text-[90px] xl:text-[110px]">
-          About Me
-        </h2>
+      {/* Scroll track: 350svh gives ~250svh of animation travel — slow, deliberate */}
+      <div className="relative h-[350svh]" data-squares-track="">
+        {/* Sticky stage: clipped full-screen, stays pinned for the full track */}
+        <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-[#FFDC79]" data-squares-stage="">
 
-        <div data-reveal>
-          <div data-parallax data-speed="0.18" className="mt-6 md:mt-0 w-full md:w-4/6">
-            <p className="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#828282]">
-              I am a passionate <span className="font-semibold text-zinc-900">UI/UX designer</span> focused on creating clear, intuitive, and visually engaging, unique digital experiences. With a strong foundation in design and a growing skill set in development, <span className="font-semibold text-zinc-900">I blend creativity with functionality to turn ideas into real, working products.</span> My work emphasizes usability and detail, ensuring that every interaction feels seamless and purposeful.
-            </p>
-            <p className="mt-8 text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[22px] leading-relaxed md:leading-8 lg:leading-9 xl:leading-[34px] text-[#6C6C6C]">
-              Outside of design, I enjoy surfing, running, and producing music. These simple passions keep me inspired and balanced.
-            </p>
+          {/* Subtle center highlight */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at 50% 50%, rgba(255,244,209,0.22), rgba(255,244,209,0) 72%)",
+            }}
+          />
+
+          {/* Concentric square layers */}
+          <div className="absolute inset-0">
+            {[132, 116, 100, 84, 68, 52, 36, 24].map((size, idx) => (
+              <div
+                key={size}
+                data-squares-layer=""
+                data-depth={idx}
+                className="absolute left-1/2 top-1/2 bg-[#C89B1F]"
+                style={{
+                  width: `${size}%`,
+                  aspectRatio: "1",
+                  transform: "translate(-50%, -50%) scale(0.04)",
+                  opacity: 0.14,
+                  filter: "blur(0.2px)",
+                }}
+              />
+            ))}
           </div>
-        </div>
 
-        <Carousel />
+          {/* Foreground content */}
+          <div className="relative z-10 mx-auto flex h-full w-full max-w-[110rem] flex-col justify-center overflow-y-auto px-4 py-10 md:px-8 md:py-14">
+            <h2
+              data-about-heading=""
+              className="font-bebas text-[3.6rem] uppercase leading-none tracking-wide text-black sm:text-[5rem] md:text-[7rem] lg:text-[9rem]"
+              style={{ opacity: 0 }}
+            >
+              About Me
+            </h2>
+
+            <div
+              data-about-copy=""
+              className="mt-4 max-w-3xl text-black/90 md:mt-6"
+              style={{ opacity: 0 }}
+            >
+              <p className="text-[1.05rem] leading-relaxed md:text-[1.2rem] md:leading-[1.65]">
+                I am a passionate <span className="font-semibold">UI/UX designer</span> focused on creating clear, intuitive, and visually engaging digital experiences. With a strong foundation in design and a growing skill set in development,{" "}
+                <span className="font-semibold">I blend creativity with functionality to turn ideas into real, working products.</span>{" "}
+                My work emphasizes usability and detail, ensuring that every interaction feels seamless and purposeful.
+              </p>
+              <p className="mt-6 text-[1rem] leading-relaxed text-black/75 md:mt-8 md:text-[1.1rem] md:leading-[1.6]">
+                This portfolio takes on the identity of what a modern 80s/90s inspired design experience could be; an era defined by vibrant color, playful energy, and a willingness to break convention. While modern design often leans toward simplicity, this explores how reintroducing character and personality can create more engaging, memorable experiences that connect with users.
+              </p>
+              <p className="mt-6 text-[1rem] leading-relaxed text-black/75 md:mt-8 md:text-[1.1rem] md:leading-[1.6]">
+                Outside of design, I enjoy surfing, running, and producing music. These simple passions keep me inspired and balanced.
+              </p>
+            </div>
+
+            <div
+              data-about-images=""
+              className="mt-6 opacity-0 md:mt-8"
+            >
+              <Carousel />
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
   );
 }
 
-type Slide = { type: "image" | "video" | "youtube" | "placeholder"; src: any; alt?: string };
+type Slide = { type: "image" | "video" | "youtube" | "placeholder"; src: string; alt?: string };
 
-// Helper function to convert YouTube URL to embed URL
 function getYouTubeEmbedUrl(url: string): string {
-  const videoId = url.includes('youtu.be/') 
-    ? url.split('youtu.be/')[1].split('?')[0]
-    : url.split('v=')[1]?.split('&')[0];
+  const videoId = url.includes("youtu.be/")
+    ? url.split("youtu.be/")[1].split("?")[0]
+    : url.split("v=")[1]?.split("&")[0];
   return `https://www.youtube.com/embed/${videoId}?autoplay=0&mute=1&loop=1&playlist=${videoId}`;
 }
 
 function Carousel() {
   const slides: Slide[] = [
-    { type: "image", src: "/images/about/Fredy.png", alt: "I smiling with ocean background" },
+    { type: "image", src: "/images/about/Fredy.png", alt: "Fredy smiling with ocean background" },
     { type: "image", src: "/images/about/Surf.png", alt: "Surfboard and street scene" },
-    // YouTube video embed
     { type: "youtube", src: "https://youtu.be/NzhowvwpWyo", alt: "Fredy's video" },
   ];
-  
+
   const track: Slide[] = [slides[slides.length - 1], ...slides, slides[0]];
   const [current, setCurrent] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
   const [enableTransition, setEnableTransition] = useState(true);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const realIndex = (current - 1 + slides.length) % slides.length;
+  const nextIndex = (realIndex + 1) % slides.length;
 
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    if (slides[realIndex].type === "video") {
-      v.play().catch(() => {});
-    } else {
-      v.pause();
-    }
+    if (slides[realIndex].type === "video") v.play().catch(() => {});
+    else v.pause();
   }, [realIndex, slides]);
 
   const go = (dir: -1 | 1) => {
@@ -123,64 +215,53 @@ function Carousel() {
     setCurrent((i) => i + dir);
   };
 
-  const nextIndex = (realIndex + 1) % slides.length;
-
   return (
-    <div className="mt-6 md:mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
-      <div data-reveal>
-        <div data-parallax data-speed="0.3" className="relative overflow-hidden rounded-2xl ring-1 ring-black/10 bg-black/[0.04] mt-2 md:mt-8 h-[500px] md:h-[580px] lg:h-[660px]">
+    <div className="max-w-3xl">
+      {/* Two-up image grid */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
+        {/* Primary slide */}
+        <div className="relative aspect-square overflow-hidden rounded-2xl">
           <div className="relative h-full w-full">
             <div
-              className={`flex h-full w-full will-change-transform ${enableTransition ? "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" : ""}`}
+              className={`flex h-full w-full will-change-transform ${
+                enableTransition ? "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" : ""
+              }`}
               style={{ transform: `translate3d(-${current * 100}%,0,0)` }}
               onTransitionEnd={() => {
                 if (current === 0) {
                   setEnableTransition(false);
                   setCurrent(slides.length);
-                  requestAnimationFrame(() => {
+                  requestAnimationFrame(() =>
                     requestAnimationFrame(() => {
                       setEnableTransition(true);
                       setIsAnimating(false);
-                    });
-                  });
+                    })
+                  );
                 } else if (current === slides.length + 1) {
                   setEnableTransition(false);
                   setCurrent(1);
-                  requestAnimationFrame(() => {
+                  requestAnimationFrame(() =>
                     requestAnimationFrame(() => {
                       setEnableTransition(true);
                       setIsAnimating(false);
-                    });
-                  });
+                    })
+                  );
                 } else {
                   setIsAnimating(false);
                 }
               }}
             >
               {track.map((s, i) => (
-                <div key={i} className="relative h-full w-full shrink-0 grow-0 basis-full">
+                <div key={`${s.src}-${i}`} className="relative h-full w-full shrink-0 grow-0 basis-full">
                   {s.type === "image" ? (
                     <img
                       src={s.src}
                       alt={s.alt || ""}
-                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
-                      onLoad={() => console.log('Image loaded successfully:', s.src)}
-                      onError={(e) => console.error('Image failed to load:', s.src, e)}
-                    />
-                  ) : s.type === "video" ? (
-                    <video
-                      ref={i === current ? videoRef : undefined}
-                      className={`about-media h-full w-full object-cover transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
-                      src={s.src}
-                      muted
-                      controls
-                      playsInline
-                      autoPlay
-                      loop
+                      className="absolute inset-0 h-full w-full object-cover"
                     />
                   ) : s.type === "youtube" ? (
                     <iframe
-                      className={`h-full w-full transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}
+                      className="h-full w-full"
                       src={getYouTubeEmbedUrl(s.src)}
                       title={s.alt || "YouTube video"}
                       frameBorder="0"
@@ -188,16 +269,8 @@ function Carousel() {
                       allowFullScreen
                     />
                   ) : (
-                    <div className={`h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center transition-opacity duration-300 ${i === current ? "opacity-100" : "opacity-20"}`}>
-                      <div className="text-center text-white">
-                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
-                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                          </svg>
-                        </div>
-                        <p className="text-lg font-medium">Video Coming Soon</p>
-                        <p className="text-sm text-white/70 mt-2">Will be updated with YouTube embed</p>
-                      </div>
+                    <div className="flex h-full w-full items-center justify-center bg-black/20">
+                      <p className="text-black/60">Media</p>
                     </div>
                   )}
                 </div>
@@ -205,59 +278,60 @@ function Carousel() {
             </div>
           </div>
 
-          <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 transform flex gap-2">
+          {/* Nav buttons — bottom-right of the primary image */}
+          <div className="absolute bottom-3 right-3 z-10 flex gap-2">
             <button
               onClick={() => go(-1)}
-              className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white ring-1 ring-white/10 hover:bg-black/80"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/80 text-white backdrop-blur-sm transition-all hover:bg-black"
+              style={{ opacity: realIndex === 0 ? 0.35 : 1 }}
               aria-label="Previous"
             >
-              ‹
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
             </button>
             <button
               onClick={() => go(1)}
-              className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white ring-1 ring-white/10 hover:bg-black/80"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/80 text-white backdrop-blur-sm transition-all hover:bg-black"
               aria-label="Next"
             >
-              ›
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
             </button>
           </div>
         </div>
-      </div>
 
-      <div data-reveal className="hidden md:block">
-        <div data-parallax data-speed="0.22" className="relative overflow-hidden rounded-2xl ring-1 ring-black/10 bg-black/[0.04] mt-8 h-[500px] md:h-[580px] lg:h-[660px]">
+        {/* Preview of next slide */}
+        <div className="hidden aspect-square overflow-hidden rounded-2xl md:block">
           {(() => {
             const s = slides[nextIndex];
             return s.type === "image" ? (
               <img
                 src={s.src}
                 alt={s.alt || ""}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
+                className={`h-full w-full object-cover transition-opacity duration-500 ${
+                  isAnimating ? "opacity-0" : "opacity-40"
+                }`}
               />
-            ) : s.type === "video" ? (
-              <video
-                className={`about-media h-full w-full object-cover transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}
-                src={s.src}
-                muted
-                playsInline
-                loop
-                // no controls on preview
+            ) : s.type === "youtube" ? (
+              <iframe
+                className={`h-full w-full transition-opacity duration-500 ${
+                  isAnimating ? "opacity-0" : "opacity-40"
+                }`}
+                src={getYouTubeEmbedUrl(s.src)}
+                title={s.alt || "YouTube video"}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
               />
             ) : (
-              <div className={`h-full w-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-20"}`}>
-                <div className="text-center text-white/60">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-white/5 flex items-center justify-center">
-                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  </div>
-                  <p className="text-sm">Preview</p>
-                </div>
-              </div>
+              <div className="h-full w-full rounded-2xl bg-black/10" />
             );
           })()}
         </div>
       </div>
+
     </div>
   );
 }

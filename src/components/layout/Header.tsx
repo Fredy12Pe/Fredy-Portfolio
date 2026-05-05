@@ -9,6 +9,9 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isCircleHovered, setIsCircleHovered] = useState(false);
+  const [isMobileThemePink, setIsMobileThemePink] = useState(false);
+  const [isContactHovered, setIsContactHovered] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -31,12 +34,45 @@ export default function Header() {
     return () => document.removeEventListener("click", handler);
   }, [isMobileMenuOpen]);
 
-  const navTextColor = scrolled ? "text-white" : "text-black";
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false);
+        setIsMobileThemePink(false);
+      }
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = overflow;
+    };
+  }, [isMobileMenuOpen]);
+
+  const heroIsPink = isCircleHovered || isMobileThemePink;
+  const navIsLight = scrolled || heroIsPink;
+  const navTextColor = navIsLight ? "text-white" : "text-black";
   const linkBase =
     "relative font-poppins font-medium transition-colors duration-200 " +
     "after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 " +
     "after:content-[''] after:transition-all after:duration-300 hover:after:w-full";
-  const linkColor = scrolled
+  const linkColor = navIsLight
     ? "text-white/90 hover:text-white after:bg-white"
     : "text-black/90 hover:text-black after:bg-black";
 
@@ -74,8 +110,12 @@ export default function Header() {
                   <a href="#contact" className={`${linkBase} ${linkColor} text-base md:text-lg`}>Contact</a>
                   <a
                     href="#contact"
-                    className="inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-2.5 font-poppins text-sm font-semibold uppercase tracking-[0.12em] text-white transition-opacity hover:opacity-90"
-                    style={{ backgroundColor: PINK }}
+                    className="inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-2.5 font-poppins text-sm font-semibold uppercase tracking-[0.12em] transition-opacity hover:opacity-90"
+                    style={{
+                      backgroundColor: isCircleHovered ? "white" : PINK,
+                      color: isCircleHovered ? PINK : "white",
+                      transition: "background-color 0.4s ease, color 0.4s ease",
+                    }}
                   >
                     Leave a message
                   </a>
@@ -86,10 +126,12 @@ export default function Header() {
               <button
                 type="button"
                 className={`p-2 transition-colors md:hidden ${
-                  isMobileMenuOpen || scrolled ? "text-white" : "text-black"
+                  isMobileMenuOpen || navIsLight ? "text-white" : "text-black"
                 }`}
                 onClick={() => setIsMobileMenuOpen((v) => !v)}
                 aria-label="Toggle menu"
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-menu"
               >
                 {isMobileMenuOpen ? (
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -108,7 +150,10 @@ export default function Header() {
 
       {/* Mobile full-screen menu */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-10 bg-black/95 backdrop-blur-sm md:hidden">
+        <div
+          id="mobile-menu"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-10 bg-black/95 backdrop-blur-sm md:hidden"
+        >
           <button
             type="button"
             className="absolute right-6 top-6 p-2 text-white"
@@ -137,7 +182,11 @@ export default function Header() {
       <header
         id="site-header"
         className="relative w-full overflow-hidden rounded-b-[clamp(2.5rem,8vw,4.75rem)]"
-        style={{ height: "100svh", background: CREAM }}
+        style={{
+          height: "100svh",
+          background: heroIsPink ? PINK : CREAM,
+          transition: "background 0.4s ease",
+        }}
       >
         {/* ── Desktop: art stays 50vw; text column capped so block centers + shorter intro measure ── */}
         <div className="absolute inset-0 hidden min-h-0 md:flex md:items-stretch md:justify-center">
@@ -155,7 +204,16 @@ export default function Header() {
                 }}
               >
                 <div
-                  className="pointer-events-auto relative h-full w-full origin-center transition-[transform,filter] duration-300 ease-out hover:scale-[1.06] hover:drop-shadow-[0_0_40px_rgba(248,61,124,0.55)]"
+                  className="pointer-events-auto relative h-full w-full origin-center"
+                  style={{
+                    transform: heroIsPink ? "scale(1.06)" : "scale(1)",
+                    filter: heroIsPink
+                      ? "brightness(0) invert(1) drop-shadow(0 0 40px rgba(255,255,255,0.6))"
+                      : "none",
+                    transition: "transform 0.3s ease-out, filter 0.4s ease",
+                  }}
+                  onMouseEnter={() => setIsCircleHovered(true)}
+                  onMouseLeave={() => setIsCircleHovered(false)}
                 >
                   <Image src="/images/hero/Circle-BG.svg" alt="" fill className="object-contain" sizes="35vw" priority />
                 </div>
@@ -181,27 +239,43 @@ export default function Header() {
               <h1
                 className="font-bebas uppercase leading-[0.88] tracking-[0.02em]"
                 style={{
-                  color: PINK,
+                  color: heroIsPink ? "white" : PINK,
                   fontSize: "clamp(6.25rem, 9vw, 14rem)",
                   fontWeight: 900,
-                  WebkitTextStroke: `2.75px ${PINK}`,
+                  WebkitTextStroke: heroIsPink ? "2.75px white" : `2.75px ${PINK}`,
                   paintOrder: "stroke fill",
+                  transition: "color 0.4s ease, -webkit-text-stroke-color 0.4s ease",
                 }}
               >
                 Hi, I&apos;m
                 <br />
                 Fredy
               </h1>
-              <p className="mt-5 font-poppins text-xl font-bold uppercase tracking-[0.14em] text-black md:text-2xl">
+              <p
+                className="mt-5 font-poppins text-xl font-bold uppercase tracking-[0.14em] md:text-2xl"
+                style={{ color: heroIsPink ? "white" : "black", transition: "color 0.4s ease" }}
+              >
                 Designer &amp; Developer
               </p>
-              <p className="mt-5 max-w-md font-poppins text-lg leading-relaxed text-black md:text-xl">
-                I design and build digital experiences that are useful, interactive, and memorable.
+              <p
+                className="mt-5 font-poppins text-lg md:text-xl"
+                style={{ color: heroIsPink ? "rgba(255,255,255,0.85)" : "black", transition: "color 0.4s ease", lineHeight: 1.75 }}
+              >
+                I mix design, code, and interaction<br />
+                to build things that feel different<br />
+                and drive results.
               </p>
               <a
                 href="#contact"
-                className="mt-20 inline-flex w-fit items-center justify-center rounded-xl border-2 border-solid bg-transparent px-10 py-4 font-poppins text-base font-semibold uppercase tracking-[0.12em] text-[#F83D7C] transition-colors duration-200 hover:bg-[#F83D7C] hover:text-white md:text-lg"
-                style={{ borderColor: PINK }}
+                className="mt-20 inline-flex w-fit items-center justify-center rounded-xl border-2 border-solid px-10 py-4 font-poppins text-base font-semibold uppercase tracking-[0.12em] md:text-lg"
+                style={{
+                  backgroundColor: isContactHovered ? (heroIsPink ? "white" : PINK) : "transparent",
+                  color: isContactHovered ? (heroIsPink ? PINK : "white") : (heroIsPink ? "white" : PINK),
+                  borderColor: heroIsPink ? "white" : PINK,
+                  transition: "color 0.4s ease, border-color 0.4s ease, background-color 0.25s ease",
+                }}
+                onMouseEnter={() => setIsContactHovered(true)}
+                onMouseLeave={() => setIsContactHovered(false)}
               >
                 Get in contact
               </a>
@@ -210,41 +284,91 @@ export default function Header() {
         </div>
 
         {/* ── Mobile: stacked layout ── */}
-        <div className="flex h-full flex-col px-6 pt-24 md:hidden">
+        <div className="flex h-full flex-col px-6 pt-28 md:hidden">
           <div className="flex flex-col justify-center">
             <h1
               className="font-bebas uppercase leading-[0.88] tracking-[0.02em]"
               style={{
-                color: PINK,
-                fontSize: "clamp(4.5rem, 18vw, 7.25rem)",
+                color: heroIsPink ? "white" : PINK,
+                fontSize: "clamp(4.2rem, 17.5vw, 6.8rem)",
                 fontWeight: 900,
-                WebkitTextStroke: `2px ${PINK}`,
+                WebkitTextStroke: heroIsPink ? "2px white" : `2px ${PINK}`,
                 paintOrder: "stroke fill",
+                transition: "color 0.4s ease, -webkit-text-stroke-color 0.4s ease",
               }}
             >
               Hi, I&apos;m<br />Fredy
             </h1>
-            <p className="mt-4 font-poppins text-lg font-bold uppercase tracking-[0.14em] text-black">
+            <p
+              className="mt-2 font-poppins text-base font-bold uppercase tracking-[0.14em]"
+              style={{ color: heroIsPink ? "white" : "black", transition: "color 0.4s ease" }}
+            >
               Designer &amp; Developer
             </p>
-            <p className="mt-4 font-poppins text-base leading-relaxed text-black">
-              I design and build digital experiences that are useful, interactive, and memorable.
-            </p>
-            <a
-              href="#contact"
-              className="mt-6 inline-flex w-fit items-center justify-center rounded-xl border-2 border-solid bg-transparent px-8 py-3.5 font-poppins text-sm font-semibold uppercase tracking-[0.12em] text-[#F83D7C] transition-colors duration-200 hover:bg-[#F83D7C] hover:text-white"
-              style={{ borderColor: PINK }}
+            <p
+              className="mt-2 max-w-[31ch] font-poppins text-[0.95rem]"
+              style={{ color: heroIsPink ? "rgba(255,255,255,0.85)" : "black", transition: "color 0.4s ease", lineHeight: 1.65 }}
             >
-              Get in contact
-            </a>
+              I mix design, code, and interaction<br />
+              to build things that feel different<br />
+              and drive results.
+            </p>
+            <div className="mt-5 flex items-center gap-3">
+              <a
+                href="#contact"
+                className="inline-flex w-fit items-center justify-center rounded-xl border-2 border-solid px-8 py-3.5 font-poppins text-sm font-semibold uppercase tracking-[0.12em]"
+                style={{
+                  backgroundColor: isContactHovered ? (heroIsPink ? "white" : PINK) : "transparent",
+                  color: isContactHovered ? (heroIsPink ? PINK : "white") : (heroIsPink ? "white" : PINK),
+                  borderColor: heroIsPink ? "white" : PINK,
+                  transition: "color 0.4s ease, border-color 0.4s ease, background-color 0.25s ease",
+                }}
+                onMouseEnter={() => setIsContactHovered(true)}
+                onMouseLeave={() => setIsContactHovered(false)}
+              >
+                Get in contact
+              </a>
+              <button
+                type="button"
+                aria-label={isMobileThemePink ? "Switch to light theme" : "Switch to pink theme"}
+                aria-pressed={isMobileThemePink}
+                className="inline-flex h-[3.2rem] w-[3.2rem] items-center justify-center rounded-xl border-2 border-solid transition-colors"
+                style={{
+                  borderColor: heroIsPink ? "white" : PINK,
+                  backgroundColor: heroIsPink ? "white" : PINK,
+                  color: heroIsPink ? PINK : "white",
+                }}
+                onClick={() => setIsMobileThemePink((v) => !v)}
+              >
+                {isMobileThemePink ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 12.8A9 9 0 1 1 11.2 3a7.1 7.1 0 0 0 9.8 9.8Z" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="4.5" />
+                    <path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
           {/* Mobile portrait */}
-          <div className="relative mt-6 flex flex-1 items-end justify-center">
+          <div className="relative mt-1 flex flex-1 items-end justify-center">
             <div
               className="pointer-events-none absolute left-1/2 -translate-x-1/2"
-              style={{ bottom: 0, width: "67%", aspectRatio: "1" }}
+              style={{ bottom: "-22%", width: "140%", aspectRatio: "1" }}
             >
-              <div className="pointer-events-auto relative h-full w-full origin-center transition-[transform,filter] duration-300 ease-out hover:scale-[1.06] hover:drop-shadow-[0_0_40px_rgba(248,61,124,0.55)]">
+              <div
+                className="relative h-full w-full origin-center"
+                style={{
+                  transform: heroIsPink ? "scale(1.06)" : "scale(1)",
+                  filter: heroIsPink
+                    ? "brightness(0) invert(1) drop-shadow(0 0 40px rgba(255,255,255,0.6))"
+                    : "none",
+                  transition: "transform 0.3s ease-out, filter 0.4s ease",
+                }}
+              >
                 <Image src="/images/hero/Circle-BG.svg" alt="" fill className="object-contain object-bottom" sizes="65vw" priority />
               </div>
             </div>
@@ -253,7 +377,7 @@ export default function Header() {
               alt="Fredy Pedro"
               width={600}
               height={750}
-              className="pointer-events-none relative z-10 h-full w-auto object-contain object-bottom"
+              className="pointer-events-none relative z-10 h-full w-auto translate-y-[3%] object-contain object-bottom"
               priority
               sizes="100vw"
             />
