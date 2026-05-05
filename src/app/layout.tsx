@@ -28,16 +28,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
       >
         {children}
-        {/* Fixed sentinel: Safari 26 samples background-color of fixed elements ≥80% wide, ≥3px tall, within 3px of bottom */}
+        {/* Safari 26 URL-bar sentinel — full-width fixed element at bottom so it always qualifies for sampling */}
         <div
           aria-hidden="true"
           style={{
             position: "fixed",
             bottom: 0,
-            left: "10%",
-            width: "80%",
+            left: 0,
+            width: "100%",
             height: "3px",
-            backgroundColor: "#000000",
+            background: "linear-gradient(to bottom, transparent 0%, transparent 100%)",
             pointerEvents: "none",
             zIndex: 9999,
           }}
