@@ -104,8 +104,8 @@ export default function Header() {
 
               {/* Desktop links */}
               <div className="hidden items-center gap-8 lg:gap-10 md:flex">
-                <a href="#about"          className={`${linkBase} ${linkColor} text-base md:text-lg`}>About</a>
                 <a href="#projects"       className={`${linkBase} ${linkColor} text-base md:text-lg`}>Projects</a>
+                <a href="#about"          className={`${linkBase} ${linkColor} text-base md:text-lg`}>About</a>
                 <a href="#favorite-stack" className={`${linkBase} ${linkColor} text-base md:text-lg`}>Stack</a>
                 <div className="flex items-center gap-4 lg:gap-5">
                   <a href="#contact" className={`${linkBase} ${linkColor} text-base md:text-lg`}>Contact</a>
@@ -164,7 +164,7 @@ export default function Header() {
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
-          {[["#about","About"],["#projects","Projects"],["#favorite-stack","Stack"],["#contact","Contact"]].map(([href, label]) => (
+          {[["#projects","Projects"],["#about","About"],["#favorite-stack","Stack"],["#contact","Contact"]].map(([href, label]) => (
             <a key={href + label} href={href} className="font-poppins text-3xl font-medium text-white hover:text-white/80"
               onClick={() => setIsMobileMenuOpen(false)}>{label}</a>
           ))}
