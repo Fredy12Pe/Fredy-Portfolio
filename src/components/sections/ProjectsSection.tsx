@@ -519,7 +519,7 @@ export default function ProjectsSection() {
         ref={musicRef}
         src={current.musicSrc}
         loop
-        preload="auto"
+        preload="metadata"
         playsInline
         aria-hidden
       />
@@ -533,7 +533,7 @@ export default function ProjectsSection() {
       <audio
         ref={cassetteFxBRef}
         src={CASSETTE_LATCH_WAV}
-        preload="auto"
+        preload="none"
         playsInline
         aria-hidden
       />
