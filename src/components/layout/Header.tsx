@@ -364,7 +364,7 @@ export default function Header() {
           <div className="relative mt-1 flex flex-1 items-end justify-center">
             <div
               className="pointer-events-none absolute left-1/2 -translate-x-1/2"
-              style={{ bottom: "-52%", width: "130%", aspectRatio: "1" }}
+              style={{ bottom: "-52%", width: "115%", aspectRatio: "1" }}
             >
               <div
                 className="relative h-full w-full origin-center"
@@ -384,7 +384,7 @@ export default function Header() {
               alt="Fredy Pedro"
               width={600}
               height={750}
-              className="pointer-events-none relative z-10 h-auto max-h-full w-auto max-w-[88%] translate-y-[12%] object-contain object-bottom"
+              className="pointer-events-none relative z-10 h-auto max-h-full w-auto max-w-[76%] translate-y-[12%] object-contain object-bottom"
               priority
               sizes="80vw"
             />
