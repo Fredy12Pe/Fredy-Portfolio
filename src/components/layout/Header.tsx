@@ -109,7 +109,7 @@ export default function Header() {
                 <a href="#favorite-stack" className={`${linkBase} ${linkColor} text-base md:text-lg`}>Stack</a>
                 <div className="flex items-center gap-4 lg:gap-5">
                   <a href="#contact" className={`${linkBase} ${linkColor} text-base md:text-lg`}>Contact</a>
-                  <a
+                  {/* <a
                     href="#contact"
                     className="inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-2.5 font-poppins text-sm font-semibold uppercase tracking-[0.12em] transition-opacity hover:opacity-90"
                     style={{
@@ -119,7 +119,7 @@ export default function Header() {
                     }}
                   >
                     Leave a message
-                  </a>
+                  </a> */}
                 </div>
               </div>
 
