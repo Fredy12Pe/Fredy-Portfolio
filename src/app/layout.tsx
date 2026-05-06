@@ -28,6 +28,20 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
       >
         {children}
+        {/* Top sentinel — Safari 26 samples this to color the status bar (time/battery area) */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "3px",
+            backgroundColor: "#FFF4D5",
+            pointerEvents: "none",
+            zIndex: 9999,
+          }}
+        />
         {/* Safari 26 URL-bar sentinel — full-width fixed element at bottom so it always qualifies for sampling */}
         <div
           aria-hidden="true"
