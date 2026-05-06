@@ -291,7 +291,7 @@ export default function Header() {
         </div>
 
         {/* ── Mobile: stacked layout ── */}
-        <div className="flex h-full flex-col px-6 pt-28 md:hidden">
+        <div className="flex h-full flex-col px-6 pt-24 md:hidden">
           <div className="relative z-20 flex flex-col justify-center">
             <h1
               className="font-bebas uppercase leading-[0.88] tracking-[0.06em]"
@@ -364,7 +364,7 @@ export default function Header() {
           <div className="relative mt-1 flex flex-1 items-end justify-center">
             <div
               className="pointer-events-none absolute left-1/2 -translate-x-1/2"
-              style={{ bottom: "-60%", width: "130%", aspectRatio: "1" }}
+              style={{ bottom: "-56%", width: "130%", aspectRatio: "1" }}
             >
               <div
                 className="relative h-full w-full origin-center"
