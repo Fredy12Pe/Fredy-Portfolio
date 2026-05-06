@@ -1,11 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const PINK = "#F83D7C";
 const CREAM = "#FFF4D5";
 
 export default function Header() {
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -98,9 +101,19 @@ export default function Header() {
             }}
           >
             <div className="flex items-center justify-between">
-              <span className={`font-poppins text-sm font-bold uppercase tracking-[0.2em] transition-colors md:text-base ${navTextColor}`}>
+              <Link
+                href="/"
+                className={`font-poppins text-sm font-bold uppercase tracking-[0.2em] transition-colors md:text-base ${navTextColor} hover:opacity-90`}
+                onClick={(e) => {
+                  setIsMobileMenuOpen(false);
+                  if (pathname === "/") {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
+              >
                 FREDY DESIGN
-              </span>
+              </Link>
 
               {/* Desktop links */}
               <div className="hidden items-center gap-8 lg:gap-10 md:flex">
