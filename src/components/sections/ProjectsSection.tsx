@@ -365,6 +365,7 @@ export default function ProjectsSection() {
   const lastCassetteFxAtRef = useRef(0);
 
   const triggerCassetteFx = useCallback(() => {
+    if (mutedRef.current) return;
     const now = performance.now();
     if (now - lastCassetteFxAtRef.current < CASSETTE_FX_DEBOUNCE_MS) return;
     lastCassetteFxAtRef.current = now;
