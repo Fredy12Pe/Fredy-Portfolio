@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { useRef } from "react";
 import { IconShoppingCart, IconUsers, IconSearch } from "@tabler/icons-react";
 import ProjectNav from "@/components/layout/ProjectNav";
+import OtherProjects from "@/components/sections/OtherProjects";
 
 const DotGrid = dynamic(() => import("../selah-reflect/DotGrid"), { ssr: false });
 
@@ -457,6 +458,8 @@ export default function EcommerceCaseStudyPage() {
             </div>
           </div>
         </Section>
+
+        <OtherProjects currentProject="ecommerce" />
 
         <footer className="py-12 bg-black text-zinc-200">
           <Container>

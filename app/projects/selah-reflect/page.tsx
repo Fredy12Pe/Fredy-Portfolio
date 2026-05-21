@@ -7,6 +7,7 @@ import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import Image, { type StaticImageData } from "next/image";
 import dynamic from "next/dynamic";
 import ProjectNav from "@/components/layout/ProjectNav";
+import OtherProjects from "@/components/sections/OtherProjects";
 import heroImg from "./images/headerImg.png";
 import imgDevotionalHub from "./images/DevotionalHub.png";
 import imgHymn from "./images/Hymn.png";
@@ -800,6 +801,8 @@ export default function SelahCaseStudyPage() {
           </div>
         </div>
       </Section>
+
+      <OtherProjects currentProject="selah" />
 
       <footer className="py-12 bg-black text-zinc-200">
         <Container>

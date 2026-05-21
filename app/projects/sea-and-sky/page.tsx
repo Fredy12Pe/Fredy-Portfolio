@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { useRef } from "react";
 import { IconUsers, IconFileCertificate, IconVideo } from "@tabler/icons-react";
 import ProjectNav from "@/components/layout/ProjectNav";
+import OtherProjects from "@/components/sections/OtherProjects";
 
 const DotGrid = dynamic(() => import("../selah-reflect/DotGrid"), { ssr: false });
 import heroImg from "./images/Project images/Header.png";
@@ -545,6 +546,8 @@ export default function SeaSkyCaseStudyPage() {
           </div>
         </div>
       </Section>
+
+      <OtherProjects currentProject="sea-sky" />
 
       <footer className="py-12 bg-black text-zinc-200">
         <Container>

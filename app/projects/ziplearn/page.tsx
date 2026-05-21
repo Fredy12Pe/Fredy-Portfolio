@@ -6,6 +6,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { CardSpotlight } from "../../../components/ui/card-spotlight";
 import ProjectNav from "@/components/layout/ProjectNav";
+import OtherProjects from "@/components/sections/OtherProjects";
 import heroRef from "./images/Header img.png";
 import processRef from "./images/02.png";
 import midFidelity from "./images/Mid-fi mockups.png";
@@ -445,6 +446,12 @@ export default function ZipLearnCaseStudyPage() {
           <li>Focus order structured for fast navigation through booking flow.</li>
         </ul>
       </Section>
+      <OtherProjects currentProject="ziplearn" />
+      <footer className="py-12 bg-black text-zinc-200">
+        <Container>
+          <p className="text-center text-xs">© {new Date().getFullYear()} ZipLearn · Case Study</p>
+        </Container>
+      </footer>
       </main>
     </div>
   );

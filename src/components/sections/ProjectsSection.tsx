@@ -124,14 +124,13 @@ const PROJECTS: Project[] = [
     category: "HABIT TRACKER APP",
     description:
       "Grow your habits into something you can see. A gamified habit tracker that turns daily routines into a growing, peaceful garden.",
-    comingSoon: true,
     cassette:
       "/images/projects-section/cassettes/grove-Cassette-1.png",
     miniCassette:
       "/images/projects-section/miniCassettes/mini-grove-Cassette-1.png",
     caseStudy:
       "/images/projects-section/caseStudies/case-Studies/Grove-caseStudy.png",
-    href: "/#contact",
+    href: "/projects/grove",
     musicSrc: MUSIC.grove,
   },
   {
@@ -913,7 +912,7 @@ export default function ProjectsSection() {
                     </div>
                   ) : (
                     <Link className={styles.viewLink} href={current.href}>
-                      View project<span aria-hidden> →</span>
+                      View Project<span aria-hidden> →</span>
                     </Link>
                   )}
                 </div>

@@ -20,7 +20,7 @@
 
 .linesDecor {
   position: absolute;
-  top: clamp(7rem, 18vh, 14rem);
+  top: clamp(9rem, 22vh, 16rem);
   right: 0;
   width: clamp(515px, 70vw, 930px);
   height: auto;

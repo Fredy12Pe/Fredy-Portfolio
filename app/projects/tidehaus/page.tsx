@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import { IconShoppingCart, IconPalette, IconCode, IconRocket } from "@tabler/icons-react";
 import ProjectNav from "@/components/layout/ProjectNav";
+import OtherProjects from "@/components/sections/OtherProjects";
 
 const DotGrid = dynamic(() => import("../selah-reflect/DotGrid"), { ssr: false });
 
@@ -646,6 +647,8 @@ export default function TidehausCaseStudyPage() {
           </div>
         </Section>
 
+
+        <OtherProjects currentProject="tidehaus" theme="dark" />
 
         <footer className="py-12 bg-black text-zinc-200">
           <Container>
