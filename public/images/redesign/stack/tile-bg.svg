@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="139" height="139" viewBox="0 0 139 139" fill="none" preserveAspectRatio="none">
+  <defs>
+    <filter id="tileGlow" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feMorphology radius="10" operator="erode" in="SourceAlpha" result="effect1_innerShadow"/>
+      <feOffset/>
+      <feGaussianBlur stdDeviation="30"/>
+      <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.262745 0 0 0 0 0.501961 0 0 0 0 1 0 0 0 0.2 0"/>
+      <feBlend mode="normal" in2="shape" result="effect1_innerShadow"/>
+    </filter>
+    <linearGradient id="tileStroke" x1="69.5" y1="0" x2="69.5" y2="139" gradientUnits="userSpaceOnUse">
+      <stop offset="0.481576" stop-color="#A259FF"/>
+      <stop offset="0.846763" stop-color="#0ACF83"/>
+      <stop offset="1" stop-color="#1ABCFE"/>
+    </linearGradient>
+  </defs>
+  <!-- Fill + glow only — filter must not wrap the stroke or edges get clipped -->
+  <rect width="139" height="139" rx="20" ry="20" fill="#121212" filter="url(#tileGlow)"/>
+  <!-- Stroke fully inset (inside align) so overflow/viewBox never cuts it off -->
+  <rect
+    x="1"
+    y="1"
+    width="137"
+    height="137"
+    rx="19"
+    ry="19"
+    stroke="url(#tileStroke)"
+    stroke-opacity="0.4"
+    stroke-width="1"
+    fill="none"
+  />
+</svg>

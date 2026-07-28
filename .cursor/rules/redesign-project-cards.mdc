@@ -1,0 +1,66 @@
+---
+description: Conventions for animated redesign project cards (Grove as reference)
+globs: app/redesign/**
+alwaysApply: false
+---
+
+# Redesign project cards
+
+Use `GroveCard` + `.grove*` styles as the reference when building or updating project cards.
+
+## Project-specific data
+
+Update title, tagline, brandColor, href, and cardImage **only** in [`app/redesign/projects.ts`](app/redesign/projects.ts). Do not hardcode those fields in card components.
+
+Pass brand via CSS var `--card-brand` on the card root. Layout positions stay in `redesign.module.css` (map `id → styles.*` in the board).
+
+## Shared typography (must match across cards)
+
+| Role | Size | Weight | Line-height | Opacity |
+|------|------|--------|-------------|---------|
+| Title | `clamp(0.875rem, 1.3vw, 1.375rem)` | 700 | 1.2 | 100% |
+| Tagline | `clamp(0.75rem, 1.05vw, 1.125rem)` | 500 | 1.25 | 60% |
+
+- Tagline is always smaller than title; use `text-transform: capitalize`.
+- Across the redesign: headers/titles at `opacity: 1`, description/tagline copy at `opacity: 0.6` idle — full opacity on card hover / focus-visible.
+- Text block: absolute inset from design px ÷ card size; column with `justify-content: space-between`.
+
+## Hover interaction
+
+- Idle background: `#F2F2F2`
+- Hover / focus-visible background: `var(--card-brand-hover, var(--card-brand))` (solid or gradient via optional `brandHover` in `projects.ts`)
+- Idle text: `var(--card-brand)`; hover / focus-visible text: `#fff`
+- Transition background/color ~`320ms ease` (use opacity crossfade when hover bg is a gradient)
+- Start layer motion on card hover/focus only (`onPointerEnter` / `Leave`, `onFocus` / `Blur`)
+- Honor `useReducedMotion()`: skip layer motion
+- **Mobile (≤900px):** no hover affordance — use `useCardHover()` from `useCardHover.ts` so layer motion stays at the end pose; CSS in the stacked-layout media query mirrors hover colors/opacity
+
+## Layer geometry (porting from Figma)
+
+- **Prefer Figma "copy as code" absolute geometry** over deriving placement from nested wrappers/masks: one box in card coordinates (`left/top/width/height` from the design px ÷ card size) is simpler and far less fragile.
+- Rotated layers: keep Figma's `transform-origin` (usually `top left` in copy-as-code output) — re-deriving a center-origin equivalent invites drift.
+- Never put CSS `rotate` on a framer-motion element: motion overwrites `transform`. Motion wrapper = unrotated box (translate only); rotation goes on an inner element.
+- Ignore Figma mask rectangles when the card's own `overflow: hidden` + `border-radius` already does the clipping (copy-as-code renders masks as grey `#D9D9D9` placeholder rects — don't implement those).
+
+## Sizing chip/badge contents (container queries)
+
+- `container-type` must go on the **parent frame**, not the element being sized: cq units (`cqw`/`cqh`) resolve against the nearest *ancestor* container. An element can't be its own container — without an ancestor container, cq units silently fall back to viewport units and blow up padding/font (symptom: giant empty pill, text clipped by `overflow: hidden`).
+- Compute cq values as design px ÷ container frame size, and note the math in a comment (e.g. `11.11cqw /* 20 ÷ 180 */`).
+- `container-type: size` doesn't clip — children can still animate outside the frame.
+
+## Motion
+
+- One-shot only — never `repeat: Infinity`
+- Shared hover spring across cards: `{ type: "spring", duration: 0.4, bounce: 0.28 }`; leave uses `{ type: "spring", duration: 0.28, bounce: 0 }`
+- Animate to end pose values (not keyframe arrays); use `delay` for stagger between layers
+- Prefer motion offsets as `%` of the layer’s own size when layout is `%`-based (fixed px breaks when the card scales)
+- Rest = Figma t=0; hold end pose while hovered — rest position is the node's static frame position
+
+## Image assets
+
+- **Never remove backgrounds or post-process exported images** (no flood-fill, color-keying, or alpha edits). The Figma assets are already prepped for export with transparent backgrounds — use them as-is (downscaling for file size is OK).
+- If a node export comes back with the card background baked in (opaque alpha), don't "fix" it in post — download the node's **raw source images** instead (`download_assets` → `rawImages`); those are the prepped transparent assets.
+- Do not crop: `object-contain` on layered PNGs (not `object-cover`)
+- Prefer `fill` + percentage bounds from Figma
+- Transparent Figma exports: `unoptimized` + cache-bust `?v=` when re-exporting
+- Rotated nested assets: overflow visible on the motion wrapper; rotate an inner element if the export is unrotated

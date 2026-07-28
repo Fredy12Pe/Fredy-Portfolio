@@ -16,11 +16,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Preload critical fonts */}
         <link
           rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@500;700&family=Poppins:wght@400;500;600;700;800;900&display=swap"
           as="style"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@500;700&family=Poppins:wght@400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
         

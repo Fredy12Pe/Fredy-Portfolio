@@ -1,0 +1,3753 @@
+/* Figma Portfolio-2 (51:648) — 1920×2099 artboard, scaled via container queries */
+
+.page {
+  --page-bg: #fff;
+  --card-idle-bg: #f2f2f2;
+  /* Chips/badges on glass cards — darker than glass so pure white doesn't vanish */
+  --card-fg-surface: #e4e4e4;
+  --card-fg-surface-mid: #ebebeb;
+  --card-fg-surface-soft: #f0f0f0;
+  --theme-toggle-track: #e8e8e8;
+  --theme-toggle-thumb: #fff;
+  --theme-toggle-icon: #1a1a1a;
+  --intro-text: #000;
+  --intro-text-muted: rgba(0, 0, 0, 0.6);
+  --text-header-opacity: 1;
+  --text-desc-opacity: 0.6;
+  --menu-bar-bg: rgba(255, 255, 255, 0.94);
+  --menu-surface: rgba(246, 248, 250, 0.95);
+  --menu-active: #ffffff;
+  --menu-text: #141414;
+  --menu-muted: #4a4a4a;
+  --menu-glass-border: rgba(0, 0, 0, 0.1);
+  --menu-glass-highlight: rgba(255, 255, 255, 0.95);
+  --menu-glass-shadow: rgba(15, 20, 28, 0.28);
+  /* Glass project cards — frosts the low-opacity atmosphere wash */
+  --atmosphere-opacity: 0.16;
+  --glass-bg: rgba(255, 255, 255, 0.68);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-highlight: rgba(255, 255, 255, 0.88);
+  --glass-shadow: rgba(31, 38, 46, 0.1);
+  --glass-blur: 20px;
+
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: var(--page-bg);
+  padding: clamp(0.2rem, 0.5vw, 0.4rem) clamp(0.75rem, 3vw, 1.5rem) 6rem;
+  transition: background-color 320ms ease;
+  isolation: isolate;
+}
+
+.page[data-theme="dark"] {
+  --page-bg: #292929;
+  --card-idle-bg: #0b0b0b;
+  /* Keep chips light so black label text stays readable on dark glass */
+  --card-fg-surface: #e8e8e8;
+  --card-fg-surface-mid: #e0e0e0;
+  --card-fg-surface-soft: #d6d6d6;
+  --theme-toggle-track: #1a1a1a;
+  --theme-toggle-thumb: #3a3a3a;
+  --theme-toggle-icon: #f2f2f2;
+  --intro-text: #fff;
+  --intro-text-muted: rgba(255, 255, 255, 0.6);
+  --menu-bar-bg: rgba(28, 29, 32, 0.94);
+  --menu-surface: rgba(36, 37, 40, 0.95);
+  --menu-active: rgba(88, 90, 96, 0.95);
+  --menu-text: #f7f7f7;
+  --menu-muted: #c8c8c8;
+  --menu-glass-border: rgba(255, 255, 255, 0.28);
+  --menu-glass-highlight: rgba(255, 255, 255, 0.22);
+  --menu-glass-shadow: rgba(0, 0, 0, 0.55);
+  --atmosphere-opacity: 0.2;
+  --glass-bg: rgba(20, 20, 22, 0.68);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.12);
+  --glass-shadow: rgba(0, 0, 0, 0.4);
+}
+
+.page[data-theme="dark"] :is(
+  .groveTitle,
+  .groveTagline,
+  .samplesTitle,
+  .samplesTagline,
+  .seaSkyTitle,
+  .seaSkyTagline,
+  .selahTitle,
+  .selahTagline,
+  .ziplearnTitle,
+  .ziplearnTagline,
+  .tidehausTitle,
+  .tidehausTagline
+) {
+  color: #fff;
+}
+
+/* Headers at full opacity; description / tagline copy at 60% */
+.page :is(
+  .groveTitle,
+  .samplesTitle,
+  .seaSkyTitle,
+  .selahTitle,
+  .ziplearnTitle,
+  .tidehausTitle,
+  .favoriteStackTitle,
+  .favoriteStackToolName,
+  .aboutBioHeading,
+  .aboutActivitiesTitle,
+  .aboutSkillsTitle,
+  .introLocationTitle,
+  .aboutDuoCount,
+  .aboutDuoLangTitle
+) {
+  opacity: var(--text-header-opacity);
+}
+
+.page :is(
+  .groveTagline,
+  .samplesTagline,
+  .seaSkyTagline,
+  .selahTagline,
+  .ziplearnTagline,
+  .tidehausTagline,
+  .favoriteStackToolDesc,
+  .aboutBioCopy p,
+  .aboutActivitiesBody,
+  .aboutDuoLabel,
+  .introLocationSub
+) {
+  opacity: var(--text-desc-opacity);
+  transition: opacity 320ms ease, color 320ms ease;
+}
+
+/* Descriptions go full opacity on card hover / focus */
+.page :is(
+  a.grove:hover .groveTagline,
+  a.grove:focus-visible .groveTagline,
+  a.samples:hover .samplesTagline,
+  a.samples:focus-visible .samplesTagline,
+  a.seaSky:hover .seaSkyTagline,
+  a.seaSky:focus-visible .seaSkyTagline,
+  a.selah:hover .selahTagline,
+  a.selah:focus-visible .selahTagline,
+  a.ziplearn:hover .ziplearnTagline,
+  a.ziplearn:focus-visible .ziplearnTagline,
+  a.tidehaus:hover .tidehausTagline,
+  a.tidehaus:focus-visible .tidehausTagline,
+  .aboutBio:hover .aboutBioCopy p,
+  .aboutBio:focus-visible .aboutBioCopy p,
+  .aboutActivities:hover .aboutActivitiesBody,
+  .aboutActivities:focus-visible .aboutActivitiesBody,
+  .aboutDuo:hover .aboutDuoLabel,
+  .aboutDuo:focus-visible .aboutDuoLabel,
+  .intro:hover .introLocationSub,
+  .intro:focus-visible .introLocationSub,
+  .favoriteStack:hover .favoriteStackToolDesc,
+  .favoriteStack:focus-within .favoriteStackToolDesc
+) {
+  opacity: var(--text-header-opacity);
+}
+
+.pageContent {
+  --art-w: 1920;
+  --art-h: 2099;
+  /* No z-index — a stacking context here traps .breatheSpotlight (z:50)
+     under .breathingOverlay (sibling z:40) and kills the session UI. */
+  position: relative;
+  width: min(100%, 1620px);
+  margin: -1.25rem auto 0;
+}
+
+/* About Me — same max width as home; aspect ratio unchanged so cards don't squash */
+.pageContentCompact {
+  width: min(100%, 1620px);
+}
+
+.pageFade {
+  width: 100%;
+  opacity: 1;
+  transition: opacity 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pageFade[data-visible="false"] {
+  opacity: 0;
+}
+
+.pageFade[data-reduced="true"] {
+  transition: none;
+}
+
+/* Live status + socials — flush under the bento card edges (no bar) */
+.bentoFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  width: calc((1799 - 120) / var(--art-w) * 100%);
+  margin: clamp(0.65rem, 1.2vw, 1rem) 0 0;
+  margin-left: calc(120 / var(--art-w) * 100%);
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--intro-text);
+  font-family: "Poppins", sans-serif;
+  transition: opacity 320ms ease, visibility 320ms ease;
+}
+
+.bentoFooter[data-hidden="true"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.bentoFooterStatus {
+  margin: 0;
+  font-size: clamp(0.6875rem, 0.85vw, 0.8125rem);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  opacity: 0.55;
+}
+
+.bentoFooterLinks {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0;
+}
+
+.bentoFooterLinkItem {
+  display: inline-flex;
+  align-items: center;
+}
+
+.bentoFooterDivider {
+  width: 1px;
+  height: 0.85em;
+  margin: 0 0.65em;
+  background: currentColor;
+  opacity: 0.22;
+}
+
+.bentoFooterLink {
+  color: inherit;
+  font-size: clamp(0.6875rem, 0.85vw, 0.8125rem);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  opacity: 0.55;
+  transition: opacity 200ms ease;
+}
+
+.bentoFooterLink:hover,
+.bentoFooterLink:focus-visible {
+  opacity: 1;
+}
+
+.bentoFooterLink:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Flush with the right edge of the bento cards (samples/contact end at 1799 / 1920) */
+.themeToggle {
+  position: absolute;
+  top: calc(48 / var(--art-h) * 100%);
+  right: calc(121 / var(--art-w) * 100%);
+  z-index: 20;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.themeToggleTrack {
+  position: relative;
+  display: block;
+  width: 64px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--theme-toggle-track);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  transition: background-color 240ms ease;
+}
+
+.themeToggleThumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--theme-toggle-thumb);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  transition: transform 240ms ease, background-color 240ms ease;
+}
+
+.themeToggleThumb[data-active="dark"] {
+  transform: translateX(32px);
+}
+
+.themeToggleIcon {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  color: var(--theme-toggle-icon);
+  opacity: 0.45;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: opacity 240ms ease;
+}
+
+.themeToggleIcon[data-side="light"] {
+  left: 3px;
+}
+
+.themeToggleIcon[data-side="dark"] {
+  right: 3px;
+}
+
+.page[data-theme="light"] .themeToggleIcon[data-side="light"],
+.page[data-theme="dark"] .themeToggleIcon[data-side="dark"] {
+  opacity: 0.9;
+}
+
+.themeToggle:focus-visible .themeToggleTrack {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+/* Viewport scroll cue — sits on the bento’s right edge, near the bottom */
+.scrollHint {
+  position: fixed;
+  /* 1620px board → half = 810px; falls back to page padding when board is full-bleed */
+  right: max(
+    clamp(0.75rem, 3vw, 1.5rem),
+    calc(50vw - 810px + 0.5rem)
+  );
+  bottom: clamp(1rem, 2.5vw, 1.5rem);
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--intro-text);
+  opacity: 0.4;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: opacity 320ms ease, color 240ms ease;
+}
+
+.scrollHint[data-visible="false"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scrollHint:hover,
+.scrollHint:focus-visible {
+  opacity: 0.7;
+}
+
+.scrollHint:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+.scrollHintIcon {
+  display: block;
+  animation: scrollHintBounce 1.6s ease-in-out infinite;
+}
+
+.scrollHint[data-reduced="true"] .scrollHintIcon {
+  animation: none;
+}
+
+@keyframes scrollHintBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollHintIcon {
+    animation: none;
+  }
+}
+
+.overlayMenu {
+  position: fixed;
+  bottom: clamp(1rem, 3vw, 1.75rem);
+  left: 50%;
+  z-index: 30;
+  width: min(420px, calc(100vw - 2rem));
+  color: var(--menu-text);
+  font-family: "Poppins", sans-serif;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.overlayMenuBar {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  height: 63px;
+  padding: 5px;
+  border: 1px solid var(--menu-glass-border);
+  border-radius: 999px;
+  background: var(--menu-bar-bg);
+  box-shadow:
+    inset 0 1px 0 var(--menu-glass-highlight),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+    0 1px 2px rgba(15, 20, 28, 0.06),
+    0 10px 28px var(--menu-glass-shadow),
+    0 28px 56px rgba(15, 20, 28, 0.14);
+  backdrop-filter: blur(48px) saturate(180%);
+  -webkit-backdrop-filter: blur(48px) saturate(180%);
+  pointer-events: auto;
+}
+
+.overlayMenuBar::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.42) 0%,
+      rgba(255, 255, 255, 0.18) 45%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+  content: "";
+  pointer-events: none;
+}
+
+.page[data-theme="dark"] .overlayMenuBar::before {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(0, 0, 0, 0.18) 100%
+    );
+}
+
+.overlayMenuItem {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--menu-muted);
+  font: inherit;
+  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.overlayMenuItem:hover {
+  color: var(--menu-text);
+}
+
+.overlayMenuItemActive {
+  color: var(--menu-text);
+}
+
+.overlayMenuPill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent),
+    var(--menu-active);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 2px rgba(15, 20, 28, 0.06),
+    0 4px 14px rgba(15, 20, 28, 0.12);
+  pointer-events: none;
+}
+
+.overlayMenuLabel {
+  position: relative;
+  z-index: 1;
+}
+
+.overlayMenuItem:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+.board,
+.intro,
+.contact,
+.aboutPhoto,
+.aboutDuo {
+  scroll-margin-bottom: 6.5rem;
+}
+
+.board {
+  --art-w: 1920;
+  --art-h: 2099;
+  position: relative;
+  width: min(100%, 1620px);
+  margin: 0 auto;
+  aspect-ratio: 1920 / 2099;
+}
+
+/* Low-opacity animated color wash — page-wide; bg stays white/dark */
+.pageAtmosphere {
+  position: absolute;
+  inset: 0;
+  /* Behind content inside .page { isolation: isolate } — avoid z-index on
+     .pageContent so .breatheSpotlight can still stack above .breathingOverlay */
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: var(--atmosphere-opacity);
+}
+
+.pageAtmosphereBlob {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(72px);
+  will-change: transform;
+}
+
+.pageAtmosphereBlob[data-blob="a"] {
+  width: min(720px, 58vw);
+  height: min(520px, 42vh);
+  left: -4%;
+  top: 4%;
+  background: #78a723;
+  animation: atmosphereDriftA 32s ease-in-out infinite alternate;
+}
+
+.pageAtmosphereBlob[data-blob="b"] {
+  width: min(640px, 50vw);
+  height: min(560px, 48vh);
+  right: -6%;
+  top: 32%;
+  background: #37a1ff;
+  animation: atmosphereDriftB 38s ease-in-out infinite alternate;
+}
+
+.pageAtmosphereBlob[data-blob="c"] {
+  width: min(700px, 55vw);
+  height: min(540px, 44vh);
+  left: 28%;
+  bottom: 6%;
+  background: #763ef8;
+  animation: atmosphereDriftC 36s ease-in-out infinite alternate;
+}
+
+@keyframes atmosphereDriftA {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(12%, 18%) scale(1.12);
+  }
+}
+
+@keyframes atmosphereDriftB {
+  from {
+    transform: translate(0, 0) scale(1.05);
+  }
+  to {
+    transform: translate(-14%, 10%) scale(1);
+  }
+}
+
+@keyframes atmosphereDriftC {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(10%, -16%) scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageAtmosphereBlob {
+    animation: none;
+  }
+}
+
+/* Frosted glass idle — solid brand cards (Duo, Breathe, contact intro) stay opaque */
+.groveBg,
+.samplesBg,
+.seaSkyBg,
+.selahBg,
+.ziplearnBg,
+.tidehausBg {
+  background: transparent;
+}
+
+.card {
+  position: absolute;
+  overflow: hidden;
+  border-radius: clamp(12px, 1.1vw, 20px);
+  background: var(--card-idle-bg);
+  transition: transform 220ms ease, box-shadow 220ms ease, background-color 320ms ease;
+}
+
+.card.grove,
+.card.samples,
+.card.seaSky,
+.card.selah,
+.card.ziplearn,
+.card.tidehaus,
+.card.intro,
+.card.favoriteStack,
+.card.contact,
+.card.openToWork,
+.card.aboutBio,
+.card.aboutPhoto,
+.card.aboutMap,
+.card.aboutActivities,
+.card.aboutSkills,
+.card.contactIg,
+.card.contactGh,
+.card.contactResume,
+.card.contactLi,
+.card.contactEmail {
+  z-index: 1;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 8px 28px var(--glass-shadow);
+  backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+}
+
+a.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+a.card:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+.contactResume:hover,
+.contactEmail:hover,
+.contactResume:focus-within,
+.contactEmail:focus-within {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Positions from Figma absolute layout (left/top/width/height ÷ artboard) */
+
+.intro {
+  left: calc(120 / var(--art-w) * 100%);
+  top: calc(130 / var(--art-h) * 100%);
+  width: calc(547 / var(--art-w) * 100%);
+  height: calc(200 / var(--art-h) * 100%);
+  z-index: 2;
+  overflow: hidden;
+}
+
+.intro:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+.introScene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* Icon frame 56:321 — real box (not display:contents) so group bob can run */
+.introAvatar {
+  position: absolute;
+  left: calc(42 / 547 * 100%);
+  top: calc(51.92 / 200 * 100%);
+  width: calc(90.301 / 547 * 100%);
+  aspect-ratio: 90.301 / 96.168;
+  z-index: 1;
+}
+
+.introCopy {
+  position: absolute;
+  left: calc(153 / 547 * 100%);
+  top: calc(52 / 200 * 100%);
+  width: calc(320 / 547 * 100%);
+  margin: 0;
+  font-size: clamp(0.6875rem, 0.95vw, 1rem);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--intro-text);
+  z-index: 2;
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+/* Frame 85 — location + flag; left/top set inline from Figma rest pose */
+.introLocation {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px; /* 6 design-px between label and flag */
+}
+
+.introLocationText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: calc(125 / 158 * 100%);
+  flex-shrink: 0;
+}
+
+.introLocationTitle {
+  margin: 0;
+  font-size: clamp(0.625rem, 0.85vw, 0.875rem);
+  font-weight: 500;
+  line-height: 1.2;
+  text-transform: capitalize;
+  color: var(--intro-text);
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+.introLocationSub {
+  margin: 0;
+  font-size: clamp(0.5rem, 0.6vw, 0.625rem);
+  font-weight: 400;
+  line-height: 1.2;
+  text-transform: capitalize;
+  color: var(--intro-text-muted);
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+.introLocationImage {
+  position: relative;
+  align-self: stretch;
+  /* 105 ÷ 158 flag box */
+  aspect-ratio: 158 / 105;
+  border-radius: clamp(6px, 0.55vw, 10px);
+  overflow: hidden;
+}
+
+.introLocationImage img {
+  object-fit: cover;
+}
+
+.grove {
+  left: calc(687 / var(--art-w) * 100%);
+  top: calc(130 / var(--art-h) * 100%);
+  width: calc(546 / var(--art-w) * 100%);
+  height: calc(478 / var(--art-h) * 100%);
+}
+
+.groveScene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.groveBg {
+  position: absolute;
+  inset: 0;
+  transition: background-color 320ms ease;
+}
+
+a.grove:hover .groveBg,
+a.grove:focus-visible .groveBg {
+  background: var(--card-brand-hover, var(--card-brand, #78a723));
+}
+
+.groveText {
+  position: absolute;
+  left: calc(42 / 546 * 100%);
+  top: calc(42 / 478 * 100%);
+  width: calc(364 / 546 * 100%);
+  height: calc(394 / 478 * 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 5;
+}
+
+.groveTitle {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--card-brand, #000);
+  white-space: nowrap;
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+.groveTagline {
+  margin: 0;
+  max-width: calc(282 / 364 * 100%);
+  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.25;
+  text-transform: capitalize;
+  color: var(--card-brand, #000);
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+a.grove:hover .groveTitle,
+a.grove:hover .groveTagline,
+a.grove:focus-visible .groveTitle,
+a.grove:focus-visible .groveTagline {
+  color: #fff;
+}
+
+.groveLayer {
+  position: absolute;
+}
+
+/* Soft edge so the widgets PNG white plate doesn't dissolve into glass */
+.groveWidgets {
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.12));
+}
+
+.groveProgress {
+  position: absolute;
+  transform-origin: center center;
+  overflow: visible;
+}
+
+/* Unrotated export, tilted to match phone (-15° / Figma rotation 15). */
+.groveProgressInner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(204.686 / 223.526 * 100%);
+  height: calc(99.74 / 149.318 * 100%);
+  transform: translate(-50%, -50%) rotate(-15deg);
+}
+
+.samples {
+  left: calc(1253 / var(--art-w) * 100%);
+  top: calc(130 / var(--art-h) * 100%);
+  width: calc(546 / var(--art-w) * 100%);
+  height: calc(478 / var(--art-h) * 100%);
+}
+
+.samplesScene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.samplesBg {
+  position: absolute;
+  inset: 0;
+  transition: background-color 320ms ease;
+}
+
+a.samples:hover .samplesBg,
+a.samples:focus-visible .samplesBg {
+  background: var(--card-brand-hover, var(--card-brand));
+}
+
+.samplesText {
+  position: absolute;
+  left: calc(42 / 546 * 100%);
+  top: calc(42 / 478 * 100%);
+  width: calc(411 / 546 * 100%);
+  height: calc(394 / 478 * 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.samplesTitle {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--card-brand, #000);
+  white-space: nowrap;
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+.samplesTagline {
+  margin: 0;
+  max-width: calc(411 / 411 * 100%);
+  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.25;
+  text-transform: capitalize;
+  color: var(--card-brand, #000);
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+/* Mint hover bg stays light — keep brand (dark) text, don't flip to white */
+a.samples:hover .samplesTitle,
+a.samples:hover .samplesTagline,
+a.samples:focus-visible .samplesTitle,
+a.samples:focus-visible .samplesTagline {
+  color: var(--card-brand, #000);
+}
+
+.samplesLayer {
+  position: absolute;
+}
+
+.samplesStorefront {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* Samples Image CROP: w 100.49% / h 128.32% / left −0.24% / top −0.36% */
+.samplesStorefrontCrop {
+  position: absolute;
+  width: 100.49%;
+  height: 128.32%;
+  left: -0.24%;
+  top: -0.36%;
+  max-width: none;
+  pointer-events: none;
+}
+
+.samplesBadge {
+  position: absolute;
+  overflow: visible;
+  transform-origin: top left;
+}
+
+.samplesBadgeFace {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-fg-surface);
+  border-radius: calc(10 / 60 * 100%);
+  transition: background-color 320ms ease;
+}
+
+a.samples:hover .samplesBadgeFace,
+a.samples:focus-visible .samplesBadgeFace {
+  background: #fff;
+}
+
+.samplesBadgeIcon {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.samplesBadgeIconCrop {
+  pointer-events: none;
+}
+
+.samplesFigmaCrop {
+  position: absolute;
+  width: 383.61%;
+  height: 145.97%;
+  left: -140.98%;
+  top: -24.12%;
+  max-width: none;
+  pointer-events: none;
+}
+
+.samplesPsCrop {
+  position: absolute;
+  width: 183.63%;
+  height: 106.08%;
+  left: -41.81%;
+  top: -3.04%;
+  max-width: none;
+  pointer-events: none;
+}
+
+.seaSky {
+  left: calc(120 / var(--art-w) * 100%);
+  top: calc(350 / var(--art-h) * 100%);
+  width: calc(547 / var(--art-w) * 100%);
+  height: calc(600 / var(--art-h) * 100%);
+  z-index: 1;
+}
+
+.seaSkyScene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.seaSkyBg {
+  position: absolute;
+  inset: 0;
+}
+
+.seaSkyBgHover {
+  position: absolute;
+  inset: 0;
+  background: var(--card-brand-hover, var(--card-brand, #0b6ad4));
+  opacity: 0;
+  transition: opacity 320ms ease;
+}
+
+a.seaSky:hover .seaSkyBgHover,
+a.seaSky:focus-visible .seaSkyBgHover {
+  opacity: 1;
+}
+
+.seaSkyText {
+  position: absolute;
+  left: calc(42 / 547 * 100%);
+  top: calc(42 / 600 * 100%);
+  width: calc(417 / 547 * 100%);
+  height: calc(516 / 600 * 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 5;
+}
+
+.seaSkyTitle {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--card-brand, #000);
+  white-space: nowrap;
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+.seaSkyTagline {
+  margin: 0;
+  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.25;
+  text-transform: capitalize;
+  color: var(--card-brand, #000);
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+a.seaSky:hover .seaSkyTitle,
+a.seaSky:hover .seaSkyTagline,
+a.seaSky:focus-visible .seaSkyTitle,
+a.seaSky:focus-visible .seaSkyTagline {
+  color: #fff;
+}
+
+/* Container for chip cq units — frame is 180×209.41 design px, so
+   design px ÷ frame size. (container-type on the chip itself doesn't work:
+   cq units resolve against the nearest ANCESTOR container, and without one
+   they fall back to viewport units, blowing up padding/font and hiding text.) */
+.seaSkyChips {
+  position: absolute;
+  z-index: 3;
+  overflow: visible;
+  container-type: size;
+}
+
+.seaSkyChip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 5.56cqw; /* 10 ÷ 180 */
+  padding: 0 11.11cqw; /* 20 ÷ 180 */
+  border-radius: 5.56cqw; /* 10 ÷ 180 */
+  font-size: 4.78cqh; /* 10 ÷ 209.41 */
+  font-weight: 500;
+  line-height: 1.2;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: background-color 320ms ease;
+}
+
+.seaSkyChipResources {
+  background: var(--card-fg-surface-soft);
+}
+
+.seaSkyChipNews {
+  background: var(--card-fg-surface-mid);
+}
+
+.seaSkyChipCommunity {
+  background: var(--card-fg-surface);
+}
+
+/* Brand hover — solid white chips */
+a.seaSky:hover .seaSkyChip,
+a.seaSky:focus-visible .seaSkyChip {
+  background: #fff;
+}
+
+.seaSkyChipIcon {
+  flex-shrink: 0;
+  width: 8.89cqw; /* 16 ÷ 180 */
+  height: auto;
+  max-height: 7.64cqh; /* 16 ÷ 209.41 */
+}
+
+.seaSkyChip span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seaSkyLayer {
+  position: absolute;
+  overflow: visible;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.12));
+}
+
+/* Header 1 (45:1580): fills the motion layer (the Figma image box) and carries the
+   rotation so framer-motion translate on the wrapper never overwrites it. */
+.seaSkyPhoneArt {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-7deg);
+  transform-origin: top left;
+}
+
+.breathe {
+  left: calc(687 / var(--art-w) * 100%);
+  top: calc(628 / var(--art-h) * 100%);
+  width: calc(1112 / var(--art-w) * 100%);
+  height: calc(438 / var(--art-h) * 100%);
+  background: #f3fbde;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.breathe:hover:not(.breatheSpotlight) {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(172, 226, 59, 0.22);
+}
+
+/* Above the full-page dim overlay while a breath session is running */
+.breatheSpotlight {
+  z-index: 50;
+}
+
+.breatheSpotlight:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.breathingOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.58);
+  pointer-events: auto;
+}
+
+.selah {
+  left: calc(120 / var(--art-w) * 100%);
+  top: calc(970 / var(--art-h) * 100%);
+  width: calc(547 / var(--art-w) * 100%);
+  height: calc(553 / var(--art-h) * 100%);
+  z-index: 1;
+}
+
+.selahScene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.selahBg {
+  position: absolute;
+  inset: 0;
+  transition: background-color 320ms ease;
+}
+
+a.selah:hover .selahBg,
+a.selah:focus-visible .selahBg {
+  background: var(--card-brand-hover, var(--card-brand, #878279));
+}
+
+.selahText {
+  position: absolute;
+  left: calc(42 / 547 * 100%);
+  top: calc(42 / 553 * 100%);
+  width: calc(417 / 547 * 100%);
+  height: calc(469 / 553 * 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 5;
+}
+
+.selahTitle {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--card-brand, #000);
+  white-space: nowrap;
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+.selahTagline {
+  margin: 0;
+  max-width: calc(307 / 417 * 100%);
+  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.25;
+  text-transform: capitalize;
+  color: var(--card-brand, #000);
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+a.selah:hover .selahTitle,
+a.selah:hover .selahTagline,
+a.selah:focus-visible .selahTitle,
+a.selah:focus-visible .selahTagline {
+  color: #fff;
+}
+
+.selahCross {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.selahCrossVector {
+  position: absolute;
+}
+
+.selahCrossImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.selahLayer {
+  position: absolute;
+  overflow: visible;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.14));
+}
+
+/* Unrotated motion/box; −24° top-left rotation on the art (Figma copy-as-code). */
+.selahPhoneArt {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-24.06deg);
+  transform-origin: top left;
+  border-top-left-radius: calc(10 / 203 * 100%);
+  border-top-right-radius: calc(10 / 203 * 100%);
+  overflow: hidden;
+}
+
+.selahPhone1 {
+  transform: rotate(-23.99deg);
+  border-top-left-radius: calc(10 / 200 * 100%);
+  border-top-right-radius: calc(10 / 200 * 100%);
+}
+
+.ziplearn {
+  left: calc(687 / var(--art-w) * 100%);
+  top: calc(1086 / var(--art-h) * 100%);
+  width: calc(546 / var(--art-w) * 100%);
+  height: calc(437 / var(--art-h) * 100%);
+  z-index: 1;
+}
+
+.ziplearnScene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.ziplearnBg {
+  position: absolute;
+  inset: 0;
+  transition: background-color 320ms ease;
+}
+
+a.ziplearn:hover .ziplearnBg,
+a.ziplearn:focus-visible .ziplearnBg {
+  background: var(--card-brand-hover, var(--card-brand, #763ef8));
+}
+
+.ziplearnText {
+  position: absolute;
+  left: calc(42 / 546 * 100%);
+  top: calc(42 / 437 * 100%);
+  width: calc(202 / 546 * 100%);
+  height: calc(353 / 437 * 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 5;
+}
+
+.ziplearnTitle {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--card-brand, #000);
+  white-space: nowrap;
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+.ziplearnTagline {
+  margin: 0;
+  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.25;
+  text-transform: capitalize;
+  color: var(--card-brand, #000);
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+a.ziplearn:hover .ziplearnTitle,
+a.ziplearn:hover .ziplearnTagline,
+a.ziplearn:focus-visible .ziplearnTitle,
+a.ziplearn:focus-visible .ziplearnTagline {
+  color: #fff;
+}
+
+/* Container for chip cq units — frame is 217×156 design px.
+   cq units resolve against the nearest ANCESTOR container. */
+.ziplearnChips {
+  position: absolute;
+  z-index: 3;
+  overflow: visible;
+  container-type: size;
+}
+
+.ziplearnChip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4.61cqw; /* 10 ÷ 217 */
+  padding: 0 9.22cqw; /* 20 ÷ 217 */
+  border-radius: 4.61cqw; /* 10 ÷ 217 */
+  background: var(--card-fg-surface);
+  font-size: 6.41cqh; /* 10 ÷ 156 */
+  font-weight: 500;
+  line-height: 1.2;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: background-color 320ms ease;
+}
+
+a.ziplearn:hover .ziplearnChip,
+a.ziplearn:focus-visible .ziplearnChip {
+  background: #fff;
+}
+
+.ziplearnChipIcon {
+  flex-shrink: 0;
+  width: 7.37cqw; /* 16 ÷ 217 */
+  height: auto;
+  max-height: 10.26cqh; /* 16 ÷ 156 */
+}
+
+.ziplearnChip span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ziplearnLayer {
+  position: absolute;
+  overflow: hidden;
+}
+
+/* Purple mobile 1 (45:2265): 221×447.58 at +5px inside the 231×448 phone frame. */
+.ziplearnPhoneArt {
+  position: absolute;
+  left: calc(5 / 231 * 100%);
+  top: 0;
+  width: calc(221 / 231 * 100%);
+  height: calc(447.58 / 448 * 100%);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.14);
+}
+
+.tidehaus {
+  left: calc(1253 / var(--art-w) * 100%);
+  top: calc(1086 / var(--art-h) * 100%);
+  width: calc(546 / var(--art-w) * 100%);
+  height: calc(437 / var(--art-h) * 100%);
+  z-index: 1;
+}
+
+.tidehausScene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.tidehausBg {
+  position: absolute;
+  inset: 0;
+  transition: background-color 320ms ease;
+}
+
+a.tidehaus:hover .tidehausBg,
+a.tidehaus:focus-visible .tidehausBg {
+  background: var(--card-brand-hover, var(--card-brand, #0a2d3d));
+}
+
+.tidehausText {
+  position: absolute;
+  left: calc(42 / 546 * 100%);
+  top: calc(42 / 437 * 100%);
+  width: calc(380 / 546 * 100%);
+  height: calc(353 / 437 * 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 5;
+}
+
+.tidehausTitle {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--card-brand, #000);
+  white-space: nowrap;
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+.tidehausTagline {
+  margin: 0;
+  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.25;
+  text-transform: capitalize;
+  color: var(--card-brand, #000);
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+a.tidehaus:hover .tidehausTitle,
+a.tidehaus:hover .tidehausTagline,
+a.tidehaus:focus-visible .tidehausTitle,
+a.tidehaus:focus-visible .tidehausTagline {
+  color: #fff;
+}
+
+.tidehausDesktopFrame {
+  position: absolute;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.tidehausDesktopArt {
+  position: absolute;
+  border-radius: calc(10 / 323 * 100%);
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.14);
+}
+
+.tidehausLayer {
+  position: absolute;
+  overflow: visible;
+}
+
+.tidehausSnorkel {
+  position: absolute;
+  overflow: visible;
+  transform-origin: top left;
+}
+
+/* Open to Work — 546×437 at (120, 1543); was Figma slotA placeholder */
+.openToWork {
+  left: calc(120 / var(--art-w) * 100%);
+  top: calc(1543 / var(--art-h) * 100%);
+  width: calc(546 / var(--art-w) * 100%);
+  height: calc(437 / var(--art-h) * 100%);
+  overflow: hidden;
+  container-type: size;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.openToWork:hover,
+.openToWork:focus-within {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.openToWork:focus-within {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+.openToWorkScene {
+  position: absolute;
+  inset: 0;
+}
+
+.openToWorkCopy {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+}
+
+.openToWorkStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+}
+
+.openToWorkDot {
+  flex-shrink: 0;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  background: #34c759;
+  box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.45);
+}
+
+.openToWorkDotPulse {
+  animation: openToWorkPulse 2.2s ease-out infinite;
+}
+
+@keyframes openToWorkPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 0.75em rgba(52, 199, 89, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .openToWorkDotPulse {
+    animation: none;
+  }
+}
+
+.openToWorkTitle {
+  margin: 0;
+  color: var(--intro-text);
+  font-size: clamp(1.25rem, 2.2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.openToWorkRole {
+  margin: 0;
+  color: var(--intro-text);
+  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.25;
+  opacity: var(--text-desc-opacity);
+}
+
+.openToWorkButton {
+  position: absolute;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55em;
+  border-radius: 3.663cqw; /* 20 ÷ 546 */
+  background: #000;
+  color: #fff;
+  font-size: clamp(0.75rem, 1vw, 1.125rem);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color 280ms ease, color 280ms ease, transform 220ms ease;
+}
+
+.openToWorkButton:hover,
+.openToWorkButton:focus-visible {
+  background: #1a1a1a;
+  transform: translateY(-1px);
+}
+
+.openToWorkButton:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+.page[data-theme="dark"] .openToWorkButton {
+  background: #fff;
+  color: #000;
+}
+
+.page[data-theme="dark"] .openToWorkButton:hover,
+.page[data-theme="dark"] .openToWorkButton:focus-visible {
+  background: #f2f2f2;
+}
+
+/* Contact card — 405×435, right-aligned with right-column edge (1799) */
+.contact {
+  left: calc(1394 / var(--art-w) * 100%);
+  top: calc(1543 / var(--art-h) * 100%);
+  width: calc(405 / var(--art-w) * 100%);
+  height: calc(435 / var(--art-h) * 100%);
+  overflow: hidden;
+  container-type: size;
+}
+
+.contactScene {
+  position: absolute;
+  inset: 0;
+}
+
+.contactMedia {
+  position: absolute;
+  overflow: hidden;
+  border-bottom-left-radius: calc(20 / 405 * 100%);
+  border-bottom-right-radius: calc(20 / 405 * 100%);
+  background: #d9d9d9;
+}
+
+.contactLiquid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+.contactLiquidActive {
+  opacity: 1;
+}
+
+.contactPhoto {
+  position: absolute;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+  transform: scale(1);
+  transform-origin: top center;
+  transition: transform 420ms ease;
+}
+
+.contact:hover .contactPhoto,
+.contact:focus-visible .contactPhoto {
+  transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contactPhoto {
+    transition: none;
+  }
+
+  .contact:hover .contactPhoto,
+  .contact:focus-visible .contactPhoto {
+    transform: none;
+  }
+}
+
+.contactPhotoImg {
+  object-fit: contain;
+  object-position: top center;
+  pointer-events: none;
+}
+
+.contactButton {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* 20px at card width — cqw resolves against .contact, not the button itself */
+  border-radius: 4.938cqw; /* 20 ÷ 405 */
+  background: #000;
+}
+
+.contactButtonLiquid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+.contactButtonLiquidActive {
+  opacity: 1;
+}
+
+.contactButtonLabel {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  font-size: clamp(0.75rem, 1vw, 1.125rem);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+.page[data-theme="dark"] .contactButton {
+  background: #fff;
+}
+
+.page[data-theme="dark"] .contactButtonLabel {
+  color: #000;
+}
+
+.page[data-theme="dark"] .contactButton:hover .contactButtonLabel {
+  color: #fff;
+}
+
+/* Favorite Stack 120:3013 — 688×435 at (686, 1543) */
+.favoriteStack {
+  left: calc(686 / var(--art-w) * 100%);
+  top: calc(1543 / var(--art-h) * 100%);
+  width: calc(688 / var(--art-w) * 100%);
+  height: calc(435 / var(--art-h) * 100%);
+  overflow: hidden;
+}
+
+.favoriteStack:focus-within {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+.favoriteStackScene {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+}
+
+.favoriteStackTitle {
+  position: absolute;
+  left: calc(42 / 688 * 100%);
+  top: calc(42 / 435 * 100%);
+  z-index: 1;
+  margin: 0;
+  color: var(--intro-text);
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.favoriteStackTile {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  overflow: hidden;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transform-origin: center center;
+}
+
+.favoriteStackTile:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 2px;
+}
+
+.favoriteStackExpanded {
+  position: absolute;
+  z-index: 4;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  overflow: hidden;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  will-change: transform;
+}
+
+.favoriteStackExpanded:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 2px;
+}
+
+/* Crisp chrome for the wide panel — SVG stretch was warping the radius/border */
+.favoriteStackExpandedChrome {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: #121212;
+  box-shadow: inset 0 0 60px 10px rgba(67, 128, 255, 0.2);
+  pointer-events: none;
+}
+
+.favoriteStackExpandedChrome::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    180deg,
+    #a259ff 48.16%,
+    #0acf83 84.68%,
+    #1abcfe 100%
+  );
+  opacity: 0.4;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.favoriteStackExpandedContent {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.favoriteStackTileBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  border-radius: 20px;
+}
+
+.favoriteStackLogo {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.favoriteStackLogoImg {
+  object-fit: contain;
+}
+
+.favoriteStackCopy {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  text-align: left;
+  color: #fff;
+  pointer-events: none;
+}
+
+.favoriteStackToolName {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.favoriteStackToolDesc {
+  margin: 0;
+  font-size: clamp(0.75rem, 1.15vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+/* Top-right of expanded panel (42,110,592×325) — ~28px inset from right */
+.favoriteStackClose {
+  position: absolute;
+  left: calc(580 / 688 * 100%); /* 42 + 592 - 54 */
+  top: calc(126 / 435 * 100%); /* 110 + 16 */
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(36 / 688 * 100%);
+  aspect-ratio: 1;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.favoriteStackClose:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.favoriteStackClose:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 2px;
+}
+
+.favoriteStackCloseIcon {
+  display: block;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  font-weight: 400;
+  line-height: 1;
+  transform: translateY(-0.05em);
+}
+
+/* —— About Me board (Figma 144:195) — same 1920×2099 artboard —— */
+
+.aboutBoard {
+  width: 100%;
+}
+
+/* Tall left bio — 759×970 at (120, 130); live text, not a raster */
+.aboutBio {
+  left: calc(120 / var(--art-w) * 100%);
+  top: calc(130 / var(--art-h) * 100%);
+  width: calc(759 / var(--art-w) * 100%);
+  height: calc(970 / var(--art-h) * 100%);
+  container-type: size;
+  overflow: hidden;
+}
+
+.aboutBioScene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* Tighter text measure; even top/bottom inset */
+  padding: 7cqh 11.5cqw;
+  color: var(--intro-text);
+}
+
+.aboutBioHeading {
+  margin: 0;
+  max-width: 92%;
+  font-size: clamp(1.75rem, 9cqw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.aboutBioHeadingChar {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.aboutBio:focus-visible {
+  outline: 2px solid #a6323f;
+  outline-offset: 3px;
+}
+
+/* display: contents so heading + paragraphs share one even vertical rhythm */
+.aboutBioCopy {
+  display: contents;
+}
+
+.aboutBioCopy p {
+  margin: 0;
+  max-width: 92%;
+  font-size: clamp(0.8125rem, 2.85cqw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--intro-text);
+}
+
+.aboutBioCopy strong {
+  font-weight: 600;
+}
+
+/* Photo card — 900×720 at (899, 130) — camera + LCD carousel */
+.aboutPhoto {
+  left: calc(899 / var(--art-w) * 100%);
+  top: calc(130 / var(--art-h) * 100%);
+  width: calc(900 / var(--art-w) * 100%);
+  height: calc(720 / var(--art-h) * 100%);
+}
+
+.aboutPhoto:focus-visible {
+  outline: 2px solid #a6323f;
+  outline-offset: 3px;
+}
+
+.aboutPhotoScene {
+  position: absolute;
+  inset: 0;
+  perspective: 1000px;
+  perspective-origin: 42% 48%;
+}
+
+/* Carousel slide — local to camera group */
+.aboutPhotoSlide {
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aboutPhotoSlideInner {
+  position: absolute;
+  inset: 0;
+}
+
+.aboutPhotoImg {
+  object-fit: cover;
+  object-position: center top;
+  /* Soft vintage grade under the grain */
+  filter: sepia(0.18) contrast(1.06) saturate(0.88) brightness(1.02);
+}
+
+.aboutPhotoColorSlide {
+  position: absolute;
+  inset: 0;
+}
+
+/* Film grain — stays fixed over every slide */
+.aboutPhotoGrain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.42;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  background-repeat: repeat;
+}
+
+.aboutPhotoGrain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.28;
+  mix-blend-mode: soft-light;
+  background:
+    radial-gradient(ellipse at center, transparent 45%, rgba(40, 28, 16, 0.45) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aboutPhotoGrain {
+    opacity: 0.32;
+  }
+}
+
+.aboutPhotosIcon {
+  position: absolute;
+  z-index: 4;
+  overflow: hidden;
+  border-radius: clamp(10px, 1vw, 20px);
+  pointer-events: none;
+}
+
+.aboutPhotosIcon img {
+  object-fit: contain;
+}
+
+/* Camera assembly — shared 0 → 9.35° tilt (photo / body / LCD / borders / strap).
+   Origin = center of camera body (749.64×473.23 at local 0,0) within the group.
+   preserve-3d so pointer parallax (rotateX/Y) reads under scene perspective. */
+.aboutPhotoCameraGroup {
+  position: absolute;
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+  transform-origin: calc(374.82 / 1001.78 * 100%) calc(236.615 / 780 * 100%);
+  transform-style: preserve-3d;
+}
+
+/* Exclude — camera body */
+.aboutPhotoCamera {
+  position: absolute;
+  z-index: 2;
+  overflow: visible;
+}
+
+.aboutPhotoCamera img {
+  object-fit: contain;
+}
+
+/* LCD gradient — local to camera group (blends with photo sibling) */
+.aboutPhotoLcdGradient {
+  position: absolute;
+  z-index: 3;
+  mix-blend-mode: overlay;
+  /* Light stops brighten; dark stops deepen — overlay blend adds contrast */
+  background: linear-gradient(
+    127.95deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(180, 180, 180, 0.2) 38%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* Borders — local to camera group */
+.aboutPhotoBorders {
+  position: absolute;
+  z-index: 3;
+  overflow: visible;
+}
+
+.aboutPhotoBorders img {
+  object-fit: fill;
+}
+
+/* Strap — local to camera group; tilts with body */
+.aboutPhotoStrap {
+  position: absolute;
+  z-index: 3;
+  overflow: visible;
+}
+
+.aboutPhotoStrap img {
+  object-fit: contain;
+  object-position: left top;
+}
+
+/* Prev / Next — 98×82 at bottom-left */
+.aboutPhotoNav {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  height: calc(82 / 720 * 100%);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #000;
+  font-family: "Poppins", sans-serif;
+}
+
+.aboutPhotoNav:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.aboutPhotoNav:focus-visible {
+  outline: 2px solid #a6323f;
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+.aboutPhotoNavBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: calc(54 / 82 * 100%);
+  background: #e1e1e1;
+  border-radius: clamp(8px, 0.85vw, 14px);
+  color: #000;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.aboutPhotoNav:not(:disabled):hover .aboutPhotoNavBtn {
+  background: #2a2a2a;
+  color: #fff;
+}
+
+.aboutPhotoNavBtnPrev {
+  transform: scaleX(-1);
+}
+
+.aboutPhotoNavChevron {
+  display: flex;
+  width: calc(32 / 98 * 100%);
+  aspect-ratio: 1;
+}
+
+.aboutPhotoNavChevron svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aboutPhotoNavLabel {
+  width: 100%;
+  text-align: center;
+  font-size: clamp(0.5625rem, 0.85vw, 0.875rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.page[data-theme="dark"] .aboutPhotoNav {
+  color: #fff;
+}
+
+.page[data-theme="dark"] .aboutPhotoNavBtn {
+  background: #2a2a2a;
+  color: #fff;
+}
+
+.page[data-theme="dark"] .aboutPhotoNav:not(:disabled):hover .aboutPhotoNavBtn {
+  background: #e1e1e1;
+  color: #000;
+}
+
+/* Duolingo streak — 900×586 at (899, 870) */
+.aboutDuo {
+  left: calc(899 / var(--art-w) * 100%);
+  top: calc(870 / var(--art-h) * 100%);
+  width: calc(900 / var(--art-w) * 100%);
+  height: calc(586 / var(--art-h) * 100%);
+  background: #fea203;
+  overflow: hidden;
+  container-type: size;
+}
+
+.aboutDuo:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+.aboutDuoScene {
+  position: absolute;
+  inset: 0;
+}
+
+.aboutDuoIcon {
+  position: absolute;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: clamp(10px, 1vw, 20px);
+  pointer-events: none;
+}
+
+.aboutDuoIcon img {
+  object-fit: cover;
+}
+
+.aboutDuoFire {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.aboutDuoFlameOuter,
+.aboutDuoFlameInner,
+.aboutDuoSpark {
+  position: absolute;
+  transform-origin: center center;
+}
+
+.aboutDuoFlameOuter img,
+.aboutDuoFlameInner img,
+.aboutDuoSpark img {
+  object-fit: fill;
+}
+
+.aboutDuoStreak {
+  position: absolute;
+  left: 50%;
+  top: calc(303 / 586 * 100%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: calc(229 / 900 * 100%);
+  transform: translateX(-50%);
+  color: #fff6ed;
+  font-family: "Nunito", "Poppins", sans-serif;
+  line-height: normal;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.aboutDuoCount {
+  margin: 0;
+  /* 122 ÷ 900 card width */
+  font-size: 13.56cqw;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.aboutDuoLabel {
+  margin: 0;
+  /* Figma: label top 440 vs count top 303 → ~23% of card height below count start */
+  margin-top: 2.2cqh;
+  /* 42 ÷ 900 */
+  font-size: 4.67cqw;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.aboutDuoOwl {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.aboutDuoOwl img {
+  object-fit: contain;
+  object-position: right bottom;
+  transform: scaleX(-1);
+}
+
+.aboutDuoLangRail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.aboutDuoLangTitle {
+  position: absolute;
+  left: 0;
+  z-index: 2;
+  margin: 0;
+  color: #fff6ed;
+  font-family: "Nunito", "Poppins", sans-serif;
+  /* 30 ÷ 900 */
+  font-size: 3.33cqw;
+  font-weight: 700;
+  line-height: normal;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.aboutDuoFlag {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.aboutDuoFlag img {
+  object-fit: cover;
+}
+
+.aboutDuoConnect {
+  position: absolute;
+  left: 50%;
+  bottom: calc(36 / 586 * 100%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(200 / 900 * 100%);
+  height: calc(56 / 586 * 100%);
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: #1a1a1a;
+  font-family: "Nunito", "Poppins", sans-serif;
+  font-size: 2.4cqw; /* ~22px at 900 */
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.aboutDuoConnect:hover {
+  background: #fff6ed;
+}
+
+.aboutDuoConnect:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+/* Mid-left map — 759×336 at (120, 1120), under About Me bio */
+.aboutMap,
+.aboutSlotMid {
+  left: calc(120 / var(--art-w) * 100%);
+  top: calc(1120 / var(--art-h) * 100%);
+  width: calc(759 / var(--art-w) * 100%);
+  height: calc(336 / var(--art-h) * 100%);
+}
+
+.aboutMap {
+  container-type: size;
+  /* Match shared glass card chrome; map palette tracks page theme */
+  --map-bg: #ebebeb;
+  --map-block-a: #f7f7f7;
+  --map-block-b: #f0f0f0;
+  --map-block-c: #fafafa;
+  --map-road-major: #cfcfcf;
+  --map-road-arterial: #c4c4c4;
+  --map-road-local: #d8d8d8;
+  --map-route: #98ef08;
+  --map-radar-fill: rgba(152, 239, 8, 0.18);
+  --map-radar-stroke: rgba(152, 239, 8, 0.85);
+  --map-fade: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.55) 42%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  color: var(--intro-text);
+  font-family: "Poppins", sans-serif;
+}
+
+.page[data-theme="dark"] .aboutMap {
+  --map-bg: #121214;
+  --map-block-a: #1a1a1c;
+  --map-block-b: #1f1f22;
+  --map-block-c: #171719;
+  --map-road-major: #323236;
+  --map-road-arterial: #36363a;
+  --map-road-local: #2a2a2e;
+  --map-fade: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.82) 0%,
+    rgba(0, 0, 0, 0.45) 42%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.aboutMapScene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.aboutMapSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aboutMapBg {
+  fill: var(--map-bg);
+}
+
+.aboutMapBlockA {
+  fill: var(--map-block-a);
+}
+
+.aboutMapBlockB {
+  fill: var(--map-block-b);
+}
+
+.aboutMapBlockC {
+  fill: var(--map-block-c);
+}
+
+.aboutMapRoadMajor {
+  stroke: var(--map-road-major);
+}
+
+.aboutMapRoadArterial {
+  stroke: var(--map-road-arterial);
+}
+
+.aboutMapRoadLocal {
+  stroke: var(--map-road-local);
+}
+
+.aboutMapRouteStroke {
+  stroke: var(--map-route);
+}
+
+.aboutMapPin {
+  fill: var(--map-route);
+}
+
+.aboutMapRoute {
+  /* Shared loop: radar first, then draw, hold, reset — 6s */
+  animation: aboutMapRouteLoop 6s linear infinite;
+}
+
+@keyframes aboutMapRouteLoop {
+  /* Hidden while radar leads */
+  0%,
+  28% {
+    stroke-dashoffset: var(--route-len);
+  }
+  /* Draw to destination, then hold until the loop restarts (no retrace) */
+  55%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.aboutMapRadarRing {
+  fill: var(--map-radar-fill);
+  stroke: var(--map-radar-stroke);
+  stroke-width: 2.75;
+  transform-box: fill-box;
+  transform-origin: center;
+  /* Same 6s cycle as the route — radar leads the sequence */
+  animation: aboutMapRadarLoop 6s ease-in-out infinite;
+}
+
+@keyframes aboutMapRadarLoop {
+  /* Grow */
+  0% {
+    transform: scale(0.28);
+    opacity: 0.95;
+  }
+  14% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  /* Shrink — end of radar lead-in */
+  28% {
+    transform: scale(0.38);
+    opacity: 0.85;
+  }
+  /* Soft presence while route draws + holds */
+  42% {
+    transform: scale(0.78);
+    opacity: 0.45;
+  }
+  55% {
+    transform: scale(0.45);
+    opacity: 0.7;
+  }
+  78% {
+    transform: scale(0.7);
+    opacity: 0.4;
+  }
+  /* Settle before next loop */
+  100% {
+    transform: scale(0.28);
+    opacity: 0.95;
+  }
+}
+
+.aboutMapFade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  height: 48%;
+  pointer-events: none;
+  background: var(--map-fade);
+}
+
+.aboutMapLabel {
+  position: absolute;
+  z-index: 2;
+  left: clamp(0.85rem, 3.5cqw, 1.5rem);
+  bottom: clamp(0.75rem, 3.2cqh, 1.25rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  pointer-events: none;
+}
+
+.aboutMapIcon {
+  position: absolute;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: clamp(10px, 1vw, 20px);
+  pointer-events: none;
+}
+
+.aboutMapIcon img {
+  object-fit: contain;
+}
+
+.aboutMapCity {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--intro-text);
+  opacity: 1;
+}
+
+.aboutMapCoords {
+  margin: 0;
+  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--intro-text);
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aboutMapRoute {
+    animation: none;
+    stroke-dashoffset: 0 !important;
+  }
+
+  .aboutMapRadarRing {
+    animation: none;
+    display: none;
+  }
+}
+
+/* Bottom-left activities — 759×502 at (120, 1476); Figma white card */
+.aboutActivities,
+.aboutSlotBL {
+  left: calc(120 / var(--art-w) * 100%);
+  top: calc(1476 / var(--art-h) * 100%);
+  width: calc(759 / var(--art-w) * 100%);
+  height: calc(502 / var(--art-h) * 100%);
+}
+
+.aboutActivities {
+  overflow: hidden;
+  container-type: size;
+  color: var(--intro-text);
+  font-family: "Poppins", sans-serif;
+}
+
+.page[data-theme="dark"] .aboutActivities {
+  color: var(--intro-text);
+}
+
+.aboutActivitiesCopy {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  pointer-events: none;
+}
+
+.aboutActivitiesTitle {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  /* Shared title system (Skills / project cards) */
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.aboutActivitiesBody {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  /* Shared tagline system */
+  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.aboutActivitiesIcon {
+  position: absolute;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: clamp(10px, 1.25cqw, 19px); /* Figma 19 on 90 */
+  background: #000;
+  pointer-events: none;
+}
+
+.aboutActivitiesIconArt {
+  position: absolute;
+  pointer-events: none;
+}
+
+.aboutActivitiesIconArt img {
+  object-fit: contain;
+}
+
+/* Idle lime disc — half-cropped by overflow; slides off on hover.
+   Size via cqw + aspect-ratio (same pattern as activity icon discs) so %
+   height can't collapse to 0 before the card's box is resolved on reload. */
+.aboutActivitiesAccent {
+  position: absolute;
+  z-index: 0;
+  width: 65.88cqw; /* 500 ÷ 759 */
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #99ef08;
+  pointer-events: none;
+}
+
+.aboutActivitiesItem {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  cursor: default;
+}
+
+.aboutActivitiesItemInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35em;
+  width: 100%;
+  transform-origin: center center;
+}
+
+.aboutActivitiesCircle {
+  /* Circle is 90×90 inside frames that may be wider (Music Production = 155).
+     cqw resolves against the .aboutActivities container (container-type: size),
+     so this stays 90/759 of the card — a plain % would resolve against the
+     narrow item frame and collapse the circle. */
+  width: 11.86cqw; /* 90 ÷ 759 */
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #99ef08;
+}
+
+.aboutActivitiesGlyph {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.aboutActivitiesGlyph img {
+  object-fit: contain;
+}
+
+.aboutActivitiesLabel {
+  margin: 0;
+  width: 100%;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(0.625rem, 0.9vw, 0.9375rem);
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Bottom-right skills — 900×502 at (899, 1476) */
+.aboutSkills,
+.aboutSlotBR {
+  left: calc(899 / var(--art-w) * 100%);
+  top: calc(1476 / var(--art-h) * 100%);
+  width: calc(900 / var(--art-w) * 100%);
+  height: calc(502 / var(--art-h) * 100%);
+}
+
+.aboutSkills {
+  overflow: hidden;
+  container-type: size;
+  color: var(--intro-text);
+  font-family: "Poppins", sans-serif;
+}
+
+.aboutSkillsScene {
+  position: absolute;
+  inset: 0;
+}
+
+.aboutSkillsTitle {
+  position: absolute;
+  left: calc(42 / 900 * 100%);
+  top: calc(42 / 502 * 100%);
+  z-index: 1;
+  margin: 0;
+  color: var(--intro-text);
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.aboutSkillsWheelFrame {
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: clamp(16px, 1.8vw, 32px);
+  /* Match parent glass card — avoid a solid gray inset that fights the wash */
+  background: transparent;
+}
+
+.aboutSkillsPill {
+  position: absolute;
+  z-index: 0;
+  border-radius: clamp(10px, 1vw, 16px);
+  background: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  pointer-events: none;
+}
+
+.page[data-theme="dark"] .aboutSkillsPill {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.aboutSkillsWheel {
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aboutSkillsItem {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 1.5%;
+  box-sizing: border-box;
+  color: var(--intro-text);
+  font-family: "Poppins", sans-serif;
+  line-height: 1.2;
+  text-align: center;
+  will-change: top, opacity;
+}
+
+.aboutSkillsFit {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+  text-align: center;
+}
+
+.aboutSkillsLabel {
+  display: inline-block;
+  white-space: nowrap;
+  /* font-size is set in px by FitLabel after measuring */
+  font-size: 2.5cqw;
+}
+
+.aboutSkillsBtn {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50px;
+  background: rgba(0, 0, 0, 0.06);
+  color: #1d1d1f;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  touch-action: none;
+  user-select: none;
+  transition: background-color 180ms ease, color 180ms ease, opacity 180ms ease;
+}
+
+.page[data-theme="dark"] .aboutSkillsBtn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f2f2f2;
+}
+
+.aboutSkillsBtn:hover:not(:disabled) {
+  background: #2a2a2a;
+  color: #fff;
+}
+
+.page[data-theme="dark"] .aboutSkillsBtn:hover:not(:disabled) {
+  background: #3a3a3e;
+  color: #fff;
+}
+
+.aboutSkillsBtn:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.aboutSkillsBtn:focus-visible {
+  outline: 2px solid #a6323f;
+  outline-offset: 3px;
+}
+
+.aboutSkillsArrow {
+  display: block;
+  width: calc(10 / 44 * 100%);
+  height: auto;
+  aspect-ratio: 10 / 18;
+  pointer-events: none;
+}
+
+.aboutSkillsArrowDown {
+  transform: scaleY(-1);
+}
+
+/* Soft bounce so the down control reads as clickable; settle while pressed */
+.aboutSkillsBtn:not(:disabled):not(:active) .aboutSkillsArrowDown {
+  animation: aboutSkillsArrowBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes aboutSkillsArrowBounce {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(-1);
+  }
+  50% {
+    transform: translateY(5px) scaleY(-1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aboutSkillsBtn:not(:disabled):not(:active) .aboutSkillsArrowDown {
+    animation: none;
+  }
+}
+
+.aboutSkillsLive {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Contact page — Figma ~1920×1159; horizontal span remapped to home/about 120…1799 ── */
+
+.contactBoard {
+  --art-w: 1920;
+  --art-h: 1159;
+  /* Figma content 107…1813 (1706) → shared bento 120…1799 (1679) */
+  --contact-src-left: 107;
+  --contact-src-span: 1706;
+  --contact-dst-left: 120;
+  --contact-dst-span: 1679;
+  aspect-ratio: 1920 / 1159;
+  width: 100%;
+}
+
+.pageContentContact {
+  --art-w: 1920;
+  --art-h: 1159;
+}
+
+.contactPageScene {
+  position: absolute;
+  inset: 0;
+}
+
+.contactPageOrb {
+  position: absolute;
+  z-index: 0;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background: #0635fd;
+  pointer-events: none;
+  will-change: transform;
+  transition: background-color 320ms ease;
+}
+
+a.card:hover .contactPageOrb,
+a.card:focus-visible .contactPageOrb,
+.contactResume:hover .contactPageOrb,
+.contactResume:focus-within .contactPageOrb,
+.contactEmail:hover .contactPageOrb,
+.contactEmail:focus-within .contactPageOrb {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.contactPageArrow {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  pointer-events: none;
+  transition: background-color 320ms ease, color 320ms ease;
+}
+
+.contactPageActions {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  gap: 0.85rem;
+}
+
+.contactPageAction {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 11cqw; /* ~44 ÷ ~400-ish; overridden by container on each card */
+  aspect-ratio: 1;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 320ms ease, color 320ms ease, transform 180ms ease;
+}
+
+.contactResume .contactPageAction,
+.contactEmail .contactPageAction {
+  width: calc(44 / 574 * 100cqw);
+}
+
+.contactEmail .contactPageAction {
+  width: calc(44 / 1112 * 100cqw);
+}
+
+.contactPageAction:hover,
+.contactPageAction:focus-visible {
+  background: rgba(0, 0, 0, 0.55);
+  transform: scale(1.06);
+}
+
+.contactPageAction:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 2px;
+}
+
+.contactPageIcon {
+  position: relative;
+  z-index: 2;
+  display: block;
+  flex-shrink: 0;
+  aspect-ratio: 1;
+  height: auto;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.contactPageMeta {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 3.5cqw, 1.25rem);
+  pointer-events: none;
+}
+
+.contactBrandSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.contactIconTile {
+  transition: fill 320ms ease;
+}
+
+.contactIconGlyph {
+  transition: fill 320ms ease;
+}
+
+/* Instagram — brand gradient idle; white on hover */
+.contactIgMark {
+  transition: fill 320ms ease;
+}
+
+.contactIg:hover .contactIgMark,
+.contactIg:focus-visible .contactIgMark {
+  fill: #fff;
+}
+
+/* LinkedIn — official mark; white on hover so it stays visible on blue card */
+.contactLiMark {
+  fill: #0a66c2;
+  transition: fill 320ms ease;
+}
+
+.contactLi:hover .contactLiMark,
+.contactLi:focus-visible .contactLiMark {
+  fill: #fff;
+}
+
+/* GitHub — dark tile, white mark; invert on card hover */
+.contactGhSvg .contactIconTile {
+  fill: #0d1117;
+}
+
+.contactGhSvg .contactIconGlyph {
+  fill: #fff;
+}
+
+.contactGh:hover .contactGhSvg .contactIconTile,
+.contactGh:focus-visible .contactGhSvg .contactIconTile {
+  fill: #fff;
+}
+
+.contactGh:hover .contactGhSvg .contactIconGlyph,
+.contactGh:focus-visible .contactGhSvg .contactIconGlyph {
+  fill: #0d1117;
+}
+
+/* Resume — blue tile, white doc; invert on card hover */
+.contactResumeSvg .contactIconTile {
+  fill: #0635fd;
+}
+
+.contactResumeSvg .contactIconGlyph {
+  fill: #fff;
+}
+
+.contactResumeFold {
+  fill: #b8c4ff;
+  transition: fill 320ms ease;
+}
+
+.contactResumeLines {
+  fill: none;
+  stroke: #0635fd;
+  transition: stroke 320ms ease;
+}
+
+.contactResume:hover .contactResumeSvg .contactIconTile,
+.contactResume:focus-visible .contactResumeSvg .contactIconTile {
+  fill: #fff;
+}
+
+.contactResume:hover .contactResumeSvg .contactIconGlyph,
+.contactResume:focus-visible .contactResumeSvg .contactIconGlyph {
+  fill: #0635fd;
+}
+
+.contactResume:hover .contactResumeFold,
+.contactResume:focus-visible .contactResumeFold {
+  fill: #d6dcff;
+}
+
+.contactResume:hover .contactResumeLines,
+.contactResume:focus-visible .contactResumeLines {
+  stroke: #fff;
+}
+
+.contactPageLabel {
+  position: relative;
+  color: #919191;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 320ms ease;
+}
+
+/* Intro — Figma 574×244 at (107, 111) → shared left margin */
+.contactIntro {
+  left: calc(var(--contact-dst-left) / var(--art-w) * 100%);
+  top: calc(111 / var(--art-h) * 100%);
+  width: calc(
+    574 * var(--contact-dst-span) / var(--contact-src-span) / var(--art-w) * 100%
+  );
+  height: calc(244 / var(--art-h) * 100%);
+  background: #0635fd;
+  container-type: size;
+}
+
+.contactIntro:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+.contactIntroTitle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  margin: 0;
+  padding: 8% 10%;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(0.875rem, 1.3vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.contactIntroChar {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+/* Instagram — Figma 546×478 at (701, 111) */
+.contactIg {
+  left: calc(
+    (
+        var(--contact-dst-left) + (701 - var(--contact-src-left)) *
+          var(--contact-dst-span) / var(--contact-src-span)
+      ) / var(--art-w) * 100%
+  );
+  top: calc(111 / var(--art-h) * 100%);
+  width: calc(
+    546 * var(--contact-dst-span) / var(--contact-src-span) / var(--art-w) * 100%
+  );
+  height: calc(478 / var(--art-h) * 100%);
+  container-type: size;
+  --card-brand: #c837ab;
+  --card-brand-hover: radial-gradient(
+    ellipse 99% 92% at 27% 108%,
+    #ffdd55 0%,
+    #ffdd55 10%,
+    #ff543e 50%,
+    #c837ab 100%
+  );
+}
+
+.contactIg:hover,
+.contactIg:focus-visible {
+  background: #c837ab;
+}
+
+.contactIg:hover .contactPageLabel,
+.contactIg:focus-visible .contactPageLabel,
+.contactIg:hover .contactPageArrow,
+.contactIg:focus-visible .contactPageArrow {
+  color: #fff;
+}
+
+.contactIg:hover .contactPageArrow,
+.contactIg:focus-visible .contactPageArrow {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* GitHub — Figma 546×478 at (1267, 111) */
+.contactGh {
+  left: calc(
+    (
+        var(--contact-dst-left) + (1267 - var(--contact-src-left)) *
+          var(--contact-dst-span) / var(--contact-src-span)
+      ) / var(--art-w) * 100%
+  );
+  top: calc(111 / var(--art-h) * 100%);
+  width: calc(
+    546 * var(--contact-dst-span) / var(--contact-src-span) / var(--art-w) * 100%
+  );
+  height: calc(478 / var(--art-h) * 100%);
+  container-type: size;
+  --card-brand: #000;
+}
+
+.contactGh:hover,
+.contactGh:focus-visible {
+  background: #111;
+}
+
+.contactGh:hover .contactPageLabel,
+.contactGh:focus-visible .contactPageLabel,
+.contactGh:hover .contactPageArrow,
+.contactGh:focus-visible .contactPageArrow {
+  color: #fff;
+}
+
+.contactGh:hover .contactPageArrow,
+.contactGh:focus-visible .contactPageArrow {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Resume — Figma 574×341 at (107, 375) */
+.contactResume {
+  left: calc(var(--contact-dst-left) / var(--art-w) * 100%);
+  top: calc(375 / var(--art-h) * 100%);
+  width: calc(
+    574 * var(--contact-dst-span) / var(--contact-src-span) / var(--art-w) * 100%
+  );
+  height: calc(341 / var(--art-h) * 100%);
+  container-type: size;
+  --card-brand: #0635fd;
+}
+
+.contactResume:hover,
+.contactResume:focus-visible {
+  background: #0635fd;
+}
+
+.contactResume:hover .contactPageLabel,
+.contactResume:focus-visible .contactPageLabel,
+.contactResume:focus-within .contactPageLabel,
+.contactResume:hover .contactPageArrow,
+.contactResume:focus-visible .contactPageArrow,
+.contactResume:hover .contactPageAction,
+.contactResume:focus-within .contactPageAction {
+  color: #fff;
+}
+
+.contactResume:hover .contactPageArrow,
+.contactResume:focus-visible .contactPageArrow,
+.contactResume:hover .contactPageAction,
+.contactResume:focus-within .contactPageAction {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* LinkedIn — Figma 574×312 at (107, 736) */
+.contactLi {
+  left: calc(var(--contact-dst-left) / var(--art-w) * 100%);
+  top: calc(736 / var(--art-h) * 100%);
+  width: calc(
+    574 * var(--contact-dst-span) / var(--contact-src-span) / var(--art-w) * 100%
+  );
+  height: calc(312 / var(--art-h) * 100%);
+  container-type: size;
+  --card-brand: #0a66c2;
+}
+
+.contactLi:hover,
+.contactLi:focus-visible {
+  background: #0a66c2;
+}
+
+.contactLi:hover .contactPageLabel,
+.contactLi:focus-visible .contactPageLabel,
+.contactLi:hover .contactPageArrow,
+.contactLi:focus-visible .contactPageArrow {
+  color: #fff;
+}
+
+.contactLi:hover .contactPageArrow,
+.contactLi:focus-visible .contactPageArrow {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Email — Figma 1112×439 at (701, 609) */
+.contactEmail {
+  left: calc(
+    (
+        var(--contact-dst-left) + (701 - var(--contact-src-left)) *
+          var(--contact-dst-span) / var(--contact-src-span)
+      ) / var(--art-w) * 100%
+  );
+  top: calc(609 / var(--art-h) * 100%);
+  width: calc(
+    1112 * var(--contact-dst-span) / var(--contact-src-span) / var(--art-w) * 100%
+  );
+  height: calc(439 / var(--art-h) * 100%);
+  container-type: size;
+  --card-brand: #0635fd;
+  transition: background-color 320ms ease, transform 220ms ease, box-shadow 220ms ease;
+}
+
+.contactEmail:hover,
+.contactEmail:focus-visible {
+  background: #0635fd;
+}
+
+.contactEmail:hover .contactPageLabel,
+.contactEmail:focus-visible .contactPageLabel,
+.contactEmail:focus-within .contactPageLabel,
+.contactEmail:hover .contactPageArrow,
+.contactEmail:focus-visible .contactPageArrow,
+.contactEmail:hover .contactPageAction,
+.contactEmail:focus-within .contactPageAction {
+  color: #fff;
+}
+
+.contactEmail:hover .contactPageArrow,
+.contactEmail:focus-visible .contactPageArrow,
+.contactEmail:hover .contactPageAction,
+.contactEmail:focus-within .contactPageAction {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.contactEmail .contactPageLabel {
+  text-transform: none;
+}
+
+/* Stacked mobile / tablet layout */
+@media (max-width: 900px) {
+  .page {
+    padding: 0.35rem 0.75rem 5rem;
+  }
+
+  .pageContent {
+    margin-top: 0;
+  }
+
+  .bentoFooter {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+    padding: 0;
+  }
+
+  .bentoFooterStatus {
+    width: 100%;
+    white-space: normal;
+    font-size: 0.75rem;
+  }
+
+  .bentoFooterLinks {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    row-gap: 0.35rem;
+  }
+
+  .bentoFooterLink {
+    font-size: 0.75rem;
+  }
+
+  .themeToggle {
+    position: relative;
+    top: auto;
+    right: auto;
+    display: block;
+    margin: 0 0 0.5rem auto;
+  }
+
+  .board {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    aspect-ratio: auto;
+    height: auto;
+  }
+
+  .card {
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 220px;
+  }
+
+  .intro {
+    min-height: 160px;
+    aspect-ratio: 547 / 200;
+    overflow: hidden;
+  }
+
+  .introCopy {
+    font-size: clamp(0.75rem, 3vw, 0.9375rem);
+  }
+
+  .grove,
+  .samples,
+  .seaSky,
+  .selah,
+  .ziplearn,
+  .tidehaus {
+    aspect-ratio: 546 / 478;
+    min-height: 0;
+  }
+
+  .ziplearn,
+  .tidehaus {
+    aspect-ratio: 546 / 437;
+  }
+
+  .seaSky {
+    aspect-ratio: 547 / 600;
+  }
+
+  .selah {
+    aspect-ratio: 547 / 553;
+  }
+
+  .breathe {
+    aspect-ratio: 1112 / 438;
+    min-height: 280px;
+    overflow: hidden;
+  }
+
+  .openToWork {
+    aspect-ratio: 546 / 437;
+    min-height: 240px;
+  }
+
+  .openToWorkTitle {
+    font-size: clamp(1.375rem, 6vw, 2rem);
+  }
+
+  .openToWorkRole {
+    font-size: clamp(0.875rem, 3.4vw, 1.125rem);
+  }
+
+  .openToWorkButton {
+    font-size: clamp(0.9375rem, 3.6vw, 1.25rem);
+  }
+
+  .contact {
+    aspect-ratio: 405 / 435;
+    min-height: 240px;
+  }
+
+  .contactButtonLabel {
+    font-size: clamp(1rem, 4vw, 1.375rem);
+  }
+
+  .favoriteStack {
+    aspect-ratio: 688 / 435;
+    min-height: 280px;
+  }
+
+  .favoriteStackTitle {
+    font-size: clamp(1rem, 4vw, 1.375rem);
+  }
+
+  .aboutBio {
+    aspect-ratio: 759 / 970;
+    min-height: 320px;
+  }
+
+  .aboutBioHeading {
+    font-size: clamp(1.75rem, 8vw, 2.75rem);
+  }
+
+  .aboutBioCopy p {
+    font-size: clamp(0.875rem, 3.4vw, 1.125rem);
+  }
+
+  .aboutPhoto {
+    aspect-ratio: 900 / 720;
+    min-height: 240px;
+  }
+
+  .aboutDuo {
+    aspect-ratio: 900 / 586;
+    min-height: 280px;
+  }
+
+  .aboutMap,
+  .aboutSlotMid {
+    aspect-ratio: 759 / 336;
+    min-height: 140px;
+  }
+
+  .aboutActivities,
+  .aboutSlotBL {
+    aspect-ratio: 759 / 502;
+    min-height: 180px;
+  }
+
+  .aboutSkills,
+  .aboutSlotBR {
+    aspect-ratio: 900 / 502;
+    min-height: 180px;
+  }
+
+  .aboutActivitiesTitle {
+    font-size: clamp(1rem, 4vw, 1.375rem);
+  }
+
+  .aboutActivitiesBody {
+    font-size: clamp(0.8125rem, 3.2vw, 1.125rem);
+  }
+
+  .aboutActivitiesLabel {
+    font-size: clamp(0.6875rem, 2.8vw, 0.9375rem);
+  }
+
+  .aboutDuoCount {
+    font-size: clamp(3.5rem, 18vw, 7.625rem);
+  }
+
+  .aboutDuoLabel {
+    font-size: clamp(1.25rem, 6vw, 2.625rem);
+  }
+
+  .aboutDuoLangTitle {
+    font-size: clamp(0.875rem, 4vw, 1.5rem);
+  }
+
+  .contactIntro {
+    aspect-ratio: 574 / 244;
+    min-height: 140px;
+  }
+
+  .contactIntroTitle {
+    font-size: clamp(0.875rem, 3.5vw, 1.375rem);
+    padding: 1.25rem;
+  }
+
+  .contactIg,
+  .contactGh {
+    aspect-ratio: 546 / 478;
+    min-height: 260px;
+  }
+
+  .contactResume {
+    aspect-ratio: 574 / 341;
+    min-height: 200px;
+  }
+
+  .contactLi {
+    aspect-ratio: 574 / 312;
+    min-height: 180px;
+  }
+
+  .contactEmail {
+    aspect-ratio: 1112 / 439;
+    min-height: 220px;
+  }
+
+  .contactPageLabel {
+    font-size: clamp(0.875rem, 3.5vw, 1.375rem);
+  }
+
+  /*
+   * No hover on touch — lock cards to their final hovered look:
+   * brand backgrounds, white (or brand) titles, full-opacity taglines, chip faces.
+   * Layer motion is forced separately via useCardHover().
+   */
+  .page :is(
+    a.grove .groveTagline,
+    a.samples .samplesTagline,
+    a.seaSky .seaSkyTagline,
+    a.selah .selahTagline,
+    a.ziplearn .ziplearnTagline,
+    a.tidehaus .tidehausTagline,
+    .aboutBio .aboutBioCopy p,
+    .aboutActivities .aboutActivitiesBody,
+    .aboutDuo .aboutDuoLabel,
+    .intro .introLocationSub,
+    .favoriteStack .favoriteStackToolDesc
+  ) {
+    opacity: var(--text-header-opacity);
+  }
+
+  a.grove .groveBg {
+    background: var(--card-brand-hover, var(--card-brand, #78a723));
+  }
+
+  a.grove .groveTitle,
+  a.grove .groveTagline {
+    color: #fff;
+  }
+
+  a.samples .samplesBg {
+    background: var(--card-brand-hover, var(--card-brand));
+  }
+
+  a.samples .samplesTitle,
+  a.samples .samplesTagline {
+    color: var(--card-brand, #000);
+  }
+
+  a.samples .samplesBadgeFace {
+    background: #fff;
+  }
+
+  a.seaSky .seaSkyBgHover {
+    opacity: 1;
+  }
+
+  a.seaSky .seaSkyTitle,
+  a.seaSky .seaSkyTagline {
+    color: #fff;
+  }
+
+  a.seaSky .seaSkyChip {
+    background: #fff;
+  }
+
+  a.selah .selahBg {
+    background: var(--card-brand-hover, var(--card-brand, #878279));
+  }
+
+  a.selah .selahTitle,
+  a.selah .selahTagline {
+    color: #fff;
+  }
+
+  a.ziplearn .ziplearnBg {
+    background: var(--card-brand-hover, var(--card-brand, #763ef8));
+  }
+
+  a.ziplearn .ziplearnTitle,
+  a.ziplearn .ziplearnTagline {
+    color: #fff;
+  }
+
+  a.ziplearn .ziplearnChip {
+    background: #fff;
+  }
+
+  a.tidehaus .tidehausBg {
+    background: var(--card-brand-hover, var(--card-brand, #0a2d3d));
+  }
+
+  a.tidehaus .tidehausTitle,
+  a.tidehaus .tidehausTagline {
+    color: #fff;
+  }
+
+  .contact .contactPhoto {
+    transform: scale(1.06);
+  }
+
+  .page[data-theme="dark"] .contactButton .contactButtonLabel {
+    color: #fff;
+  }
+}
+
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  .contact .contactPhoto {
+    transform: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .overlayMenu {
+    bottom: 0.75rem;
+    width: calc(100vw - 1.5rem);
+  }
+
+  .overlayMenuBar {
+    height: 52px;
+    padding: 4px;
+  }
+
+  .overlayMenuItem {
+    padding: 0 0.35rem;
+  }
+}
