@@ -240,12 +240,26 @@ export default function BreatheWithSprout({
       {/* Sprout Rive — same size always; slides right when the session starts.
           Menu hover: gentle scale-up from the feet so Sprout leans into the card. */}
       <motion.div
-        className="pointer-events-none absolute inset-y-0 z-[5] w-[52%] origin-bottom"
+        className={`pointer-events-none absolute z-[5] origin-bottom ${
+          isMobile
+            ? isActive
+              ? "bottom-0 left-1/2 h-[40%] w-[85%]"
+              : "bottom-0 left-1/2 h-[48%] w-[90%]"
+            : "inset-y-0 w-[52%]"
+        }`}
         initial={false}
-        animate={{
-          right: isActive ? "0%" : "10%",
-          scale: menuHover ? 1.02 : 1,
-        }}
+        animate={
+          isMobile
+            ? {
+                x: "-50%",
+                y: isActive ? 4 : 0,
+                scale: menuHover ? 1.04 : 1,
+              }
+            : {
+                right: isActive ? "0%" : "10%",
+                scale: menuHover ? 1.02 : 1,
+              }
+        }
         transition={
           isActive
             ? SPRING
@@ -256,12 +270,22 @@ export default function BreatheWithSprout({
       >
         <div
           className="absolute"
-          style={{
-            width: "180%",
-            height: "180%",
-            left: "-38%",
-            bottom: "-44%",
-          }}
+          style={
+            isMobile
+              ? {
+                  width: "120%",
+                  height: "140%",
+                  left: "50%",
+                  bottom: "-16%",
+                  transform: "translateX(-50%)",
+                }
+              : {
+                  width: "180%",
+                  height: "180%",
+                  left: "-38%",
+                  bottom: "-44%",
+                }
+          }
         >
           <BreathingRivePlayer
             key={riveMountKey}
@@ -274,28 +298,107 @@ export default function BreatheWithSprout({
         </div>
       </motion.div>
 
-      {/* Left chrome: title always; setup controls when idle */}
+      {/* Mobile active session — centered column above Sprout */}
+      <AnimatePresence>
+        {isMobile && isActive ? (
+          <motion.div
+            key="mobile-active"
+            className="absolute inset-x-0 top-0 bottom-[38%] z-20 flex flex-col items-center px-4 pt-5"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={SPRING}
+          >
+            <h2 className="shrink-0 text-center text-[1.0625rem] font-bold uppercase leading-tight tracking-tight text-black">
+              Breathe with Sprout
+            </h2>
+
+            <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-4 py-3">
+              <p className="text-[1rem] font-semibold text-[#53b035]">
+                {phaseInstruction(phase)}
+              </p>
+              <BreathingPerimeterCard
+                progress={cycleProgress}
+                timeLabel={formatMmSs(secondsRemaining)}
+                className="w-[min(42cqh,46%,168px)]"
+              />
+              <div className="mt-1 flex items-center justify-center gap-3">
+                {!paused ? (
+                  <button
+                    type="button"
+                    onClick={() => setPaused(true)}
+                    className="flex size-12 items-center justify-center rounded-full bg-[#ace23b] text-white transition hover:brightness-95"
+                    aria-label="Pause"
+                  >
+                    <PauseIcon />
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setPaused(false)}
+                      className="flex size-12 items-center justify-center rounded-full bg-[#ace23b] text-white transition hover:brightness-95"
+                      aria-label="Continue"
+                    >
+                      <PlayIcon />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={endSessionToSetup}
+                      className="flex h-12 items-center justify-center rounded-full bg-white px-6 text-[14px] font-bold text-[#53b035] shadow-sm transition hover:brightness-95"
+                    >
+                      End
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      {/* Chrome: title always; setup controls when idle (desktop active uses left chrome) */}
       <div
-        className={`absolute inset-y-0 left-0 z-20 flex flex-col px-[clamp(1.25rem,4%,2rem)] pt-[clamp(1.35rem,4.5%,1.875rem)] pb-[clamp(1.35rem,4.5cqh,1.875rem)] transition-[width,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-          isActive
-            ? "w-[min(28%,220px)] bg-transparent"
-            : "w-[min(46%,340px)] bg-[#F3FBDE]"
+        className={`absolute z-20 flex min-w-0 flex-col transition-[width,background-color,inset] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          isMobile
+            ? isActive
+              ? "pointer-events-none invisible inset-y-0 left-0 w-0 overflow-hidden opacity-0"
+              : "inset-x-0 top-0 h-auto max-h-[58%] bg-gradient-to-b from-[#F3FBDE] from-70% to-transparent px-4 pt-5 pb-2"
+            : isActive
+              ? "inset-y-0 left-0 w-[min(28%,220px)] bg-transparent px-[clamp(1.25rem,4%,2rem)] pt-[clamp(1.35rem,4.5%,1.875rem)] pb-[clamp(1.35rem,4.5cqh,1.875rem)]"
+              : "inset-y-0 left-0 w-[min(46%,340px)] bg-[#F3FBDE] px-[clamp(1.25rem,4%,2rem)] pt-[clamp(1.35rem,4.5%,1.875rem)] pb-[clamp(1.35rem,4.5cqh,1.875rem)]"
         }`}
       >
-        <div>
-          <h2 className="text-[clamp(0.875rem,1.3vw,1.25rem)] font-bold uppercase tracking-tight text-black">
+        <div
+          className={`min-w-0 shrink-0 ${
+            isMobile ? "mx-auto w-full max-w-[20rem] text-center" : ""
+          }`}
+        >
+          <h2
+            className={`font-bold uppercase tracking-tight text-black ${
+              isMobile
+                ? "text-[1.0625rem] leading-tight"
+                : "text-[clamp(0.875rem,1.3vw,1.25rem)]"
+            }`}
+          >
             Breathe with Sprout
           </h2>
           <p
-            className={`mt-1.5 max-w-[270px] text-[clamp(0.75rem,1vw,0.9375rem)] font-medium leading-[1.4] text-black transition-opacity duration-320 ${
-              hovered || isMobile ? "opacity-100" : "opacity-60"
-            }`}
+            className={`mt-1.5 font-medium leading-[1.35] text-black transition-opacity duration-320 ${
+              isMobile
+                ? "mx-auto max-w-[18rem] text-[0.8125rem]"
+                : "max-w-[270px] text-[clamp(0.75rem,1vw,0.9375rem)]"
+            } ${hovered || isMobile ? "opacity-100" : "opacity-60"}`}
           >
             Take a moment to slow down and reset
           </p>
         </div>
 
-        <div className="relative mt-[clamp(1.25rem,4cqh,1.75rem)] flex min-h-0 flex-1 flex-col">
+        <div
+          className={`relative flex min-h-0 min-w-0 flex-1 flex-col ${
+            isMobile ? "mt-6" : "mt-[clamp(1.25rem,4cqh,1.75rem)]"
+          }`}
+        >
           <AnimatePresence mode="wait" initial={false}>
             {!isActive && (
               <motion.div
@@ -304,11 +407,31 @@ export default function BreatheWithSprout({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.28 }}
-                className="flex h-full w-full max-w-[302px] flex-col"
+                className={`flex min-w-0 w-full flex-col ${
+                  isMobile ? "max-w-none items-center" : "h-full max-w-[302px]"
+                }`}
               >
-                <div className="flex flex-col gap-[clamp(1rem,3.2cqh,1.35rem)]">
-                  <div className="flex w-fit flex-col items-center gap-1.5">
-                    <div className="flex items-center gap-2 text-[clamp(1rem,1.45vw,1.25rem)] font-medium text-[#ace23b]">
+                <div
+                  className={`flex min-w-0 flex-col ${
+                    isMobile
+                      ? "w-full max-w-[20rem] items-center gap-5"
+                      : "gap-[clamp(1rem,3.2cqh,1.35rem)]"
+                  }`}
+                >
+                  <div
+                    className={`flex flex-col ${
+                      isMobile
+                        ? "w-full items-center gap-2"
+                        : "w-fit items-center gap-1.5"
+                    }`}
+                  >
+                    <div
+                      className={`flex items-center gap-2 font-medium text-[#ace23b] ${
+                        isMobile
+                          ? "text-[1.0625rem]"
+                          : "text-[clamp(1rem,1.45vw,1.25rem)]"
+                      }`}
+                    >
                       <span>4</span>
                       <span className="size-1 rounded-full bg-[#ace23b]" />
                       <span>4</span>
@@ -317,12 +440,24 @@ export default function BreatheWithSprout({
                       <span className="size-1 rounded-full bg-[#ace23b]" />
                       <span>4</span>
                     </div>
-                    <p className="whitespace-nowrap text-center text-[clamp(0.6875rem,0.9vw,0.8125rem)] font-medium text-[rgba(83,176,53,0.6)]">
+                    <p
+                      className={`font-medium text-[rgba(83,176,53,0.6)] ${
+                        isMobile
+                          ? "text-center text-[0.75rem]"
+                          : "whitespace-nowrap text-center text-[clamp(0.6875rem,0.9vw,0.8125rem)]"
+                      }`}
+                    >
                       Inhale - Hold - Exhale - Hold
                     </p>
                   </div>
 
-                  <div className="flex w-full gap-2">
+                  <div
+                    className={
+                      isMobile
+                        ? "grid w-full min-w-0 grid-cols-4 gap-2"
+                        : "flex w-full gap-2"
+                    }
+                  >
                     {DURATIONS.map((m) => {
                       const selected = minutes === m;
                       return (
@@ -330,7 +465,11 @@ export default function BreatheWithSprout({
                           key={m}
                           type="button"
                           onClick={() => setMinutes(m)}
-                          className={`flex h-10 flex-1 items-center justify-center rounded-[30px] text-[clamp(0.75rem,0.95vw,0.875rem)] font-medium transition ${
+                          className={`flex min-w-0 items-center justify-center rounded-[30px] font-medium transition ${
+                            isMobile
+                              ? "h-10 px-1 text-[0.6875rem] leading-none"
+                              : "h-10 flex-1 text-[clamp(0.75rem,0.95vw,0.875rem)]"
+                          } ${
                             selected
                               ? "bg-white text-[#ace23b]"
                               : "bg-[#e8f3c8] text-black/40 hover:bg-white/80"
@@ -341,43 +480,68 @@ export default function BreatheWithSprout({
                       );
                     })}
                   </div>
+
+                  {isMobile ? (
+                    <motion.button
+                      type="button"
+                      onClick={startSession}
+                      className="mx-auto mt-1 flex h-12 w-[min(100%,12rem)] shrink-0 items-center justify-center rounded-[30px] bg-[#ace23b] text-[0.9375rem] font-medium text-[#fefffd] hover:brightness-95"
+                      animate={
+                        reduced ? { scale: 1 } : { scale: [1, 1.045, 1] }
+                      }
+                      transition={
+                        reduced
+                          ? undefined
+                          : {
+                              duration: 1.7,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }
+                      }
+                      whileHover={reduced ? undefined : { scale: 1.06 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      Start
+                    </motion.button>
+                  ) : null}
                 </div>
 
-                <motion.button
-                  type="button"
-                  onClick={startSession}
-                  className="mt-auto flex h-11 w-44 items-center justify-center rounded-[30px] bg-[#ace23b] text-[clamp(0.8125rem,1vw,0.9375rem)] font-medium text-[#fefffd] hover:brightness-95"
-                  animate={
-                    reduced ? { scale: 1 } : { scale: [1, 1.045, 1] }
-                  }
-                  transition={
-                    reduced
-                      ? undefined
-                      : {
-                          duration: 1.7,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }
-                  }
-                  whileHover={reduced ? undefined : { scale: 1.06 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  Start
-                </motion.button>
+                {!isMobile ? (
+                  <motion.button
+                    type="button"
+                    onClick={startSession}
+                    className="mt-auto flex h-11 w-44 shrink-0 items-center justify-center rounded-[30px] bg-[#ace23b] text-[clamp(0.8125rem,1vw,0.9375rem)] font-medium text-[#fefffd] hover:brightness-95"
+                    animate={
+                      reduced ? { scale: 1 } : { scale: [1, 1.045, 1] }
+                    }
+                    transition={
+                      reduced
+                        ? undefined
+                        : {
+                            duration: 1.7,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }
+                    }
+                    whileHover={reduced ? undefined : { scale: 1.06 }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    Start
+                  </motion.button>
+                ) : null}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
 
-      {/* Pause / End — bottom-aligned with the centered breath square */}
+      {/* Pause / End — desktop only (mobile uses the centered active column) */}
       <AnimatePresence>
-        {isActive && (
+        {isActive && !isMobile ? (
           <motion.div
             key="pause"
             className="absolute left-[clamp(1.25rem,4%,2rem)] z-20 flex items-center gap-3"
             style={{
-              // Square group is vertically centered; offset for phase label + gap above the box
               bottom: `calc(50% - (${SQUARE_SIZE}) / 2 - 0.85rem)`,
             }}
             initial={{ opacity: 0, scale: 0.85 }}
@@ -414,12 +578,12 @@ export default function BreatheWithSprout({
               </>
             )}
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
 
-      {/* Center square + phase label */}
+      {/* Center square + phase label — desktop only */}
       <AnimatePresence>
-        {isActive && (
+        {isActive && !isMobile ? (
           <motion.div
             key="square"
             className="pointer-events-none absolute inset-y-0 left-[18%] right-[38%] z-10 flex flex-col items-center justify-center"
@@ -437,7 +601,7 @@ export default function BreatheWithSprout({
               className="w-[min(44cqh,72%,170px)]"
             />
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );

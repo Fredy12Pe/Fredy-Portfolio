@@ -120,20 +120,26 @@
   transition: opacity 320ms ease, color 320ms ease;
 }
 
-/* Descriptions go full opacity on card hover / focus */
+/* Descriptions go full opacity on card hover / focus / mobile play */
 .page :is(
   a.grove:hover .groveTagline,
   a.grove:focus-visible .groveTagline,
+  a.grove[data-card-active="true"] .groveTagline,
   a.samples:hover .samplesTagline,
   a.samples:focus-visible .samplesTagline,
+  a.samples[data-card-active="true"] .samplesTagline,
   a.seaSky:hover .seaSkyTagline,
   a.seaSky:focus-visible .seaSkyTagline,
+  a.seaSky[data-card-active="true"] .seaSkyTagline,
   a.selah:hover .selahTagline,
   a.selah:focus-visible .selahTagline,
+  a.selah[data-card-active="true"] .selahTagline,
   a.ziplearn:hover .ziplearnTagline,
   a.ziplearn:focus-visible .ziplearnTagline,
+  a.ziplearn[data-card-active="true"] .ziplearnTagline,
   a.tidehaus:hover .tidehausTagline,
   a.tidehaus:focus-visible .tidehausTagline,
+  a.tidehaus[data-card-active="true"] .tidehausTagline,
   .aboutBio:hover .aboutBioCopy p,
   .aboutBio:focus-visible .aboutBioCopy p,
   .aboutActivities:hover .aboutActivitiesBody,
@@ -253,16 +259,134 @@
   border-radius: 4px;
 }
 
-/* Flush with the right edge of the bento cards (samples/contact end at 1799 / 1920) */
-.themeToggle {
+/* Desktop: theme sits over the artboard; mobile: sticky top nav + theme */
+.topChrome {
   position: absolute;
   top: calc(48 / var(--art-h) * 100%);
   right: calc(121 / var(--art-w) * 100%);
   z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.themeToggle {
+  position: relative;
+  top: auto;
+  right: auto;
+  z-index: 1;
+  flex-shrink: 0;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
+}
+
+.mobileTopNav {
+  display: none;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  height: 48px;
+  padding: 4px;
+  border: 1px solid var(--menu-glass-border);
+  border-radius: 999px;
+  background: var(--menu-bar-bg);
+  box-shadow:
+    inset 0 1px 0 var(--menu-glass-highlight),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+    0 1px 2px rgba(15, 20, 28, 0.06),
+    0 10px 28px var(--menu-glass-shadow);
+  backdrop-filter: blur(48px) saturate(180%);
+  -webkit-backdrop-filter: blur(48px) saturate(180%);
+}
+
+.mobileTopNav::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.42) 0%,
+      rgba(255, 255, 255, 0.18) 45%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+  content: "";
+  pointer-events: none;
+}
+
+.page[data-theme="dark"] .mobileTopNav::before {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(0, 0, 0, 0.18) 100%
+    );
+}
+
+.mobileTopNavLink {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 0.35rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--menu-muted);
+  font-family: inherit;
+  font-size: clamp(0.75rem, 3.2vw, 0.9375rem);
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.mobileTopNavLink:hover,
+.mobileTopNavLink[data-active="true"] {
+  color: var(--menu-text);
+}
+
+.mobileTopNavLink:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 2px;
+}
+
+.mobileTopNavPill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent),
+    var(--menu-active);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 2px rgba(15, 20, 28, 0.06),
+    0 4px 14px rgba(15, 20, 28, 0.12);
+  pointer-events: none;
+}
+
+.mobileTopNavLabel {
+  position: relative;
+  z-index: 1;
+}
+
+.page[data-breathing="active"] .mobileTopNav {
+  pointer-events: none;
+  opacity: 0.55;
 }
 
 .themeToggleTrack {
@@ -789,7 +913,8 @@ a.card:focus-visible {
 }
 
 a.grove:hover .groveBg,
-a.grove:focus-visible .groveBg {
+a.grove:focus-visible .groveBg,
+a.grove[data-card-active="true"] .groveBg {
   background: var(--card-brand-hover, var(--card-brand, #78a723));
 }
 
@@ -829,7 +954,9 @@ a.grove:focus-visible .groveBg {
 a.grove:hover .groveTitle,
 a.grove:hover .groveTagline,
 a.grove:focus-visible .groveTitle,
-a.grove:focus-visible .groveTagline {
+a.grove:focus-visible .groveTagline,
+a.grove[data-card-active="true"] .groveTitle,
+a.grove[data-card-active="true"] .groveTagline {
   color: #fff;
 }
 
@@ -879,7 +1006,8 @@ a.grove:focus-visible .groveTagline {
 }
 
 a.samples:hover .samplesBg,
-a.samples:focus-visible .samplesBg {
+a.samples:focus-visible .samplesBg,
+a.samples[data-card-active="true"] .samplesBg {
   background: var(--card-brand-hover, var(--card-brand));
 }
 
@@ -921,7 +1049,9 @@ a.samples:focus-visible .samplesBg {
 a.samples:hover .samplesTitle,
 a.samples:hover .samplesTagline,
 a.samples:focus-visible .samplesTitle,
-a.samples:focus-visible .samplesTagline {
+a.samples:focus-visible .samplesTagline,
+a.samples[data-card-active="true"] .samplesTitle,
+a.samples[data-card-active="true"] .samplesTagline {
   color: var(--card-brand, #000);
 }
 
@@ -965,7 +1095,8 @@ a.samples:focus-visible .samplesTagline {
 }
 
 a.samples:hover .samplesBadgeFace,
-a.samples:focus-visible .samplesBadgeFace {
+a.samples:focus-visible .samplesBadgeFace,
+a.samples[data-card-active="true"] .samplesBadgeFace {
   background: #fff;
 }
 
@@ -1028,7 +1159,8 @@ a.samples:focus-visible .samplesBadgeFace {
 }
 
 a.seaSky:hover .seaSkyBgHover,
-a.seaSky:focus-visible .seaSkyBgHover {
+a.seaSky:focus-visible .seaSkyBgHover,
+a.seaSky[data-card-active="true"] .seaSkyBgHover {
   opacity: 1;
 }
 
@@ -1067,7 +1199,9 @@ a.seaSky:focus-visible .seaSkyBgHover {
 a.seaSky:hover .seaSkyTitle,
 a.seaSky:hover .seaSkyTagline,
 a.seaSky:focus-visible .seaSkyTitle,
-a.seaSky:focus-visible .seaSkyTagline {
+a.seaSky:focus-visible .seaSkyTagline,
+a.seaSky[data-card-active="true"] .seaSkyTitle,
+a.seaSky[data-card-active="true"] .seaSkyTagline {
   color: #fff;
 }
 
@@ -1113,7 +1247,8 @@ a.seaSky:focus-visible .seaSkyTagline {
 
 /* Brand hover — solid white chips */
 a.seaSky:hover .seaSkyChip,
-a.seaSky:focus-visible .seaSkyChip {
+a.seaSky:focus-visible .seaSkyChip,
+a.seaSky[data-card-active="true"] .seaSkyChip {
   background: #fff;
 }
 
@@ -1200,7 +1335,8 @@ a.seaSky:focus-visible .seaSkyChip {
 }
 
 a.selah:hover .selahBg,
-a.selah:focus-visible .selahBg {
+a.selah:focus-visible .selahBg,
+a.selah[data-card-active="true"] .selahBg {
   background: var(--card-brand-hover, var(--card-brand, #878279));
 }
 
@@ -1240,7 +1376,9 @@ a.selah:focus-visible .selahBg {
 a.selah:hover .selahTitle,
 a.selah:hover .selahTagline,
 a.selah:focus-visible .selahTitle,
-a.selah:focus-visible .selahTagline {
+a.selah:focus-visible .selahTagline,
+a.selah[data-card-active="true"] .selahTitle,
+a.selah[data-card-active="true"] .selahTagline {
   color: #fff;
 }
 
@@ -1305,7 +1443,8 @@ a.selah:focus-visible .selahTagline {
 }
 
 a.ziplearn:hover .ziplearnBg,
-a.ziplearn:focus-visible .ziplearnBg {
+a.ziplearn:focus-visible .ziplearnBg,
+a.ziplearn[data-card-active="true"] .ziplearnBg {
   background: var(--card-brand-hover, var(--card-brand, #763ef8));
 }
 
@@ -1344,7 +1483,9 @@ a.ziplearn:focus-visible .ziplearnBg {
 a.ziplearn:hover .ziplearnTitle,
 a.ziplearn:hover .ziplearnTagline,
 a.ziplearn:focus-visible .ziplearnTitle,
-a.ziplearn:focus-visible .ziplearnTagline {
+a.ziplearn:focus-visible .ziplearnTagline,
+a.ziplearn[data-card-active="true"] .ziplearnTitle,
+a.ziplearn[data-card-active="true"] .ziplearnTagline {
   color: #fff;
 }
 
@@ -1377,7 +1518,8 @@ a.ziplearn:focus-visible .ziplearnTagline {
 }
 
 a.ziplearn:hover .ziplearnChip,
-a.ziplearn:focus-visible .ziplearnChip {
+a.ziplearn:focus-visible .ziplearnChip,
+a.ziplearn[data-card-active="true"] .ziplearnChip {
   background: #fff;
 }
 
@@ -1431,7 +1573,8 @@ a.ziplearn:focus-visible .ziplearnChip {
 }
 
 a.tidehaus:hover .tidehausBg,
-a.tidehaus:focus-visible .tidehausBg {
+a.tidehaus:focus-visible .tidehausBg,
+a.tidehaus[data-card-active="true"] .tidehausBg {
   background: var(--card-brand-hover, var(--card-brand, #0a2d3d));
 }
 
@@ -1470,7 +1613,9 @@ a.tidehaus:focus-visible .tidehausBg {
 a.tidehaus:hover .tidehausTitle,
 a.tidehaus:hover .tidehausTagline,
 a.tidehaus:focus-visible .tidehausTitle,
-a.tidehaus:focus-visible .tidehausTagline {
+a.tidehaus:focus-visible .tidehausTagline,
+a.tidehaus[data-card-active="true"] .tidehausTitle,
+a.tidehaus[data-card-active="true"] .tidehausTagline {
   color: #fff;
 }
 
@@ -2009,6 +2154,13 @@ a.tidehaus:focus-visible .tidehausTagline {
   height: calc(720 / var(--art-h) * 100%);
 }
 
+/* Solid idle fill — glass reads too white and clashes with the Photos icon */
+.card.aboutPhoto {
+  background: var(--card-idle-bg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 .aboutPhoto:focus-visible {
   outline: 2px solid #a6323f;
   outline-offset: 3px;
@@ -2095,6 +2247,14 @@ a.tidehaus:focus-visible .tidehausTagline {
   z-index: 2;
   overflow: visible;
   pointer-events: none;
+  transform-origin: calc(374.82 / 1001.78 * 100%) calc(236.615 / 780 * 100%);
+  transform-style: preserve-3d;
+}
+
+/* Fills the camera group so prev/next shuffle can nudge without fighting tilt */
+.aboutPhotoShuffle {
+  position: absolute;
+  inset: 0;
   transform-origin: calc(374.82 / 1001.78 * 100%) calc(236.615 / 780 * 100%);
   transform-style: preserve-3d;
 }
@@ -3401,7 +3561,11 @@ a.card:focus-visible .contactPageOrb,
 /* Stacked mobile / tablet layout */
 @media (max-width: 900px) {
   .page {
-    padding: 0.35rem 0.75rem 5rem;
+    padding: 0.35rem 0.75rem 1.75rem;
+  }
+
+  .scrollHint {
+    display: none;
   }
 
   .pageContent {
@@ -3434,12 +3598,23 @@ a.card:focus-visible .contactPageOrb,
     font-size: 0.75rem;
   }
 
-  .themeToggle {
-    position: relative;
-    top: auto;
+  .topChrome {
+    position: sticky;
+    top: 0;
     right: auto;
-    display: block;
-    margin: 0 0 0.5rem auto;
+    z-index: 40;
+    width: 100%;
+    padding: 1.25rem 0 1.35rem;
+    margin: 0;
+    justify-content: flex-start;
+  }
+
+  .mobileTopNav {
+    display: grid;
+  }
+
+  .overlayMenu {
+    display: none;
   }
 
   .board {
@@ -3461,12 +3636,43 @@ a.card:focus-visible .contactPageOrb,
   }
 
   .intro {
-    min-height: 160px;
-    aspect-ratio: 547 / 200;
+    min-height: 180px;
+    aspect-ratio: 547 / 230;
     overflow: hidden;
   }
 
   .introCopy {
+    font-size: clamp(0.875rem, 3.4vw, 1.0625rem);
+    opacity: 1 !important;
+  }
+
+  .introLocation {
+    display: none;
+  }
+
+  .introLocationTitle {
+    font-size: clamp(0.8125rem, 3.2vw, 0.9375rem);
+  }
+
+  .introLocationSub {
+    font-size: clamp(0.6875rem, 2.8vw, 0.8125rem);
+  }
+
+  .groveTitle,
+  .samplesTitle,
+  .seaSkyTitle,
+  .selahTitle,
+  .ziplearnTitle,
+  .tidehausTitle {
+    font-size: clamp(1.125rem, 4.8vw, 1.5rem);
+  }
+
+  .groveTagline,
+  .samplesTagline,
+  .seaSkyTagline,
+  .selahTagline,
+  .ziplearnTagline,
+  .tidehausTagline {
     font-size: clamp(0.75rem, 3vw, 0.9375rem);
   }
 
@@ -3494,26 +3700,49 @@ a.card:focus-visible .contactPageOrb,
   }
 
   .breathe {
-    aspect-ratio: 1112 / 438;
-    min-height: 280px;
+    aspect-ratio: 2 / 3;
+    min-height: 540px;
     overflow: hidden;
   }
 
   .openToWork {
-    aspect-ratio: 546 / 437;
-    min-height: 240px;
+    aspect-ratio: 2.1 / 1;
+    min-height: 190px;
+    height: auto;
+  }
+
+  .openToWorkScene {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.35rem 1.2rem 1.25rem;
+    min-height: 190px;
+  }
+
+  .openToWorkCopy {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
   }
 
   .openToWorkTitle {
-    font-size: clamp(1.375rem, 6vw, 2rem);
+    font-size: clamp(1.25rem, 5.5vw, 1.625rem);
   }
 
   .openToWorkRole {
-    font-size: clamp(0.875rem, 3.4vw, 1.125rem);
+    font-size: clamp(0.8125rem, 3.2vw, 1rem);
   }
 
   .openToWorkButton {
-    font-size: clamp(0.9375rem, 3.6vw, 1.25rem);
+    position: relative !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    height: 3rem !important;
+    font-size: clamp(0.875rem, 3.4vw, 1.0625rem);
   }
 
   .contact {
@@ -3534,74 +3763,221 @@ a.card:focus-visible .contactPageOrb,
     font-size: clamp(1rem, 4vw, 1.375rem);
   }
 
+  /*
+   * About Me (mobile): stack needs taller cards so %-based Figma layouts
+   * don't crush type, icons, and touch targets at full phone width.
+   */
   .aboutBio {
-    aspect-ratio: 759 / 970;
-    min-height: 320px;
+    /* Tall enough for full bio copy at phone width; stack pushes cards below */
+    aspect-ratio: 759 / 1400;
+    min-height: 560px;
+    overflow: hidden;
+  }
+
+  .aboutBioScene {
+    padding: clamp(1.35rem, 5.5cqh, 2rem) clamp(1.25rem, 6.5cqw, 1.75rem);
+    gap: 1.1rem;
+    justify-content: space-between;
   }
 
   .aboutBioHeading {
-    font-size: clamp(1.75rem, 8vw, 2.75rem);
+    font-size: clamp(2rem, 9vw, 2.875rem);
+    flex-shrink: 0;
+  }
+
+  .aboutBioCopy {
+    display: contents;
   }
 
   .aboutBioCopy p {
-    font-size: clamp(0.875rem, 3.4vw, 1.125rem);
+    max-width: 100%;
+    font-size: clamp(0.9375rem, 3.8vw, 1.125rem);
+    line-height: 1.6;
   }
 
-  .aboutPhoto {
-    aspect-ratio: 900 / 720;
-    min-height: 240px;
+  .card.aboutPhoto {
+    /* Near design ratio so camera layers aren’t distorted; a bit of extra
+       height + bottom-pinned nav keeps Prev/Next labels visible */
+    aspect-ratio: 900 / 800;
+    min-height: 360px;
+    box-shadow: 0 8px 28px var(--glass-shadow);
+  }
+
+  /* Lock camera assembly to design aspect — card height overrides were stretching layers */
+  .aboutPhotoCameraGroup {
+    height: auto !important;
+    aspect-ratio: 1001.78 / 780;
+  }
+
+  .aboutPhotoNav {
+    --photo-nav-inset: 1.25rem;
+    --photo-nav-size: 3.5rem;
+    --photo-nav-gap: 0.5rem;
+    top: auto !important;
+    left: var(--photo-nav-inset) !important;
+    bottom: var(--photo-nav-inset) !important;
+    width: var(--photo-nav-size) !important;
+    height: fit-content !important;
+    min-height: 0;
+    gap: 0.15rem;
+  }
+
+  .aboutPhotoNav[aria-label="Next photo"] {
+    left: calc(
+      var(--photo-nav-inset) + var(--photo-nav-size) + var(--photo-nav-gap)
+    ) !important;
+  }
+
+  .aboutPhotoNavBtn {
+    height: 2.5rem;
+    border-radius: 12px;
+  }
+
+  .aboutPhotoNavLabel {
+    font-size: clamp(0.6875rem, 2.8vw, 0.8125rem);
+  }
+
+  /* Corner app icons — same size + top/right inset on every About card */
+  .aboutPhotosIcon,
+  .aboutDuoIcon,
+  .aboutMapIcon,
+  .aboutActivitiesIcon {
+    top: 1rem !important;
+    right: 1rem !important;
+    left: auto !important;
+    width: 3.25rem !important;
+    height: 3.25rem !important;
   }
 
   .aboutDuo {
+    /* Match design 900×586 so fire %-geometry stays correct */
     aspect-ratio: 900 / 586;
-    min-height: 280px;
+    min-height: 320px;
+  }
+
+  .aboutDuoFlameOuter img,
+  .aboutDuoFlameInner img,
+  .aboutDuoSpark img {
+    object-fit: fill;
+  }
+
+  /* Flags were huge on full-bleed width — keep rail width (hover math) but shrink chips */
+  .aboutDuoFlag {
+    width: 2.85rem !important;
+    height: 1.5rem !important;
+    border-radius: 5px;
+  }
+
+  .aboutDuoLangTitle {
+    font-size: clamp(0.75rem, 3.2vw, 0.9375rem) !important;
+  }
+
+  /* Keep design streak placement so the flame sits directly above the number */
+  .aboutDuoStreak {
+    top: calc(303 / 586 * 100%);
+  }
+
+  .aboutDuoCount {
+    font-size: 13.56cqw; /* match desktop design scale */
+  }
+
+  .aboutDuoLabel {
+    font-size: 4.67cqw;
+  }
+
+  .aboutDuoConnect {
+    width: min(56%, 12.5rem);
+    height: auto;
+    min-height: 2.5rem;
+    bottom: 0.85rem;
+    padding: 0.55rem 1.1rem;
+    font-size: clamp(0.875rem, 3.6vw, 1.0625rem);
   }
 
   .aboutMap,
   .aboutSlotMid {
-    aspect-ratio: 759 / 336;
-    min-height: 140px;
+    aspect-ratio: 759 / 480;
+    min-height: 220px;
+  }
+
+  .aboutMapCity {
+    font-size: clamp(1.125rem, 4.8vw, 1.5rem);
+  }
+
+  .aboutMapCoords {
+    font-size: clamp(0.8125rem, 3.2vw, 1rem);
   }
 
   .aboutActivities,
   .aboutSlotBL {
-    aspect-ratio: 759 / 502;
-    min-height: 180px;
+    aspect-ratio: 759 / 760;
+    min-height: 340px;
+  }
+
+  /* Idle green bubble is desktop-only — activity icons show at rest on mobile */
+  .aboutActivitiesAccent {
+    display: none;
+  }
+
+  .aboutActivitiesCopy {
+    width: min(72%, 18rem) !important;
+  }
+
+  .aboutActivitiesCircle {
+    width: clamp(3.5rem, 16cqw, 4.5rem); /* was 11.86cqw — too small full-bleed */
   }
 
   .aboutSkills,
   .aboutSlotBR {
-    aspect-ratio: 900 / 502;
-    min-height: 180px;
+    aspect-ratio: 900 / 640;
+    min-height: 320px;
+  }
+
+  .aboutSkillsTitle {
+    font-size: clamp(1.125rem, 4.8vw, 1.5rem);
+  }
+
+  /* Leave room for the enlarged side controls */
+  .aboutSkillsWheelFrame {
+    width: calc(100% - 5.25rem) !important;
+  }
+
+  /* Side pills were ~19×30px at phone width — force real touch targets */
+  .aboutSkillsBtn {
+    left: auto !important;
+    right: clamp(0.65rem, 3.5%, 1rem) !important;
+    width: 3rem !important;
+    height: 3.5rem !important;
+  }
+
+  /* Pair midpoint = selector pill center (294 ÷ 502); 3.5rem pills, 0.55rem gap */
+  .aboutSkillsBtn[aria-label="Previous skill"] {
+    top: calc(100% * 294 / 502 - 3.775rem) !important;
+  }
+
+  .aboutSkillsBtn[aria-label="Next skill"] {
+    top: calc(100% * 294 / 502 + 0.275rem) !important;
+  }
+
+  .aboutSkillsArrow {
+    width: 0.7rem;
   }
 
   .aboutActivitiesTitle {
-    font-size: clamp(1rem, 4vw, 1.375rem);
+    font-size: clamp(1.125rem, 4.8vw, 1.5rem);
   }
 
   .aboutActivitiesBody {
-    font-size: clamp(0.8125rem, 3.2vw, 1.125rem);
+    font-size: clamp(0.875rem, 3.4vw, 1.0625rem);
   }
 
   .aboutActivitiesLabel {
-    font-size: clamp(0.6875rem, 2.8vw, 0.9375rem);
-  }
-
-  .aboutDuoCount {
-    font-size: clamp(3.5rem, 18vw, 7.625rem);
-  }
-
-  .aboutDuoLabel {
-    font-size: clamp(1.25rem, 6vw, 2.625rem);
-  }
-
-  .aboutDuoLangTitle {
-    font-size: clamp(0.875rem, 4vw, 1.5rem);
+    font-size: clamp(0.75rem, 3vw, 0.9375rem);
   }
 
   .contactIntro {
     aspect-ratio: 574 / 244;
-    min-height: 140px;
+    min-height: 120px;
   }
 
   .contactIntroTitle {
@@ -3609,35 +3985,61 @@ a.card:focus-visible .contactPageOrb,
     padding: 1.25rem;
   }
 
+  /* Uniform compact link cards — same size on mobile stack */
   .contactIg,
-  .contactGh {
-    aspect-ratio: 546 / 478;
-    min-height: 260px;
-  }
-
-  .contactResume {
-    aspect-ratio: 574 / 341;
-    min-height: 200px;
-  }
-
-  .contactLi {
-    aspect-ratio: 574 / 312;
-    min-height: 180px;
-  }
-
+  .contactGh,
+  .contactResume,
+  .contactLi,
   .contactEmail {
-    aspect-ratio: 1112 / 439;
-    min-height: 220px;
+    aspect-ratio: 2.4 / 1;
+    min-height: 0;
+  }
+
+  /* Plain cards on mobile — no decorative orbs */
+  .contactBoard .contactPageOrb {
+    display: none;
+  }
+
+  /* Pin chrome so %-based Figma placement doesn’t drift across card widths */
+  .contactPageArrow {
+    top: 0.95rem !important;
+    right: 0.95rem !important;
+    left: auto !important;
+    width: 2.5rem !important;
+  }
+
+  .contactPageActions {
+    top: 0.95rem !important;
+    right: 0.95rem !important;
+  }
+
+  .contactPageAction,
+  .contactResume .contactPageAction,
+  .contactEmail .contactPageAction {
+    width: 2.5rem !important;
+  }
+
+  .contactPageMeta {
+    left: 1.1rem !important;
+    top: auto !important;
+    bottom: 1rem !important;
+    gap: 0.7rem;
+  }
+
+  .contactPageIcon {
+    width: 2.25rem !important;
   }
 
   .contactPageLabel {
-    font-size: clamp(0.875rem, 3.5vw, 1.375rem);
+    font-size: clamp(0.875rem, 3.5vw, 1.25rem);
   }
 
   /*
-   * No hover on touch — lock cards to their final hovered look:
-   * brand backgrounds, white (or brand) titles, full-opacity taglines, chip faces.
-   * Layer motion is forced separately via useCardHover().
+   * Project cards (mobile):
+   * Light — full final hover look at idle (bg + end-pose layers).
+   * Dark — glass idle like desktop; same rewind → play tap sequence fills brand bg.
+   * Tap: data-card-replaying holds rest, then data-card-active plays to end + navigate.
+   * Non-project cards stay locked to their hovered look on touch.
    */
   .page :is(
     a.grove .groveTagline,
@@ -3649,76 +4051,158 @@ a.card:focus-visible .contactPageOrb,
     .aboutBio .aboutBioCopy p,
     .aboutActivities .aboutActivitiesBody,
     .aboutDuo .aboutDuoLabel,
-    .intro .introLocationSub,
     .favoriteStack .favoriteStackToolDesc
   ) {
     opacity: var(--text-header-opacity);
   }
 
-  a.grove .groveBg {
+  .page[data-theme="light"] a.grove .groveBg {
     background: var(--card-brand-hover, var(--card-brand, #78a723));
   }
 
-  a.grove .groveTitle,
-  a.grove .groveTagline {
+  .page[data-theme="light"] a.grove .groveTitle,
+  .page[data-theme="light"] a.grove .groveTagline {
     color: #fff;
   }
 
-  a.samples .samplesBg {
+  .page[data-theme="light"] a.samples .samplesBg {
     background: var(--card-brand-hover, var(--card-brand));
   }
 
-  a.samples .samplesTitle,
-  a.samples .samplesTagline {
+  .page[data-theme="light"] a.samples .samplesTitle,
+  .page[data-theme="light"] a.samples .samplesTagline {
     color: var(--card-brand, #000);
   }
 
-  a.samples .samplesBadgeFace {
+  .page[data-theme="light"] a.samples .samplesBadgeFace {
     background: #fff;
   }
 
-  a.seaSky .seaSkyBgHover {
+  .page[data-theme="light"] a.seaSky .seaSkyBgHover {
     opacity: 1;
   }
 
-  a.seaSky .seaSkyTitle,
-  a.seaSky .seaSkyTagline {
+  .page[data-theme="light"] a.seaSky .seaSkyTitle,
+  .page[data-theme="light"] a.seaSky .seaSkyTagline {
     color: #fff;
   }
 
-  a.seaSky .seaSkyChip {
+  .page[data-theme="light"] a.seaSky .seaSkyChip {
     background: #fff;
   }
 
-  a.selah .selahBg {
+  .page[data-theme="light"] a.selah .selahBg {
     background: var(--card-brand-hover, var(--card-brand, #878279));
   }
 
-  a.selah .selahTitle,
-  a.selah .selahTagline {
+  .page[data-theme="light"] a.selah .selahTitle,
+  .page[data-theme="light"] a.selah .selahTagline {
     color: #fff;
   }
 
-  a.ziplearn .ziplearnBg {
+  .page[data-theme="light"] a.ziplearn .ziplearnBg {
     background: var(--card-brand-hover, var(--card-brand, #763ef8));
   }
 
-  a.ziplearn .ziplearnTitle,
-  a.ziplearn .ziplearnTagline {
+  .page[data-theme="light"] a.ziplearn .ziplearnTitle,
+  .page[data-theme="light"] a.ziplearn .ziplearnTagline {
     color: #fff;
   }
 
-  a.ziplearn .ziplearnChip {
+  .page[data-theme="light"] a.ziplearn .ziplearnChip {
     background: #fff;
   }
 
-  a.tidehaus .tidehausBg {
+  .page[data-theme="light"] a.tidehaus .tidehausBg {
     background: var(--card-brand-hover, var(--card-brand, #0a2d3d));
   }
 
-  a.tidehaus .tidehausTitle,
-  a.tidehaus .tidehausTagline {
+  .page[data-theme="light"] a.tidehaus .tidehausTitle,
+  .page[data-theme="light"] a.tidehaus .tidehausTagline {
     color: #fff;
+  }
+
+  /* Dark mobile: idle glass like desktop (brand fill only while data-card-active on tap) */
+  .page[data-theme="dark"] :is(
+    a.grove .groveTagline,
+    a.samples .samplesTagline,
+    a.seaSky .seaSkyTagline,
+    a.selah .selahTagline,
+    a.ziplearn .ziplearnTagline,
+    a.tidehaus .tidehausTagline
+  ) {
+    opacity: var(--text-desc-opacity);
+  }
+
+  .page[data-theme="dark"] :is(
+    a.grove[data-card-active="true"] .groveTagline,
+    a.samples[data-card-active="true"] .samplesTagline,
+    a.seaSky[data-card-active="true"] .seaSkyTagline,
+    a.selah[data-card-active="true"] .selahTagline,
+    a.ziplearn[data-card-active="true"] .ziplearnTagline,
+    a.tidehaus[data-card-active="true"] .tidehausTagline
+  ) {
+    opacity: var(--text-header-opacity);
+  }
+
+  /* Tap rewind — initial (rest) look before replaying to the final hover pose */
+  a.grove[data-card-replaying="true"] .groveBg,
+  a.samples[data-card-replaying="true"] .samplesBg,
+  a.selah[data-card-replaying="true"] .selahBg,
+  a.ziplearn[data-card-replaying="true"] .ziplearnBg,
+  a.tidehaus[data-card-replaying="true"] .tidehausBg {
+    background: transparent;
+  }
+
+  a.seaSky[data-card-replaying="true"] .seaSkyBgHover {
+    opacity: 0;
+  }
+
+  a.grove[data-card-replaying="true"] .groveTitle,
+  a.grove[data-card-replaying="true"] .groveTagline,
+  a.seaSky[data-card-replaying="true"] .seaSkyTitle,
+  a.seaSky[data-card-replaying="true"] .seaSkyTagline,
+  a.selah[data-card-replaying="true"] .selahTitle,
+  a.selah[data-card-replaying="true"] .selahTagline,
+  a.ziplearn[data-card-replaying="true"] .ziplearnTitle,
+  a.ziplearn[data-card-replaying="true"] .ziplearnTagline,
+  a.tidehaus[data-card-replaying="true"] .tidehausTitle,
+  a.tidehaus[data-card-replaying="true"] .tidehausTagline {
+    color: var(--card-brand, #000);
+  }
+
+  a.samples[data-card-replaying="true"] .samplesTitle,
+  a.samples[data-card-replaying="true"] .samplesTagline {
+    color: var(--card-brand, #000);
+  }
+
+  a.samples[data-card-replaying="true"] .samplesBadgeFace {
+    background: var(--card-fg-surface);
+  }
+
+  a.seaSky[data-card-replaying="true"] .seaSkyChipResources {
+    background: var(--card-fg-surface-soft);
+  }
+
+  a.seaSky[data-card-replaying="true"] .seaSkyChipNews {
+    background: var(--card-fg-surface-mid);
+  }
+
+  a.seaSky[data-card-replaying="true"] .seaSkyChipCommunity {
+    background: var(--card-fg-surface);
+  }
+
+  a.ziplearn[data-card-replaying="true"] .ziplearnChip {
+    background: var(--card-fg-surface);
+  }
+
+  a.grove[data-card-replaying="true"] .groveTagline,
+  a.samples[data-card-replaying="true"] .samplesTagline,
+  a.seaSky[data-card-replaying="true"] .seaSkyTagline,
+  a.selah[data-card-replaying="true"] .selahTagline,
+  a.ziplearn[data-card-replaying="true"] .ziplearnTagline,
+  a.tidehaus[data-card-replaying="true"] .tidehausTagline {
+    opacity: var(--text-desc-opacity);
   }
 
   .contact .contactPhoto {

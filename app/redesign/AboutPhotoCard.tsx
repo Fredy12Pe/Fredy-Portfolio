@@ -4,12 +4,13 @@ import { useState, type PointerEvent } from "react";
 import Image from "next/image";
 import {
   AnimatePresence,
+  animate,
   motion,
   useMotionValue,
   useSpring,
   type Transition,
 } from "motion/react";
-import { useCardHover } from "./useCardHover";
+import { useCardHover, useIsMobileLayout } from "./useCardHover";
 import styles from "./redesign.module.css";
 
 const CARD = { w: 900, h: 720 } as const;
@@ -85,6 +86,7 @@ type AboutPhotoCardProps = {
 
 export default function AboutPhotoCard({ className }: AboutPhotoCardProps) {
   const { active, reduced, handlers } = useCardHover();
+  const isMobile = useIsMobileLayout();
   const [index, setIndex] = useState(0);
   const slide = SLIDES[index] ?? SLIDES[0];
   const count = SLIDES.length;
@@ -102,6 +104,11 @@ export default function AboutPhotoCard({ className }: AboutPhotoCardProps) {
   const rotateX = useSpring(rawRotateX, PARALLAX_SPRING);
   const shiftX = useSpring(rawShiftX, PARALLAX_SPRING);
   const shiftY = useSpring(rawShiftY, PARALLAX_SPRING);
+
+  /** One-shot nudge on mobile prev/next — sits under tilt/parallax. */
+  const shuffleX = useMotionValue(0);
+  const shuffleY = useMotionValue(0);
+  const shuffleRotate = useMotionValue(0);
 
   const resetParallax = () => {
     rawRotateY.set(0);
@@ -122,9 +129,22 @@ export default function AboutPhotoCard({ className }: AboutPhotoCardProps) {
     rawShiftY.set(ny * PARALLAX.maxShift);
   };
 
+  const playShuffle = (dir: -1 | 1) => {
+    if (!isMobile || reduced) return;
+    const ease = "easeInOut" as const;
+    const duration = 0.4;
+    void animate(shuffleX, [0, dir * 14, dir * -8, dir * 4, 0], { duration, ease });
+    void animate(shuffleY, [0, -6, 4, -2, 0], { duration, ease });
+    void animate(shuffleRotate, [0, dir * 2.2, dir * -1.4, dir * 0.6, 0], {
+      duration,
+      ease,
+    });
+  };
+
   const go = (dir: -1 | 1) => {
     if (count < 2) return;
     setIndex((i) => (i + dir + count) % count);
+    playShuffle(dir);
   };
 
   return (
@@ -186,126 +206,132 @@ export default function AboutPhotoCard({ className }: AboutPhotoCardProps) {
           animate={{ rotate, scale }}
           transition={tiltTransition}
         >
-          {/* Photo behind LCD */}
-          <div
-            className={styles.aboutPhotoSlide}
-            data-node-id="177:258"
-            data-name="Fredy"
-            style={{
-              left: pct(LOCAL.photo.x, CAM.w),
-              top: pct(LOCAL.photo.y, CAM.h),
-              width: pct(LOCAL.photo.w, CAM.w),
-              height: pct(LOCAL.photo.h, CAM.h),
-            }}
+          {/* Shuffle layer — mobile prev/next only; keeps tilt/parallax free */}
+          <motion.div
+            className={styles.aboutPhotoShuffle}
+            style={{ x: shuffleX, y: shuffleY, rotate: shuffleRotate }}
           >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={slideKey}
-                className={styles.aboutPhotoSlideInner}
-                initial={reduced ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={reduced ? undefined : { opacity: 0 }}
-                transition={{ duration: 0.28, ease: "easeInOut" }}
-              >
-                {slide.kind === "image" ? (
-                  <Image
-                    className={styles.aboutPhotoImg}
-                    src={slide.src}
-                    alt={slide.alt}
-                    fill
-                    sizes="(max-width: 900px) 100vw, 50vw"
-                    priority
-                    unoptimized
-                  />
-                ) : (
-                  <div
-                    className={styles.aboutPhotoColorSlide}
-                    style={{ background: slide.color }}
-                    role="img"
-                    aria-label={slide.label}
-                  />
-                )}
-              </motion.div>
-            </AnimatePresence>
-            <div className={styles.aboutPhotoGrain} aria-hidden />
-          </div>
+            {/* Photo behind LCD */}
+            <div
+              className={styles.aboutPhotoSlide}
+              data-node-id="177:258"
+              data-name="Fredy"
+              style={{
+                left: pct(LOCAL.photo.x, CAM.w),
+                top: pct(LOCAL.photo.y, CAM.h),
+                width: pct(LOCAL.photo.w, CAM.w),
+                height: pct(LOCAL.photo.h, CAM.h),
+              }}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={slideKey}
+                  className={styles.aboutPhotoSlideInner}
+                  initial={reduced ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={reduced ? undefined : { opacity: 0 }}
+                  transition={{ duration: 0.28, ease: "easeInOut" }}
+                >
+                  {slide.kind === "image" ? (
+                    <Image
+                      className={styles.aboutPhotoImg}
+                      src={slide.src}
+                      alt={slide.alt}
+                      fill
+                      sizes="(max-width: 900px) 100vw, 50vw"
+                      priority
+                      unoptimized
+                    />
+                  ) : (
+                    <div
+                      className={styles.aboutPhotoColorSlide}
+                      style={{ background: slide.color }}
+                      role="img"
+                      aria-label={slide.label}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+              <div className={styles.aboutPhotoGrain} aria-hidden />
+            </div>
 
-          {/* Camera body — transparent LCD */}
-          <div
-            className={styles.aboutPhotoCamera}
-            data-node-id="177:250"
-            data-name="Exclude"
-            style={{
-              left: pct(LOCAL.camera.x, CAM.w),
-              top: pct(LOCAL.camera.y, CAM.h),
-              width: pct(LOCAL.camera.w, CAM.w),
-              height: pct(LOCAL.camera.h, CAM.h),
-            }}
-          >
-            <Image
-              src={`/images/redesign/about/photos/camera.png?v=${ASSET_V}`}
-              alt=""
-              fill
-              sizes="(max-width: 900px) 100vw, 50vw"
-              priority
-              unoptimized
+            {/* Camera body — transparent LCD */}
+            <div
+              className={styles.aboutPhotoCamera}
+              data-node-id="177:250"
+              data-name="Exclude"
+              style={{
+                left: pct(LOCAL.camera.x, CAM.w),
+                top: pct(LOCAL.camera.y, CAM.h),
+                width: pct(LOCAL.camera.w, CAM.w),
+                height: pct(LOCAL.camera.h, CAM.h),
+              }}
+            >
+              <Image
+                src={`/images/redesign/about/photos/camera.png?v=${ASSET_V}`}
+                alt=""
+                fill
+                sizes="(max-width: 900px) 100vw, 50vw"
+                priority
+                unoptimized
+              />
+            </div>
+
+            {/* LCD wash */}
+            <div
+              className={styles.aboutPhotoLcdGradient}
+              data-node-id="177:253"
+              data-name="Overlay"
+              style={{
+                left: pct(LOCAL.lcd.x, CAM.w),
+                top: pct(LOCAL.lcd.y, CAM.h),
+                width: pct(LOCAL.lcd.w, CAM.w),
+                height: pct(LOCAL.lcd.h, CAM.h),
+              }}
             />
-          </div>
 
-          {/* LCD wash */}
-          <div
-            className={styles.aboutPhotoLcdGradient}
-            data-node-id="177:253"
-            data-name="Overlay"
-            style={{
-              left: pct(LOCAL.lcd.x, CAM.w),
-              top: pct(LOCAL.lcd.y, CAM.h),
-              width: pct(LOCAL.lcd.w, CAM.w),
-              height: pct(LOCAL.lcd.h, CAM.h),
-            }}
-          />
+            {/* Corner crop marks */}
+            <div
+              className={styles.aboutPhotoBorders}
+              data-node-id="177:327"
+              data-name="Borders"
+              style={{
+                left: pct(LOCAL.borders.x, CAM.w),
+                top: pct(LOCAL.borders.y, CAM.h),
+                width: pct(LOCAL.borders.w, CAM.w),
+                height: pct(LOCAL.borders.h, CAM.h),
+              }}
+            >
+              <Image
+                src={`/images/redesign/about/photos/borders.svg?v=${ASSET_V}`}
+                alt=""
+                fill
+                sizes="400px"
+                unoptimized
+              />
+            </div>
 
-          {/* Corner crop marks */}
-          <div
-            className={styles.aboutPhotoBorders}
-            data-node-id="177:327"
-            data-name="Borders"
-            style={{
-              left: pct(LOCAL.borders.x, CAM.w),
-              top: pct(LOCAL.borders.y, CAM.h),
-              width: pct(LOCAL.borders.w, CAM.w),
-              height: pct(LOCAL.borders.h, CAM.h),
-            }}
-          >
-            <Image
-              src={`/images/redesign/about/photos/borders.svg?v=${ASSET_V}`}
-              alt=""
-              fill
-              sizes="400px"
-              unoptimized
-            />
-          </div>
-
-          {/* Strap — tilts with camera so the cord stays attached */}
-          <div
-            className={styles.aboutPhotoStrap}
-            data-node-id="177:333"
-            data-name="Strap"
-            style={{
-              left: pct(LOCAL.strap.x, CAM.w),
-              top: pct(LOCAL.strap.y, CAM.h),
-              width: pct(LOCAL.strap.w, CAM.w),
-              height: pct(LOCAL.strap.h, CAM.h),
-            }}
-          >
-            <Image
-              src={`/images/redesign/about/photos/strap.png?v=${ASSET_V}`}
-              alt=""
-              fill
-              sizes="(max-width: 900px) 100vw, 60vw"
-              unoptimized
-            />
-          </div>
+            {/* Strap — tilts with camera so the cord stays attached */}
+            <div
+              className={styles.aboutPhotoStrap}
+              data-node-id="177:333"
+              data-name="Strap"
+              style={{
+                left: pct(LOCAL.strap.x, CAM.w),
+                top: pct(LOCAL.strap.y, CAM.h),
+                width: pct(LOCAL.strap.w, CAM.w),
+                height: pct(LOCAL.strap.h, CAM.h),
+              }}
+            >
+              <Image
+                src={`/images/redesign/about/photos/strap.png?v=${ASSET_V}`}
+                alt=""
+                fill
+                sizes="(max-width: 900px) 100vw, 60vw"
+                unoptimized
+              />
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Prev — overlays strap */}

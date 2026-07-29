@@ -44,7 +44,7 @@ type FredyCardProps = {
 };
 
 export default function FredyCard({ className }: FredyCardProps) {
-  const { active, handlers } = useCardHover();
+  const { active, handlers } = useCardHover({ forceHoverOnMobile: false });
 
   return (
     <section

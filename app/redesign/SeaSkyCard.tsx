@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, type Transition } from "motion/react";
 import { getRedesignProject } from "./projects";
-import { useCardHover } from "./useCardHover";
+import { useProjectCardNav } from "./useCardHover";
 import styles from "./redesign.module.css";
 
 const PROJECT = getRedesignProject("sea-sky");
@@ -57,11 +57,10 @@ type SeaSkyCardProps = {
 };
 
 export default function SeaSkyCard({ className }: SeaSkyCardProps) {
-  const { active, handlers } = useCardHover();
+  const { active, linkProps } = useProjectCardNav(PROJECT.href);
 
   return (
     <Link
-      href={PROJECT.href}
       className={`${styles.card} ${styles.seaSky} ${className ?? ""}`}
       aria-label={`Open ${PROJECT.title} case study`}
       data-node-id="45:2175"
@@ -69,7 +68,7 @@ export default function SeaSkyCard({ className }: SeaSkyCardProps) {
         ["--card-brand" as string]: PROJECT.brandColor,
         ["--card-brand-hover" as string]: PROJECT.brandHover ?? PROJECT.brandColor,
       }}
-      {...handlers}
+      {...linkProps}
     >
       <div className={styles.seaSkyScene}>
         <div className={styles.seaSkyBg} />

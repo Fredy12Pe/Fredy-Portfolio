@@ -301,8 +301,10 @@ function FitLabel({
       if (available <= 0) return;
 
       // Ideal size tracks the card scale (design px → rendered px).
+      // Phone width compresses 34→~15px; boost so the selected row stays readable.
       const cardW = wrap.closest(`.${styles.aboutSkills}`)?.clientWidth ?? available;
-      const ideal = (maxFontPx / designCardW) * cardW;
+      const narrowBoost = cardW < 640 ? 1.65 : 1;
+      const ideal = (maxFontPx / designCardW) * cardW * narrowBoost;
       const min = ideal * 0.45;
 
       let lo = min;

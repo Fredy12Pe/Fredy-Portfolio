@@ -8,7 +8,7 @@ import styles from "./redesign.module.css";
 
 const CARD = { w: 900, h: 586 } as const;
 /** Bust cache after re-exporting Figma assets. */
-const ASSET_V = "1";
+const ASSET_V = "2";
 const SEED_STREAK = 101;
 const STREAK_STORAGE_KEY = "fredy-duolingo-streak";
 

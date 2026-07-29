@@ -21,9 +21,12 @@ Pass brand via CSS var `--card-brand` on the card root. Layout positions stay in
 | Title | `clamp(0.875rem, 1.3vw, 1.375rem)` | 700 | 1.2 | 100% |
 | Tagline | `clamp(0.75rem, 1.05vw, 1.125rem)` | 500 | 1.25 | 60% |
 
+Mobile (≤900px) bumps titles to `clamp(1.125rem, 4.8vw, 1.5rem)` and taglines to `clamp(0.75rem, 3vw, 0.9375rem)`.
+
 - Tagline is always smaller than title; use `text-transform: capitalize`.
-- Across the redesign: headers/titles at `opacity: 1`, description/tagline copy at `opacity: 0.6` idle — full opacity on card hover / focus-visible.
+- Across the redesign: headers/titles at `opacity: 1`, description/tagline copy at `opacity: 0.6` idle — full opacity on card hover / focus-visible / `data-card-active`.
 - Text block: absolute inset from design px ÷ card size; column with `justify-content: space-between`.
+- Hover / play colors: wire both `:hover`/`:focus-visible` and `[data-card-active="true"]` so mobile tap-to-play matches desktop hover.
 
 ## Hover interaction
 
@@ -31,9 +34,10 @@ Pass brand via CSS var `--card-brand` on the card root. Layout positions stay in
 - Hover / focus-visible background: `var(--card-brand-hover, var(--card-brand))` (solid or gradient via optional `brandHover` in `projects.ts`)
 - Idle text: `var(--card-brand)`; hover / focus-visible text: `#fff`
 - Transition background/color ~`320ms ease` (use opacity crossfade when hover bg is a gradient)
-- Start layer motion on card hover/focus only (`onPointerEnter` / `Leave`, `onFocus` / `Blur`)
 - Honor `useReducedMotion()`: skip layer motion
-- **Mobile (≤900px):** no hover affordance — use `useCardHover()` from `useCardHover.ts` so layer motion stays at the end pose; CSS in the stacked-layout media query mirrors hover colors/opacity
+- **Desktop:** start layer motion on card hover/focus only (`onPointerEnter` / `Leave`, `onFocus` / `Blur`)
+- **Mobile (≤900px):** light mode keeps the full final hover pose at idle (brand bg + end-pose layers). Dark mode uses desktop idle (glass bg + rest pose). Use `useProjectCardNav(href)` so a tap runs the same rewind → play sequence (`data-card-replaying` then `data-card-active`), then navigates — dark goes from glass to brand on press. Reduced motion skips the play and navigates immediately.
+- Non-project cards may still use `useCardHover()` (end pose on mobile) when they are not case-study links.
 
 ## Layer geometry (porting from Figma)
 

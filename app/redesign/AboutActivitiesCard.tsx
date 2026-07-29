@@ -11,7 +11,7 @@ const CARD = { w: 759, h: 502 } as const;
 const ITEM_H = 120;
 /**
  * Idle accent circle — centered, half-cropped by the card bottom.
- * Color matches activity icon discs (#99ef08).
+ * Color matches activity icon discs (#99ef08). Desktop only (hidden on mobile).
  */
 const ACCENT = { size: 500, left: (CARD.w - 500) / 2, top: 220 } as const;
 /** Bust cache after re-exporting Figma assets. */
@@ -186,8 +186,7 @@ export default function AboutActivitiesCard({ className }: AboutActivitiesCardPr
         </div>
       </div>
 
-      {/* Idle accent — CSS geometry (cqw + aspect-ratio) so it survives reload;
-          Motion only translates on hover. */}
+      {/* Idle accent — desktop only; slides off on hover. Hidden on mobile. */}
       <motion.div
         className={styles.aboutActivitiesAccent}
         aria-hidden

@@ -6,6 +6,7 @@ import {
   type ReactNode,
   type TransitionEvent,
 } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import OverlayMenu from "./OverlayMenu";
@@ -24,6 +25,12 @@ const STORAGE_KEY = "redesign-theme";
 const FADE_EASE = [0.22, 1, 0.36, 1] as const;
 const SCROLL_HINT_HIDE_Y = 72;
 
+const NAV_ITEMS = [
+  { id: "home" as const, label: "Home", href: "/redesign" },
+  { id: "about" as const, label: "About Me", href: "/redesign/about" },
+  { id: "contact" as const, label: "Contact", href: "/redesign/contact" },
+];
+
 export default function RedesignShell({ children }: { children: ReactNode }) {
   return (
     <RedesignProviders>
@@ -36,7 +43,7 @@ function RedesignShellInner({ children }: { children: ReactNode }) {
   const pathname = usePathname() ?? "/redesign";
   const reduced = useReducedMotion();
   const { breathingActive } = useBreathingSession();
-  const { contentVisible, onFadeOutComplete } = usePageFade();
+  const { contentVisible, onFadeOutComplete, fadeTo } = usePageFade();
   const [theme, setTheme] = useState<Theme>("light");
   const [scrollHintVisible, setScrollHintVisible] = useState(false);
 
@@ -45,6 +52,12 @@ function RedesignShellInner({ children }: { children: ReactNode }) {
     pathname.startsWith("/redesign/contact");
   const isContact = pathname.startsWith("/redesign/contact");
   const isDark = theme === "dark";
+
+  const activeNav = pathname.startsWith("/redesign/about")
+    ? "about"
+    : pathname.startsWith("/redesign/contact")
+      ? "contact"
+      : "home";
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
@@ -99,30 +112,76 @@ function RedesignShellInner({ children }: { children: ReactNode }) {
     >
       <BoardAtmosphere />
 
-        <div
-          className={`${styles.pageContent}${compact ? ` ${styles.pageContentCompact}` : ""}${isContact ? ` ${styles.pageContentContact}` : ""}`}
-        >
-        <button
-          type="button"
-          className={styles.themeToggle}
-          onClick={toggleTheme}
-          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          aria-pressed={isDark}
-          disabled={breathingActive}
-        >
-          <span className={styles.themeToggleTrack} aria-hidden>
-            <span
-              className={styles.themeToggleThumb}
-              data-active={isDark ? "dark" : "light"}
-            />
-            <span className={styles.themeToggleIcon} data-side="light">
-              <SunIcon />
+      <div
+        className={`${styles.pageContent}${compact ? ` ${styles.pageContentCompact}` : ""}${isContact ? ` ${styles.pageContentContact}` : ""}`}
+      >
+        <div className={styles.topChrome}>
+          <nav className={styles.mobileTopNav} aria-label="Portfolio">
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeNav === item.id;
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className={styles.mobileTopNavLink}
+                  data-active={isActive ? "true" : undefined}
+                  aria-current={isActive ? "page" : undefined}
+                  tabIndex={breathingActive ? -1 : undefined}
+                  onClick={(event) => {
+                    if (
+                      breathingActive ||
+                      event.metaKey ||
+                      event.ctrlKey ||
+                      event.shiftKey ||
+                      event.altKey ||
+                      event.button !== 0
+                    ) {
+                      return;
+                    }
+                    event.preventDefault();
+                    fadeTo(item.href);
+                  }}
+                >
+                  {isActive ? (
+                    <motion.span
+                      className={styles.mobileTopNavPill}
+                      layoutId="mobile-top-nav-pill"
+                      transition={
+                        reduced
+                          ? { duration: 0 }
+                          : { type: "spring", duration: 0.42, bounce: 0.18 }
+                      }
+                      aria-hidden
+                    />
+                  ) : null}
+                  <span className={styles.mobileTopNavLabel}>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <button
+            type="button"
+            className={styles.themeToggle}
+            onClick={toggleTheme}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            aria-pressed={isDark}
+            disabled={breathingActive}
+          >
+            <span className={styles.themeToggleTrack} aria-hidden>
+              <span
+                className={styles.themeToggleThumb}
+                data-active={isDark ? "dark" : "light"}
+              />
+              <span className={styles.themeToggleIcon} data-side="light">
+                <SunIcon />
+              </span>
+              <span className={styles.themeToggleIcon} data-side="dark">
+                <MoonIcon />
+              </span>
             </span>
-            <span className={styles.themeToggleIcon} data-side="dark">
-              <MoonIcon />
-            </span>
-          </span>
-        </button>
+          </button>
+        </div>
 
         <div
           className={styles.pageFade}

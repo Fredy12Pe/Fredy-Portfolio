@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, type Transition } from "motion/react";
 import { getRedesignProject } from "./projects";
-import { useCardHover } from "./useCardHover";
+import { useProjectCardNav } from "./useCardHover";
 import styles from "./redesign.module.css";
 
 const PROJECT = getRedesignProject("tidehaus");
@@ -53,11 +53,10 @@ type TidehausCardProps = {
 };
 
 export default function TidehausCard({ className }: TidehausCardProps) {
-  const { active, handlers } = useCardHover();
+  const { active, linkProps } = useProjectCardNav(PROJECT.href);
 
   return (
     <Link
-      href={PROJECT.href}
       className={`${styles.card} ${styles.tidehaus} ${className ?? ""}`}
       aria-label={`Open ${PROJECT.title} case study`}
       data-node-id="51:317"
@@ -65,7 +64,7 @@ export default function TidehausCard({ className }: TidehausCardProps) {
         ["--card-brand" as string]: PROJECT.brandColor,
         ["--card-brand-hover" as string]: PROJECT.brandHover ?? PROJECT.brandColor,
       }}
-      {...handlers}
+      {...linkProps}
     >
       <div className={styles.tidehausScene}>
         <div className={styles.tidehausBg} />

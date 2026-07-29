@@ -38,8 +38,8 @@ export default function RedesignBoard({
         <BreatheWithSprout onSessionChange={onBreathingSessionChange} />
       </section>
 
-      <OpenToWorkCard />
       <FavoriteStackCard />
+      <OpenToWorkCard />
       <ContactCard />
     </div>
   );
