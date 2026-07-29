@@ -1,6 +1,8 @@
 import { getDuolingoStreak } from "@/lib/duolingo";
 
 export const runtime = "nodejs";
+/** Align CDN / route cache with the Duo fetch revalidate window. */
+export const revalidate = 3600;
 
 export async function GET() {
   const payload = await getDuolingoStreak();
