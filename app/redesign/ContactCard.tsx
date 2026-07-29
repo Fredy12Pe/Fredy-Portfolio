@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ContactLiquidBg, { type LiquidPreset } from "./ContactLiquidBg";
 import { usePageFade } from "./redesign-nav";
+import { ROUTES } from "./routes";
 import { useCardHover } from "./useCardHover";
 import styles from "./redesign.module.css";
 
@@ -24,7 +25,7 @@ const LIQUID_PRESETS: LiquidPreset[] = [
   "Vortex",
   "Mist",
 ];
-const CONTACT_HREF = "/redesign/contact";
+const CONTACT_HREF = ROUTES.contact;
 
 function pct(n: number, base: number) {
   return `${(n / base) * 100}%`;

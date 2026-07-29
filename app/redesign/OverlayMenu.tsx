@@ -5,42 +5,28 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { usePageFade } from "./redesign-nav";
+import {
+  ROUTES,
+  activePortfolioSection,
+  type PortfolioSection,
+} from "./routes";
 import styles from "./redesign.module.css";
 
-type Section = "home" | "about" | "contact";
-
-const ITEMS: { id: Section; label: string; href: string }[] = [
-  { id: "home", label: "Home", href: "/redesign" },
-  { id: "about", label: "About Me", href: "/redesign/about" },
-  { id: "contact", label: "Contact", href: "/redesign/contact" },
+const ITEMS: { id: PortfolioSection; label: string; href: string }[] = [
+  { id: "home", label: "Home", href: ROUTES.home },
+  { id: "about", label: "About Me", href: ROUTES.about },
+  { id: "contact", label: "Contact", href: ROUTES.contact },
 ];
 
 export default function OverlayMenu() {
   const pathname = usePathname();
   const reduced = useReducedMotion();
   const { fadeTo } = usePageFade();
-  const [active, setActive] = useState<Section>("home");
+  const [active, setActive] = useState<PortfolioSection>("home");
 
   useEffect(() => {
     function sync() {
-      if (pathname?.startsWith("/redesign/about")) {
-        setActive("about");
-        return;
-      }
-      if (pathname?.startsWith("/redesign/contact")) {
-        setActive("contact");
-        return;
-      }
-      const hash = window.location.hash.replace("#", "");
-      if (hash === "contact") {
-        setActive("contact");
-        return;
-      }
-      if (hash === "about") {
-        setActive("about");
-        return;
-      }
-      setActive("home");
+      setActive(activePortfolioSection(pathname ?? ROUTES.home));
     }
 
     sync();

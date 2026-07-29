@@ -12,37 +12,37 @@ const PROJECTS = [
     id: "grove",
     title: "Grove",
     href: "/projects/grove",
-    image: "/images/projects-section/caseStudies/case-Studies/Grove-caseStudy.png",
+    image: "/images/case-studies/Grove-caseStudy.png",
   },
   {
     id: "ecommerce",
     title: "E-Commerce",
     href: "/projects/ecommerce",
-    image: "/images/projects-section/caseStudies/case-Studies/Ecommerce-caseStudy.png",
+    image: "/images/case-studies/Ecommerce-caseStudy.png",
   },
   {
     id: "sea-sky",
     title: "Sea & Sky",
     href: "/projects/sea-and-sky",
-    image: "/images/projects-section/caseStudies/case-Studies/seaSky-caseStudy.png",
+    image: "/images/case-studies/seaSky-caseStudy.png",
   },
   {
     id: "tidehaus",
     title: "Tidehaus",
     href: "/projects/tidehaus",
-    image: "/images/projects-section/caseStudies/case-Studies/tidehaus-caseStudy.png",
+    image: "/images/case-studies/tidehaus-caseStudy.png",
   },
   {
     id: "selah",
     title: "Selah",
     href: "/projects/selah-reflect",
-    image: "/images/projects-section/caseStudies/case-Studies/selah-caseStudy.png",
+    image: "/images/case-studies/selah-caseStudy.png",
   },
   {
     id: "ziplearn",
     title: "ZipLearn",
     href: "/projects/ziplearn",
-    image: "/images/projects-section/caseStudies/case-Studies/ziplearn-caseStudy.png",
+    image: "/images/case-studies/ziplearn-caseStudy.png",
   },
 ] satisfies Array<{
   id: ProjectId;

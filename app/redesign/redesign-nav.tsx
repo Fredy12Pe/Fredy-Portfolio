@@ -11,6 +11,7 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useReducedMotion } from "motion/react";
+import { ROUTES, isAboutPath, isContactPath } from "./routes";
 
 const FADE_MS = 320;
 
@@ -50,7 +51,7 @@ function normalizePath(path: string) {
 }
 
 export function RedesignProviders({ children }: { children: ReactNode }) {
-  const pathname = usePathname() ?? "/redesign";
+  const pathname = usePathname() ?? ROUTES.home;
   const router = useRouter();
   const reduced = useReducedMotion();
   const [breathingActive, setBreathingActive] = useState(false);
@@ -58,10 +59,7 @@ export function RedesignProviders({ children }: { children: ReactNode }) {
   const pendingHref = useRef<string | null>(null);
 
   useEffect(() => {
-    if (
-      pathname.startsWith("/redesign/about") ||
-      pathname.startsWith("/redesign/contact")
-    ) {
+    if (isAboutPath(pathname) || isContactPath(pathname)) {
       setBreathingActive(false);
     }
   }, [pathname]);
@@ -79,7 +77,7 @@ export function RedesignProviders({ children }: { children: ReactNode }) {
       if (targetPath === currentPath) {
         if (url.hash) {
           window.location.hash = url.hash;
-        } else if (targetPath === "/redesign") {
+        } else if (targetPath === ROUTES.home) {
           window.scrollTo({ top: 0, behavior: "smooth" });
           history.replaceState(null, "", targetPath);
           window.dispatchEvent(new HashChangeEvent("hashchange"));

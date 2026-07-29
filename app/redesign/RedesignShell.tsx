@@ -17,6 +17,12 @@ import {
   useBreathingSession,
   usePageFade,
 } from "./redesign-nav";
+import {
+  ROUTES,
+  activePortfolioSection,
+  isAboutPath,
+  isContactPath,
+} from "./routes";
 import styles from "./redesign.module.css";
 
 type Theme = "light" | "dark";
@@ -26,9 +32,9 @@ const FADE_EASE = [0.22, 1, 0.36, 1] as const;
 const SCROLL_HINT_HIDE_Y = 72;
 
 const NAV_ITEMS = [
-  { id: "home" as const, label: "Home", href: "/redesign" },
-  { id: "about" as const, label: "About Me", href: "/redesign/about" },
-  { id: "contact" as const, label: "Contact", href: "/redesign/contact" },
+  { id: "home" as const, label: "Home", href: ROUTES.home },
+  { id: "about" as const, label: "About Me", href: ROUTES.about },
+  { id: "contact" as const, label: "Contact", href: ROUTES.contact },
 ];
 
 export default function RedesignShell({ children }: { children: ReactNode }) {
@@ -40,24 +46,18 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
 }
 
 function RedesignShellInner({ children }: { children: ReactNode }) {
-  const pathname = usePathname() ?? "/redesign";
+  const pathname = usePathname() ?? ROUTES.home;
   const reduced = useReducedMotion();
   const { breathingActive } = useBreathingSession();
   const { contentVisible, onFadeOutComplete, fadeTo } = usePageFade();
   const [theme, setTheme] = useState<Theme>("light");
   const [scrollHintVisible, setScrollHintVisible] = useState(false);
 
-  const compact =
-    pathname.startsWith("/redesign/about") ||
-    pathname.startsWith("/redesign/contact");
-  const isContact = pathname.startsWith("/redesign/contact");
+  const compact = isAboutPath(pathname) || isContactPath(pathname);
+  const isContact = isContactPath(pathname);
   const isDark = theme === "dark";
 
-  const activeNav = pathname.startsWith("/redesign/about")
-    ? "about"
-    : pathname.startsWith("/redesign/contact")
-      ? "contact"
-      : "home";
+  const activeNav = activePortfolioSection(pathname);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);

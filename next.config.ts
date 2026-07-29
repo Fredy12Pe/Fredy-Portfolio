@@ -16,6 +16,13 @@ const nextConfig: NextConfig = {
   },
   // Ensure public folder is served correctly
   trailingSlash: false,
+  async redirects() {
+    return [
+      { source: "/redesign", destination: "/", permanent: true },
+      { source: "/redesign/about", destination: "/about", permanent: true },
+      { source: "/redesign/contact", destination: "/contact", permanent: true },
+    ];
+  },
   // Add headers for static assets and performance
   async headers() {
     return [
