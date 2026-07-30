@@ -14,7 +14,7 @@ const PANEL = { w: 158, h: 140 } as const;
 const ASSET_V = "1";
 
 const REST = {
-  opacity: { opacity: 0.6 },
+  opacity: { opacity: 1 },
   panel: { x: 0 },
 } as const;
 
