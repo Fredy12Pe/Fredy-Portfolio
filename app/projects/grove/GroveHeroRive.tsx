@@ -56,7 +56,7 @@ export default function GroveHeroRive() {
     >
       {/*
         The canvas is sized to this div's layout dimensions (outer div size).
-        CSS scale-[3.5] then zooms the rendered canvas 3.5× visually.
+        CSS scale-[2] then zooms the rendered canvas 2× visually.
         transform-origin "50% 65%" keeps the zoom centred on the character's torso.
       */}
       <div

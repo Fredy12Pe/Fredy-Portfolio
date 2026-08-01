@@ -1,9 +1,9 @@
 "use client";
 
-import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   IconBrandApple,
   IconPlant,
@@ -25,6 +25,10 @@ const GROVE_PALETTE = {
 
 const GROVE_GRADIENT = `linear-gradient(223deg, ${GROVE_PALETTE.green} 0%, ${GROVE_PALETTE.bright} 52%, ${GROVE_PALETTE.lime} 100%)`;
 const GROVE_HERO_BG = "#F0FBDB";
+/* Darker gradient reserved for tiles with white body text — the full brand
+   gradient ends in lime, which is too bright for readable white copy. */
+const GROVE_TILE_GRADIENT =
+  "radial-gradient(circle at top left, rgba(199,239,19,0.32), transparent 42%), linear-gradient(145deg, #11B30B 0%, #0B8F07 100%)";
 
 type ProjectBriefMedia = {
   type: "image" | "video";
@@ -96,16 +100,14 @@ const Section = ({
   title,
   kicker,
   children,
-  bg = "bg-white",
 }: {
   id?: string;
   eyebrow?: React.ReactNode;
   title?: React.ReactNode;
   kicker?: React.ReactNode;
   children?: React.ReactNode;
-  bg?: string;
 }) => (
-  <section id={id} className={`relative py-20 sm:py-28 ${bg}`}>
+  <section id={id} className="relative py-10 sm:py-14">
     <Container>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -124,69 +126,86 @@ const Section = ({
         ) : null}
         {kicker ? <p className="mt-3 text-base text-zinc-600">{kicker}</p> : null}
       </motion.div>
-      <div className="mt-10">{children}</div>
+      <div className="mt-6 sm:mt-8">{children}</div>
     </Container>
   </section>
 );
 
-function HorizontalScroller({
-  children,
-  top = 96,
-  overflow = "hidden",
+/* Bento layout spec shared across every case study: a six-column grid where
+   content lives in rounded tiles of varying span, collapsing to one column. */
+
+type TileSpan = 1 | 2 | 3 | 4 | 5 | 6;
+type TileVariant = "white" | "tint" | "brand" | "dark";
+
+const TILE_SPAN: Record<TileSpan, string> = {
+  1: "md:col-span-1",
+  2: "md:col-span-2",
+  3: "md:col-span-3",
+  4: "md:col-span-4",
+  5: "md:col-span-5",
+  6: "md:col-span-6",
+};
+
+const TILE_VARIANT: Record<TileVariant, string> = {
+  white: "bg-white ring-1 ring-zinc-200",
+  tint: "bg-[#E5F7B3]/70 ring-1 ring-[#BEDA76]",
+  brand: "text-white ring-1 ring-[#11B30B]/20",
+  dark: "bg-zinc-950 text-white ring-1 ring-white/10",
+};
+
+const BentoGrid = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <div className={`grid grid-cols-1 gap-4 md:grid-cols-6 ${className}`}>{children}</div>
+);
+
+function BentoTile({
+  span = 6,
+  variant = "white",
+  delay = 0,
+  padded = true,
+  interactive = true,
   className = "",
-  ...props
-}: React.HTMLAttributes<HTMLDivElement> & {
-  top?: number;
-  overflow?: React.CSSProperties["overflow"];
+  style,
+  onMouseMove,
+  children,
+}: {
+  span?: TileSpan;
+  variant?: TileVariant;
+  delay?: number;
+  padded?: boolean;
+  interactive?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+  onMouseMove?: React.MouseEventHandler<HTMLDivElement>;
   children: React.ReactNode;
 }) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const sizerRef = useRef<HTMLDivElement | null>(null);
-  const [scrollRange, setScrollRange] = useState(0);
-  const [contentWidth, setContentWidth] = useState(0);
-
-  useLayoutEffect(() => {
-    const scrollEl = scrollRef.current;
-    const sizerEl = sizerRef.current;
-    if (!scrollEl || !sizerEl) return;
-
-    const updateScrollMetrics = () => {
-      setContentWidth(sizerEl.clientWidth);
-      setScrollRange(scrollEl.scrollWidth);
-    };
-    updateScrollMetrics();
-
-    const resizeObserver = new ResizeObserver(updateScrollMetrics);
-
-    const mutationObserver = new MutationObserver(updateScrollMetrics);
-
-    resizeObserver.observe(sizerEl);
-    mutationObserver.observe(scrollEl, { attributes: true, attributeFilter: ["style"] });
-
-    return () => {
-      resizeObserver.disconnect();
-      mutationObserver.disconnect();
-    };
-  }, []);
-
-  const { scrollYProgress } = useScroll({ target: containerRef });
-  const transform = useTransform(scrollYProgress, [0, 1], [0, Math.min(0, contentWidth - scrollRange)]);
-  const spring = useSpring(transform, { damping: 60, mass: 1, stiffness: 500 });
-
   return (
-    <div ref={containerRef} className={`relative ${className}`} {...props}>
-      <div className="sticky" style={{ top }}>
-        <div style={{ overflow }}>
-          <motion.div ref={scrollRef} style={{ x: spring }}>
-            {children}
-          </motion.div>
-        </div>
-      </div>
-      <div ref={sizerRef} aria-hidden="true" style={{ width: "100%", height: scrollRange }} />
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease: "easeOut", delay }}
+      onMouseMove={onMouseMove}
+      className={`relative flex flex-col overflow-hidden rounded-3xl ${TILE_SPAN[span]} ${
+        TILE_VARIANT[variant]
+      } ${padded ? "p-6 sm:p-7" : ""} ${
+        interactive ? "transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl" : ""
+      } ${className}`}
+      style={variant === "brand" ? { background: GROVE_TILE_GRADIENT, ...style } : style}
+    >
+      {children}
+    </motion.div>
   );
 }
+
+const TileLabel = ({ children, tone = "muted" }: { children: React.ReactNode; tone?: "muted" | "brand" }) => (
+  <p
+    className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${
+      tone === "brand" ? "text-[#11B30B]/70" : "text-zinc-500"
+    }`}
+  >
+    {children}
+  </p>
+);
 
 const HeroMetaPill = ({ children }: { children: React.ReactNode }) => (
   <motion.span
@@ -222,14 +241,20 @@ function useMouseGradient() {
   return { ref, onMouseMove };
 }
 
-const GlowCard = ({ title, children }: { title: string; children: React.ReactNode }) => {
-  const { ref, onMouseMove } = useMouseGradient();
+const GlowCard = ({
+  title,
+  span = 3,
+  delay = 0,
+  children,
+}: {
+  title: string;
+  span?: TileSpan;
+  delay?: number;
+  children: React.ReactNode;
+}) => {
+  const { onMouseMove } = useMouseGradient();
   return (
-    <motion.div
-      ref={ref}
-      onMouseMove={onMouseMove}
-      className="group relative h-full overflow-hidden rounded-2xl border border-zinc-200 bg-white p-5 transition-shadow duration-300 hover:shadow-xl"
-    >
+    <BentoTile span={span} delay={delay} onMouseMove={onMouseMove} className="group">
       <motion.div
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
@@ -239,9 +264,9 @@ const GlowCard = ({ title, children }: { title: string; children: React.ReactNod
       />
       <motion.div className="relative">
         <h4 className="text-base font-semibold text-black">{title}</h4>
-        <div className="mt-2 text-sm leading-6 text-zinc-600">{children}</div>
+        <div className="mt-3 text-sm leading-6 text-zinc-600">{children}</div>
       </motion.div>
-    </motion.div>
+    </BentoTile>
   );
 };
 
@@ -249,13 +274,17 @@ function ProblemCard({
   title,
   text,
   icon,
+  span = 2,
+  delay = 0,
 }: {
   title: string;
   text: string;
   icon: React.ReactNode;
+  span?: TileSpan;
+  delay?: number;
 }) {
   return (
-    <motion.div className="group relative h-full overflow-hidden rounded-2xl bg-white p-5 ring-1 ring-zinc-200 shadow-sm transition-all duration-300 hover:shadow-xl hover:scale-[1.03]">
+    <BentoTile span={span} delay={delay} className="group">
       <motion.div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -270,7 +299,7 @@ function ProblemCard({
           <p className="mt-1 text-sm text-zinc-700 transition-colors group-hover:text-white/90">{text}</p>
         </motion.div>
       </motion.div>
-    </motion.div>
+    </BentoTile>
   );
 }
 
@@ -322,11 +351,8 @@ function FramerPhoneMockup() {
   const media = PROJECT_BRIEF_MEDIA[activeMedia];
 
   return (
-    <motion.div
-      aria-label="iPhone mockup for Grove app walkthrough"
-      className="w-full overflow-hidden rounded-2xl bg-white p-6 sm:p-8"
-    >
-      <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-stretch lg:justify-start lg:gap-20">
+    <motion.div aria-label="iPhone mockup for Grove app walkthrough" className="w-full">
+      <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-stretch lg:justify-start lg:gap-16">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -392,6 +418,15 @@ const GROWTH_STAGES = [
 ];
 
 const STACK = ["React Native", "Expo", "TypeScript", "Rive", "Skia", "Figma"];
+
+const AT_A_GLANCE = ["7 core screens", "iOS & Android", "Solo designer-developer"];
+
+const REAL_IMPACT = [
+  "Designed for short daily engagement loops",
+  "Encourages consistency through visual progression",
+  "Creates emotional connection through environmental feedback",
+  "Built as a scalable consumer-facing mobile app",
+];
 
 const EXECUTIVE_SUMMARY_CARDS = [
   {
@@ -480,12 +515,13 @@ function FluidCardStack() {
               </div>
               <div className="mt-12">
                 <h4 className="text-2xl font-semibold tracking-tight text-white">{card.title}</h4>
-                <motion.p
-                  animate={{ opacity: isActive ? 1 : 0.72 }}
-                  className={`mt-4 max-w-md text-sm leading-6 ${isActive ? "text-white/85" : "text-white/55"}`}
+                <p
+                  className={`mt-4 max-w-md text-sm leading-6 transition-opacity duration-300 ${
+                    isActive ? "text-white/85 opacity-100" : "text-white/55 opacity-70 lg:opacity-0"
+                  }`}
                 >
                   {card.description}
-                </motion.p>
+                </p>
               </div>
             </div>
           </motion.button>
@@ -497,114 +533,142 @@ function FluidCardStack() {
 
 export default function GroveCaseStudyPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-zinc-50">
       <ProjectNav />
-      <main className="bg-white text-zinc-800 pt-16">
+      <main className="bg-zinc-50 text-zinc-800 pt-16">
         <ProgressBar />
 
         {/* ── Hero ── */}
-        <header className="relative isolate overflow-x-clip" style={{ background: GROVE_HERO_BG }}>
+        <header className="relative isolate pt-6 sm:pt-10">
           <Container>
-            <motion.div className="grid items-stretch gap-8 py-20 sm:grid-cols-2 sm:py-28">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
+            <BentoGrid>
+              <BentoTile
+                span={6}
+                padded={false}
+                interactive={false}
+                style={{ background: GROVE_HERO_BG }}
               >
-                <motion.div className="inline-flex items-center gap-2 rounded-full bg-[#E5F7B3]/70 px-3 py-1 text-xs font-medium text-[#11B30B] ring-1 ring-[#11B30B]/20">
-                  Grove Case Study
-                </motion.div>
-                <h1 className="mt-4 text-5xl font-extrabold tracking-tight text-[#11B30B] sm:text-6xl md:text-7xl">
-                  Your habits grow your world.
-                </h1>
-                <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#11B30B]/80">
-                  A gamified habit tracking app where daily consistency grows a living garden.
-                </p>
-                <motion.div className="mt-8 flex flex-wrap items-center gap-4">
-                  <span
-                    aria-disabled="true"
-                    className="inline-flex items-center gap-2 rounded-full bg-[#11B30B] px-5 py-3 text-sm font-medium text-white shadow-sm"
+                <div className="grid items-stretch gap-8 px-7 pt-10 sm:grid-cols-2 sm:px-12 sm:pt-16">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7 }}
+                    className="flex flex-col justify-center pb-10 sm:pb-16"
                   >
-                    <IconBrandApple aria-hidden="true" size={18} stroke={1.8} />
-                    Coming soon to App Store
-                  </span>
-                </motion.div>
-                <motion.div className="mt-6 flex flex-wrap items-center gap-3">
-                  <HeroMetaPill>Role: UI/UX Designer & Developer</HeroMetaPill>
-                  <HeroMetaPill>Platform: iOS & Android</HeroMetaPill>
-                </motion.div>
-                <motion.div className="mt-3 flex flex-wrap items-center gap-2">
+                    <motion.div className="inline-flex items-center gap-2 self-start rounded-full bg-[#E5F7B3]/70 px-3 py-1 text-xs font-medium text-[#11B30B] ring-1 ring-[#11B30B]/20">
+                      Grove Case Study
+                    </motion.div>
+                    <h1 className="mt-4 text-5xl font-extrabold tracking-tight text-[#11B30B] sm:text-6xl md:text-7xl">
+                      Your habits grow your world.
+                    </h1>
+                    <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#11B30B]/80">
+                      A gamified habit tracking app where daily consistency grows a living garden.
+                    </p>
+                    <motion.div className="mt-8 flex flex-wrap items-center gap-4">
+                      <span
+                        aria-disabled="true"
+                        className="inline-flex items-center gap-2 rounded-full bg-[#11B30B] px-5 py-3 text-sm font-medium text-white shadow-sm"
+                      >
+                        <IconBrandApple aria-hidden="true" size={18} stroke={1.8} />
+                        Coming soon to App Store
+                      </span>
+                    </motion.div>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7 }}
+                    className="relative flex w-full flex-1 items-end justify-start"
+                  >
+                    <GroveHeroRive />
+                  </motion.div>
+                </div>
+              </BentoTile>
+
+              <BentoTile span={2} delay={0.05}>
+                <TileLabel>Role</TileLabel>
+                <p className="mt-2 text-lg font-semibold leading-snug text-zinc-900">
+                  UI/UX Designer &amp; Developer
+                </p>
+              </BentoTile>
+              <BentoTile span={2} delay={0.1}>
+                <TileLabel>Platform</TileLabel>
+                <p className="mt-2 text-lg font-semibold leading-snug text-zinc-900">iOS &amp; Android</p>
+              </BentoTile>
+              <BentoTile span={2} delay={0.15}>
+                <TileLabel>Stack</TileLabel>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
                   {STACK.map((tool) => (
                     <HeroMetaPill key={tool}>{tool}</HeroMetaPill>
                   ))}
-                </motion.div>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-                className="relative flex w-full flex-1 items-end justify-start overflow-visible"
-                style={{ background: GROVE_HERO_BG }}
-              >
-                <GroveHeroRive />
-              </motion.div>
-            </motion.div>
+                </div>
+              </BentoTile>
+            </BentoGrid>
           </Container>
         </header>
 
         {/* ── Executive Summary ── */}
         <Section id="executive-summary" eyebrow="Executive Summary" title="Problem · Solution · Outcome">
-          <HorizontalScroller overflow="visible" className="overflow-x-clip">
-            <motion.div className="flex w-max gap-5 py-2 pr-[10vw]">
-              {EXECUTIVE_SUMMARY_CARDS.map((card, i) => (
-                <motion.article
-                  key={card.title}
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-80px" }}
-                  transition={{ delay: i * 0.08, duration: 0.5, ease: "easeOut" }}
-                  className="group relative flex min-h-64 w-[min(78vw,28rem)] flex-col justify-between overflow-hidden rounded-[2rem] border border-[#11B30B]/10 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                >
+          <BentoGrid>
+            {EXECUTIVE_SUMMARY_CARDS.map((card, i) => (
+              <BentoTile key={card.title} span={2} delay={i * 0.08} className="group">
+                <motion.div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{
+                    background:
+                      "radial-gradient(circle at top left, rgba(199,239,19,0.26), transparent 34%), linear-gradient(135deg, rgba(229,247,179,0.88), rgba(255,255,255,0.96))",
+                  }}
+                />
+                <motion.div className="relative flex h-full flex-col">
                   <motion.div
-                    aria-hidden
-                    className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                    style={{
-                      background:
-                        "radial-gradient(circle at top left, rgba(199,239,19,0.26), transparent 34%), linear-gradient(135deg, rgba(229,247,179,0.88), rgba(255,255,255,0.96))",
-                    }}
-                  />
-                  <motion.div className="relative">
-                    <motion.div
-                      className="mb-8 inline-flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-sm"
-                      style={{ background: GROVE_GRADIENT }}
-                    >
-                      {card.icon}
-                    </motion.div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#11B30B]">
-                      {String(i + 1).padStart(2, "0")}
-                    </p>
-                    <h3 className="mt-3 text-3xl font-bold tracking-tight text-[#11B30B]">{card.title}</h3>
-                    <p className="mt-4 text-base leading-7 text-zinc-700">{card.text}</p>
+                    className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-sm"
+                    style={{ background: GROVE_GRADIENT }}
+                  >
+                    {card.icon}
                   </motion.div>
-                </motion.article>
-              ))}
-            </motion.div>
-          </HorizontalScroller>
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#11B30B]">
+                    {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <h3 className="mt-3 text-2xl font-bold tracking-tight text-[#11B30B]">{card.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-zinc-700">{card.text}</p>
+                </motion.div>
+              </BentoTile>
+            ))}
+          </BentoGrid>
         </Section>
 
         {/* ── Project Brief ── */}
         <Section id="brief" eyebrow="Project Brief" title="Context">
-          <motion.div className="max-w-3xl space-y-4">
-            <p>
-              Grove reimagines habit tracking through environmental storytelling and interactive progression
-              systems. Instead of focusing on charts and productivity metrics, the app creates a peaceful
-              experience where users maintain and grow a virtual garden through daily habits.
-            </p>
-          </motion.div>
-          <motion.div className="mt-10">
-            <h4 className="mb-4 text-sm font-semibold text-zinc-700">App walkthrough</h4>
-            <FramerPhoneMockup />
-          </motion.div>
+          <BentoGrid>
+            <BentoTile span={4}>
+              <TileLabel>Overview</TileLabel>
+              <p className="mt-3 text-base leading-7 text-zinc-700">
+                Grove reimagines habit tracking through environmental storytelling and interactive progression
+                systems. Instead of focusing on charts and productivity metrics, the app creates a peaceful
+                experience where users maintain and grow a virtual garden through daily habits.
+              </p>
+            </BentoTile>
+            <BentoTile span={2} variant="tint" delay={0.08}>
+              <TileLabel tone="brand">At a glance</TileLabel>
+              <ul className="mt-3 space-y-2 text-sm font-medium text-[#11B30B]">
+                {AT_A_GLANCE.map((item) => (
+                  <li key={item} className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#11B30B]" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </BentoTile>
+            <BentoTile span={6} padded={false} interactive={false} delay={0.12}>
+              <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+                <TileLabel>App walkthrough</TileLabel>
+              </div>
+              <div className="p-6 sm:p-8">
+                <FramerPhoneMockup />
+              </div>
+            </BentoTile>
+          </BentoGrid>
         </Section>
 
         {/* ── Problem Statement ── */}
@@ -614,7 +678,7 @@ export default function GroveCaseStudyPage() {
           title="Why habit apps lose people"
           kicker="Three friction points Grove addresses."
         >
-          <motion.div className="grid gap-5 sm:grid-cols-3">
+          <BentoGrid>
             <ProblemCard
               title="Lack of Emotional Engagement"
               text="Traditional habit trackers often feel transactional and repetitive."
@@ -624,13 +688,15 @@ export default function GroveCaseStudyPage() {
               title="Progress Feels Invisible"
               text="Users struggle to feel rewarded by long-term consistency."
               icon={<IconChartBar size={22} stroke={1.5} />}
+              delay={0.06}
             />
             <ProblemCard
               title="Productivity Burnout"
               text="Many self-improvement apps prioritize pressure over encouragement."
               icon={<IconPlant size={22} stroke={1.5} />}
+              delay={0.12}
             />
-          </motion.div>
+          </BentoGrid>
         </Section>
 
         {/* ── Gamification System ── */}
@@ -640,16 +706,9 @@ export default function GroveCaseStudyPage() {
           title="The core loop"
           kicker="Habit data maps directly to a living visual environment."
         >
-          <motion.div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <BentoGrid>
             {GROWTH_STAGES.map((item, i) => (
-              <motion.div
-                key={item.stage}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-                className="rounded-2xl bg-[#E5F7B3]/70 p-5 ring-1 ring-[#BEDA76]"
-              >
+              <BentoTile key={item.stage} span={3} variant="tint" delay={i * 0.06}>
                 <motion.div
                   className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white"
                   style={{ background: GROVE_GRADIENT }}
@@ -658,28 +717,34 @@ export default function GroveCaseStudyPage() {
                 </motion.div>
                 <h4 className="text-lg font-semibold text-[#11B30B]">{item.stage}</h4>
                 <p className="mt-2 text-sm text-[#11B30B]/80">{item.desc}</p>
-              </motion.div>
+              </BentoTile>
             ))}
-          </motion.div>
-          <p className="mt-6 max-w-3xl text-sm text-zinc-600">
-            The core loop focuses on visually maintaining a peaceful, living environment rather than
-            maximizing productivity metrics.
-          </p>
+            <BentoTile span={6} interactive={false} delay={0.24}>
+              <p className="text-sm leading-6 text-zinc-600">
+                The core loop focuses on visually maintaining a peaceful, living environment rather than
+                maximizing productivity metrics.
+              </p>
+            </BentoTile>
+          </BentoGrid>
         </Section>
 
         {/* ── Real Impact ── */}
         <Section id="impact" eyebrow="Real Impact" title="Real Impact">
-          <ul className="max-w-3xl list-disc space-y-2 pl-5 text-zinc-700">
-            <li>Designed for short daily engagement loops</li>
-            <li>Encourages consistency through visual progression</li>
-            <li>Creates emotional connection through environmental feedback</li>
-            <li>Built as a scalable consumer-facing mobile app</li>
-          </ul>
+          <BentoGrid>
+            {REAL_IMPACT.map((item, i) => (
+              <BentoTile key={item} span={3} delay={i * 0.06}>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#11B30B]">
+                  {String(i + 1).padStart(2, "0")}
+                </p>
+                <p className="mt-3 text-lg font-medium leading-snug text-zinc-900">{item}</p>
+              </BentoTile>
+            ))}
+          </BentoGrid>
         </Section>
 
         {/* ── Design System ── */}
         <Section id="design-system" eyebrow="Design System" title="Design System">
-          <motion.div className="grid gap-6 md:grid-cols-2">
+          <BentoGrid>
             <GlowCard title="Principles">
               <motion.div className="flex flex-wrap gap-2">
                 {["Calm", "Minimal", "Nature-inspired", "Reward-driven"].map((principle) => (
@@ -692,7 +757,7 @@ export default function GroveCaseStudyPage() {
                 ))}
               </motion.div>
             </GlowCard>
-            <GlowCard title="Focus Areas">
+            <GlowCard title="Focus Areas" delay={0.08}>
               <ul className="space-y-2">
                 {[
                   "Lightweight interactions",
@@ -707,7 +772,7 @@ export default function GroveCaseStudyPage() {
                 ))}
               </ul>
             </GlowCard>
-          </motion.div>
+          </BentoGrid>
         </Section>
 
         {/* ── Dev Journey ── */}
@@ -722,7 +787,7 @@ export default function GroveCaseStudyPage() {
 
         {/* ── Challenges & Solutions ── */}
         <Section id="challenges" eyebrow="Challenges & Solutions" title="What we solved along the way">
-          <motion.div className="grid gap-5 sm:grid-cols-3">
+          <BentoGrid>
             <ProblemCard
               title="Balancing Gamification"
               text="Focused on peaceful progression instead of competitive mechanics."
@@ -732,19 +797,21 @@ export default function GroveCaseStudyPage() {
               title="Maintaining Simplicity"
               text="Reduced unnecessary UI complexity to keep interactions lightweight and approachable."
               icon={<IconChartBar size={22} stroke={1.5} />}
+              delay={0.06}
             />
             <ProblemCard
               title="Animation & Performance"
               text="Explored optimized animation workflows for smooth mobile performance."
               icon={<IconFlame size={22} stroke={1.5} />}
+              delay={0.12}
             />
-          </motion.div>
+          </BentoGrid>
         </Section>
 
         {/* ── Comparison ── */}
-        <Section id="comparison" eyebrow="Comparison" title="Grove vs. traditional habit apps" bg="bg-zinc-50">
-          <motion.div className="grid gap-6 sm:grid-cols-2">
-            <motion.div className="rounded-2xl border border-zinc-200 bg-white p-6">
+        <Section id="comparison" eyebrow="Comparison" title="Grove vs. traditional habit apps">
+          <BentoGrid>
+            <BentoTile span={3}>
               <h4 className="mb-4 text-base font-semibold text-zinc-900">Traditional Habit Apps</h4>
               <ul className="space-y-2 text-sm text-zinc-600">
                 {[
@@ -758,8 +825,8 @@ export default function GroveCaseStudyPage() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
-            <motion.div className="rounded-2xl bg-[#00B600] p-6 text-white">
+            </BentoTile>
+            <BentoTile span={3} variant="brand" delay={0.08}>
               <h4 className="mb-4 text-base font-semibold text-white">Grove</h4>
               <ul className="space-y-2 text-sm text-white/90">
                 {[
@@ -773,22 +840,27 @@ export default function GroveCaseStudyPage() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
-          </motion.div>
+            </BentoTile>
+          </BentoGrid>
         </Section>
 
         {/* ── Outcome ── */}
         <Section id="outcome" eyebrow="Outcome" title="Impact in practice">
-          <motion.div className="max-w-2xl space-y-4 text-zinc-700">
-            <p>
-              Grove evolved into a polished mobile habit tracking experience that blends gamification, calming
-              visuals, and lightweight interactions into a more emotionally engaging daily routine system.
-            </p>
-            <p>
-              The project also became an exploration into combining product design, illustration systems,
-              animation, and front-end development into a unified consumer app experience.
-            </p>
-          </motion.div>
+          <BentoGrid className="pb-6">
+            <BentoTile span={6} variant="brand" interactive={false}>
+              <div className="max-w-3xl space-y-4 text-white/90">
+                <p>
+                  Grove evolved into a polished mobile habit tracking experience that blends gamification,
+                  calming visuals, and lightweight interactions into a more emotionally engaging daily routine
+                  system.
+                </p>
+                <p>
+                  The project also became an exploration into combining product design, illustration systems,
+                  animation, and front-end development into a unified consumer app experience.
+                </p>
+              </div>
+            </BentoTile>
+          </BentoGrid>
         </Section>
         <OtherProjects currentProject="grove" />
         <footer className="py-12 bg-black text-zinc-200">
