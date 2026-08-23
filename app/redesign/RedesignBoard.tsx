@@ -5,7 +5,6 @@ import ContactCard from "./ContactCard";
 import FavoriteStackCard from "./FavoriteStackCard";
 import FredyCard from "./FredyCard";
 import GroveCard from "./GroveCard";
-import OpenToWorkCard from "./OpenToWorkCard";
 import SamplesCard from "./SamplesCard";
 import SeaSkyCard from "./SeaSkyCard";
 import SelahCard from "./SelahCard";
@@ -39,7 +38,6 @@ export default function RedesignBoard({
       </section>
 
       <FavoriteStackCard />
-      <OpenToWorkCard />
       <ContactCard />
     </div>
   );

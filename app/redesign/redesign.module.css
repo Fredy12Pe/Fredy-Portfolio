@@ -96,7 +96,6 @@
   .aboutBioHeading,
   .aboutActivitiesTitle,
   .aboutSkillsTitle,
-  .introLocationTitle,
   .aboutDuoCount,
   .aboutDuoLangTitle
 ) {
@@ -113,8 +112,7 @@
   .favoriteStackToolDesc,
   .aboutBioCopy p,
   .aboutActivitiesBody,
-  .aboutDuoLabel,
-  .introLocationSub
+  .aboutDuoLabel
 ) {
   opacity: var(--text-desc-opacity);
   transition: opacity 320ms ease, color 320ms ease;
@@ -146,8 +144,6 @@
   .aboutActivities:focus-visible .aboutActivitiesBody,
   .aboutDuo:hover .aboutDuoLabel,
   .aboutDuo:focus-visible .aboutDuoLabel,
-  .intro:hover .introLocationSub,
-  .intro:focus-visible .introLocationSub,
   .favoriteStack:hover .favoriteStackToolDesc,
   .favoriteStack:focus-within .favoriteStackToolDesc
 ) {
@@ -752,10 +748,8 @@
 .card.selah,
 .card.ziplearn,
 .card.tidehaus,
-.card.intro,
 .card.favoriteStack,
 .card.contact,
-.card.openToWork,
 .card.aboutBio,
 .card.aboutPhoto,
 .card.aboutMap,
@@ -796,25 +790,32 @@ a.card:focus-visible {
 
 /* Positions from Figma absolute layout (left/top/width/height ÷ artboard) */
 
+/*
+ * FredyCard — Figma 248:1305 is 458×543.
+ * Slot keeps the left-column width (547) and scales height to match that ratio:
+ * 543 × 547 / 458 ≈ 649.
+ */
 .intro {
   left: calc(120 / var(--art-w) * 100%);
   top: calc(130 / var(--art-h) * 100%);
   width: calc(547 / var(--art-w) * 100%);
-  height: calc(200 / var(--art-h) * 100%);
+  height: calc(649 / var(--art-h) * 100%);
   z-index: 2;
   overflow: hidden;
+  container-type: size;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Solid idle fill — glass reads too white and washes out the avatar hat */
 .card.intro {
-  background: var(--card-idle-bg);
+  background:
+    radial-gradient(ellipse 62.5% 62.5% at 25% 56.25%, rgba(153, 38, 56, 0.4) 0%, rgba(133, 31, 51, 0.15) 50%, rgba(122, 26, 46, 0) 100%),
+    radial-gradient(ellipse 45.45% 45.45% at 45.45% 31.82%, rgba(77, 10, 51, 0.65) 0%, rgba(89, 15, 56, 0.35) 45%, rgba(102, 26, 64, 0) 100%),
+    radial-gradient(ellipse 35.71% 35.71% at 60.71% 60.71%, rgba(191, 38, 26, 0.85) 0%, rgba(166, 31, 38, 0.5) 35%, rgba(140, 26, 46, 0.15) 70%, rgba(128, 26, 51, 0) 100%),
+    linear-gradient(180deg, #df3535 0%, #a12843 35%, #731440 65%, #4d0f38 100%);
+  border: none;
+  box-shadow: 0 8px 28px var(--glass-shadow);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-}
-
-.intro:focus-visible {
-  outline: 2px solid #ace23b;
-  outline-offset: 3px;
 }
 
 .introScene {
@@ -822,81 +823,112 @@ a.card:focus-visible {
   inset: 0;
   overflow: hidden;
   border-radius: inherit;
+  /* Opaque so the frost circle can't sample the page (white fringe). */
+  background-color: #4d0f38;
+  background-image: inherit;
+  perspective: 900px;
+  perspective-origin: 50% 38%;
 }
 
-/* Icon frame 56:321 — real box (not display:contents) so group bob can run */
-.introAvatar {
+.introPortrait {
   position: absolute;
-  left: calc(42 / 547 * 100%);
-  top: calc(51.92 / 200 * 100%);
-  width: calc(90.301 / 547 * 100%);
-  aspect-ratio: 90.301 / 96.168;
   z-index: 1;
+  overflow: hidden;
+  transform-origin: 50% 40%;
+}
+
+.introPortraitArt {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 40%;
+}
+
+.introPortraitImg {
+  object-fit: cover;
+  object-position: center top;
+  filter: grayscale(1);
+}
+
+.introBlur {
+  position: absolute;
+  z-index: 2;
+  background: rgba(12, 4, 14, 0.78);
+  border-radius: 50%;
+  pointer-events: none;
+  transform-origin: 50% 0%;
+}
+
+.intro:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
 }
 
 .introCopy {
   position: absolute;
-  left: calc(153 / 547 * 100%);
-  top: calc(52 / 200 * 100%);
-  width: calc(320 / 547 * 100%);
+  left: 50%;
+  top: calc(403 / 543 * 100%);
+  width: calc(306 / 458 * 100%);
   margin: 0;
-  font-size: clamp(0.6875rem, 0.95vw, 1rem);
-  font-weight: 500;
-  line-height: 1.3;
-  color: var(--intro-text);
-  z-index: 2;
-  transition: color 320ms ease, opacity 320ms ease;
-}
-
-/* Frame 85 — location + flag; left/top set inline from Figma rest pose */
-.introLocation {
-  position: absolute;
   z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px; /* 6 design-px between label and flag */
-}
-
-.introLocationText {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: calc(125 / 158 * 100%);
-  flex-shrink: 0;
-}
-
-.introLocationTitle {
-  margin: 0;
-  font-size: clamp(0.625rem, 0.85vw, 0.875rem);
+  color: #fff;
+  text-align: center;
+  font-size: 3.493cqw; /* 16 ÷ 458 */
   font-weight: 500;
+  line-height: 1.3; /* 20.8 ÷ 16 */
+  pointer-events: none;
+}
+
+.introResume {
+  position: absolute;
+  left: calc(30 / 458 * 100%);
+  top: calc(466 / 543 * 100%);
+  width: calc(398.19 / 458 * 100%);
+  height: calc(57.06 / 543 * 100%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55em;
+  border-radius: 3.668cqw; /* 16.80 ÷ 458 */
+  background: #fff;
+  color: #000;
+  text-decoration: none;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  transition: box-shadow 220ms ease;
+}
+
+.intro:hover .introResume,
+.intro:focus-visible .introResume,
+.intro:focus-within .introResume,
+.introResume:hover,
+.introResume:focus-visible {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.introResume:focus-visible {
+  outline: 2px solid #ace23b;
+  outline-offset: 3px;
+}
+
+.introResumeIcon {
+  width: 3.93cqw; /* 18 ÷ 458 */
+  height: 3.93cqw;
+  flex-shrink: 0;
+  overflow: visible;
+  color: currentColor;
+}
+
+.introResumeIcon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.introResumeLabel {
+  font-size: 3.93cqw; /* 18 ÷ 458 */
+  font-weight: 700;
   line-height: 1.2;
-  text-transform: capitalize;
-  color: var(--intro-text);
-  transition: color 320ms ease, opacity 320ms ease;
-}
-
-.introLocationSub {
-  margin: 0;
-  font-size: clamp(0.5rem, 0.6vw, 0.625rem);
-  font-weight: 400;
-  line-height: 1.2;
-  text-transform: capitalize;
-  color: var(--intro-text-muted);
-  transition: color 320ms ease, opacity 320ms ease;
-}
-
-.introLocationImage {
-  position: relative;
-  align-self: stretch;
-  /* 105 ÷ 158 flag box */
-  aspect-ratio: 158 / 105;
-  border-radius: clamp(6px, 0.55vw, 10px);
-  overflow: hidden;
-}
-
-.introLocationImage img {
-  object-fit: cover;
 }
 
 .grove {
@@ -1139,7 +1171,7 @@ a.samples[data-card-active="true"] .samplesBadgeFace {
 
 .seaSky {
   left: calc(120 / var(--art-w) * 100%);
-  top: calc(350 / var(--art-h) * 100%);
+  top: calc(799 / var(--art-h) * 100%);
   width: calc(547 / var(--art-w) * 100%);
   height: calc(600 / var(--art-h) * 100%);
   z-index: 1;
@@ -1322,7 +1354,7 @@ a.seaSky[data-card-active="true"] .seaSkyChip {
 
 .selah {
   left: calc(120 / var(--art-w) * 100%);
-  top: calc(970 / var(--art-h) * 100%);
+  top: calc(1419 / var(--art-h) * 100%);
   width: calc(547 / var(--art-w) * 100%);
   height: calc(553 / var(--art-h) * 100%);
   z-index: 1;
@@ -1648,133 +1680,6 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
   position: absolute;
   overflow: visible;
   transform-origin: top left;
-}
-
-/* Open to Work — 546×437 at (120, 1543); was Figma slotA placeholder */
-.openToWork {
-  left: calc(120 / var(--art-w) * 100%);
-  top: calc(1543 / var(--art-h) * 100%);
-  width: calc(546 / var(--art-w) * 100%);
-  height: calc(437 / var(--art-h) * 100%);
-  overflow: hidden;
-  container-type: size;
-  transition: transform 220ms ease, box-shadow 220ms ease;
-}
-
-.openToWork:hover,
-.openToWork:focus-within {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
-}
-
-.openToWork:focus-within {
-  outline: 2px solid #ace23b;
-  outline-offset: 3px;
-}
-
-.openToWorkScene {
-  position: absolute;
-  inset: 0;
-}
-
-.openToWorkCopy {
-  position: absolute;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.55em;
-}
-
-.openToWorkStatus {
-  display: flex;
-  align-items: center;
-  gap: 0.55em;
-}
-
-.openToWorkDot {
-  flex-shrink: 0;
-  width: 0.7em;
-  height: 0.7em;
-  border-radius: 50%;
-  background: #34c759;
-  box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.45);
-}
-
-.openToWorkDotPulse {
-  animation: openToWorkPulse 2.2s ease-out infinite;
-}
-
-@keyframes openToWorkPulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.5);
-  }
-  70% {
-    box-shadow: 0 0 0 0.75em rgba(52, 199, 89, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .openToWorkDotPulse {
-    animation: none;
-  }
-}
-
-.openToWorkTitle {
-  margin: 0;
-  color: var(--intro-text);
-  font-size: clamp(1.25rem, 2.2vw, 2rem);
-  font-weight: 700;
-  line-height: 1.15;
-}
-
-.openToWorkRole {
-  margin: 0;
-  color: var(--intro-text);
-  font-size: clamp(0.75rem, 1.05vw, 1.125rem);
-  font-weight: 500;
-  line-height: 1.25;
-  opacity: var(--text-desc-opacity);
-}
-
-.openToWorkButton {
-  position: absolute;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55em;
-  border-radius: 3.663cqw; /* 20 ÷ 546 */
-  background: #000;
-  color: #fff;
-  font-size: clamp(0.75rem, 1vw, 1.125rem);
-  font-weight: 700;
-  line-height: 1.2;
-  text-decoration: none;
-  transition: background-color 280ms ease, color 280ms ease, transform 220ms ease;
-}
-
-.openToWorkButton:hover,
-.openToWorkButton:focus-visible {
-  background: #1a1a1a;
-  transform: translateY(-1px);
-}
-
-.openToWorkButton:focus-visible {
-  outline: 2px solid #ace23b;
-  outline-offset: 3px;
-}
-
-.page[data-theme="dark"] .openToWorkButton {
-  background: #fff;
-  color: #000;
-}
-
-.page[data-theme="dark"] .openToWorkButton:hover,
-.page[data-theme="dark"] .openToWorkButton:focus-visible {
-  background: #f2f2f2;
 }
 
 /* Contact card — 405×435, right-aligned with right-column edge (1799) */
@@ -3643,26 +3548,9 @@ a.card:focus-visible .contactPageOrb,
   }
 
   .intro {
-    min-height: 180px;
-    aspect-ratio: 547 / 230;
+    min-height: 0;
+    aspect-ratio: 458 / 543;
     overflow: hidden;
-  }
-
-  .introCopy {
-    font-size: clamp(0.875rem, 3.4vw, 1.0625rem);
-    opacity: 1 !important;
-  }
-
-  .introLocation {
-    display: none;
-  }
-
-  .introLocationTitle {
-    font-size: clamp(0.8125rem, 3.2vw, 0.9375rem);
-  }
-
-  .introLocationSub {
-    font-size: clamp(0.6875rem, 2.8vw, 0.8125rem);
   }
 
   .groveTitle,
@@ -3710,46 +3598,6 @@ a.card:focus-visible .contactPageOrb,
     aspect-ratio: 2 / 3;
     min-height: 540px;
     overflow: hidden;
-  }
-
-  .openToWork {
-    aspect-ratio: 2.1 / 1;
-    min-height: 190px;
-    height: auto;
-  }
-
-  .openToWorkScene {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 1.25rem;
-    padding: 1.35rem 1.2rem 1.25rem;
-    min-height: 190px;
-  }
-
-  .openToWorkCopy {
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-    width: 100% !important;
-  }
-
-  .openToWorkTitle {
-    font-size: clamp(1.25rem, 5.5vw, 1.625rem);
-  }
-
-  .openToWorkRole {
-    font-size: clamp(0.8125rem, 3.2vw, 1rem);
-  }
-
-  .openToWorkButton {
-    position: relative !important;
-    left: auto !important;
-    bottom: auto !important;
-    width: 100% !important;
-    height: 3rem !important;
-    font-size: clamp(0.875rem, 3.4vw, 1.0625rem);
   }
 
   .contact {
