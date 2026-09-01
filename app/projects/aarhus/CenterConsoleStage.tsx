@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import styles from "./center-console.module.css";
-import { isAppleTouchDevice } from "./device";
 import { useIdlePrefetch } from "./useIdlePrefetch";
 import { useStageScale } from "./useStageScale";
 
@@ -101,7 +100,7 @@ export default function CenterConsoleStage({
   }, [frame, reduceMotion]);
 
   useEffect(() => {
-    if (!reduceMotion && !isAppleTouchDevice()) {
+    if (!reduceMotion) {
       setPlayTv(true);
     }
   }, [reduceMotion]);
