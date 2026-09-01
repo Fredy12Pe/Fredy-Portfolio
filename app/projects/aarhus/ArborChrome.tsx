@@ -118,31 +118,19 @@ export default function ArborChrome({ children }: { children: ReactNode }) {
               className={`${styles.menu} ${menuOpen ? styles.menuOpen : ""}`}
               aria-label="Collections"
             >
-              {NAV_ITEMS.map((item) => {
-                const className = `${styles.menuItem} ${
-                  activeNav === item.label ? styles.menuItemActive : ""
-                }`;
-
-                if (item.href) {
-                  return (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      className={className}
-                      aria-current={activeNav === item.label ? "page" : undefined}
-                      onClick={(event) => go(item.href, event)}
-                    >
-                      {item.label}
-                    </Link>
-                  );
-                }
-
-                return (
-                  <button key={item.label} type="button" className={className}>
-                    {item.label}
-                  </button>
-                );
-              })}
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`${styles.menuItem} ${
+                    activeNav === item.label ? styles.menuItemActive : ""
+                  }`}
+                  aria-current={activeNav === item.label ? "page" : undefined}
+                  onClick={(event) => go(item.href, event)}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </nav>
           </div>
 
@@ -204,22 +192,16 @@ export default function ArborChrome({ children }: { children: ReactNode }) {
             <nav className={styles.footerNav} aria-label="Footer">
               <div className={styles.footerCol}>
                 <p className={styles.footerHeading}>Shop</p>
-                {NAV_ITEMS.map((item) =>
-                  item.href ? (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      className={styles.footerLink}
-                      onClick={(event) => go(item.href, event)}
-                    >
-                      {item.label}
-                    </Link>
-                  ) : (
-                    <button key={item.label} type="button" className={styles.footerLink}>
-                      {item.label}
-                    </button>
-                  ),
-                )}
+                {NAV_ITEMS.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className={styles.footerLink}
+                    onClick={(event) => go(item.href, event)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
               </div>
               <div className={styles.footerCol}>
                 <p className={styles.footerHeading}>Atelier</p>
