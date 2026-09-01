@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import styles from "./dining.module.css";
+import StageImage from "./StageImage";
 import { useIdlePrefetch } from "./useIdlePrefetch";
 import { useStageScale } from "./useStageScale";
 
@@ -37,9 +38,14 @@ export default function DiningStage({
   seats: SeatCount;
 }) {
   const reduceMotion = useReducedMotion();
-  const rootRef = useStageScale();
+  const [heroReady, setHeroReady] = useState(false);
+  const { ref: rootRef, scaled } = useStageScale();
   const target: DiningState = `${top}-${seats}`;
-  useIdlePrefetch(DINING_FRAMES.filter((state) => state !== target).map(diningRender));
+  const ready = scaled && heroReady;
+  useIdlePrefetch(
+    DINING_FRAMES.filter((state) => state !== target).map(diningRender),
+    ready,
+  );
 
   const [frame, setFrame] = useState<DiningState>(target);
   const [settled, setSettled] = useState<DiningState>(target);
@@ -73,10 +79,10 @@ export default function DiningStage({
   }, [frame, reduceMotion]);
 
   return (
-    <div ref={rootRef} className={styles.root}>
+    <div ref={rootRef} className={styles.root} data-ready={ready ? "true" : undefined}>
       <div className={styles.scene}>
         <div className={styles.layer} aria-hidden>
-          <img
+          <StageImage
             src={diningRender(settled)}
             alt=""
             width={840}
@@ -84,6 +90,7 @@ export default function DiningStage({
             draggable={false}
             fetchPriority="high"
             decoding="async"
+            onReady={() => setHeroReady(true)}
           />
         </div>
 

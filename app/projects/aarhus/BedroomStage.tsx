@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import styles from "./bedroom.module.css";
+import StageImage from "./StageImage";
 import { useIdlePrefetch } from "./useIdlePrefetch";
 import { useStageScale } from "./useStageScale";
 
@@ -41,9 +42,14 @@ export default function BedroomStage({
   onLampChange: (on: boolean) => void;
 }) {
   const reduceMotion = useReducedMotion();
-  const rootRef = useStageScale();
+  const [heroReady, setHeroReady] = useState(false);
+  const { ref: rootRef, scaled } = useStageScale();
   const target: BedState = `${headboard}-${lampOn ? "on" : "off"}`;
-  useIdlePrefetch(BED_STATES.filter((state) => state !== target).map(bedRender));
+  const ready = scaled && heroReady;
+  useIdlePrefetch(
+    BED_STATES.filter((state) => state !== target).map(bedRender),
+    ready,
+  );
 
   const [frame, setFrame] = useState<BedState>(target);
   const [settled, setSettled] = useState<BedState>(target);
@@ -77,10 +83,10 @@ export default function BedroomStage({
   }, [frame, reduceMotion]);
 
   return (
-    <div ref={rootRef} className={styles.root}>
+    <div ref={rootRef} className={styles.root} data-ready={ready ? "true" : undefined}>
       <div className={styles.scene}>
         <div className={styles.layer} aria-hidden>
-          <img
+          <StageImage
             src={bedRender(settled)}
             alt=""
             width={840}
@@ -88,6 +94,7 @@ export default function BedroomStage({
             draggable={false}
             fetchPriority="high"
             decoding="async"
+            onReady={() => setHeroReady(true)}
           />
         </div>
 

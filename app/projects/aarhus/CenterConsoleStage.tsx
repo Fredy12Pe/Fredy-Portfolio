@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import styles from "./center-console.module.css";
+import StageImage from "./StageImage";
 import { useIdlePrefetch } from "./useIdlePrefetch";
 import { useStageScale } from "./useStageScale";
 
@@ -52,10 +53,15 @@ export default function CenterConsoleStage({
 }) {
   const reduceMotion = useReducedMotion();
   const [playTv, setPlayTv] = useState(false);
-  const rootRef = useStageScale();
+  const [heroReady, setHeroReady] = useState(false);
+  const { ref: rootRef, scaled } = useStageScale();
   const row: ConsoleRow = !opened ? "closed" : ledOn ? "light" : "open";
   const target: ConsoleState = `${row}-${config}`;
-  useIdlePrefetch(CONSOLE_STATES.filter((state) => state !== target).map(consoleRender));
+  const ready = scaled && heroReady;
+  useIdlePrefetch(
+    CONSOLE_STATES.filter((state) => state !== target).map(consoleRender),
+    ready,
+  );
 
   const [frame, setFrame] = useState<ConsoleState>(target);
   // The settled layer stays opaque while the next frame dissolves in over it,
@@ -106,10 +112,10 @@ export default function CenterConsoleStage({
   }, [reduceMotion]);
 
   return (
-    <div ref={rootRef} className={styles.root}>
+    <div ref={rootRef} className={styles.root} data-ready={ready ? "true" : undefined}>
       <div className={styles.scene}>
         <div className={styles.layer} aria-hidden>
-          <img
+          <StageImage
             src={consoleRender(settled)}
             alt=""
             width={840}
@@ -117,6 +123,7 @@ export default function CenterConsoleStage({
             draggable={false}
             fetchPriority="high"
             decoding="async"
+            onReady={() => setHeroReady(true)}
           />
         </div>
 

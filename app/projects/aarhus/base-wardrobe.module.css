@@ -23,6 +23,21 @@
   isolation: isolate;
 }
 
+.root:not([data-ready]) .scene {
+  opacity: 0;
+}
+
+.root[data-ready] .scene {
+  opacity: 1;
+  transition: opacity 280ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-ready] .scene {
+    transition: none;
+  }
+}
+
 .room,
 .openedRoom {
   position: absolute;

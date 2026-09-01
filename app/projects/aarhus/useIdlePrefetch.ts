@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { isAppleTouchDevice } from "./device";
 
 function loadImage(src: string) {
   return new Promise<void>((resolve) => {
@@ -13,13 +12,13 @@ function loadImage(src: string) {
   });
 }
 
-/** Warm the cache after first paint so extra scene frames do not fight the LCP image. */
-export function useIdlePrefetch(urls: readonly string[]) {
+/** Warm the cache after the hero is ready so extra frames do not fight first paint. */
+export function useIdlePrefetch(urls: readonly string[], enabled = true) {
   const key = urls.join("|");
 
   useEffect(() => {
     const unique = [...new Set(key.split("|").filter(Boolean))];
-    if (unique.length === 0 || isAppleTouchDevice()) {
+    if (!enabled || unique.length === 0) {
       return;
     }
 
@@ -36,11 +35,11 @@ export function useIdlePrefetch(urls: readonly string[]) {
 
     const idleId = window.requestIdleCallback(() => {
       void run();
-    }, { timeout: 1200 });
+    }, { timeout: 1800 });
 
     return () => {
       cancelled = true;
       window.cancelIdleCallback(idleId);
     };
-  }, [key]);
+  }, [key, enabled]);
 }

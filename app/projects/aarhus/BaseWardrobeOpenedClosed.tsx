@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import styles from "./base-wardrobe.module.css";
+import StageImage from "./StageImage";
 import { useIdlePrefetch } from "./useIdlePrefetch";
 import { useStageScale } from "./useStageScale";
 
@@ -647,14 +648,16 @@ export default function BaseWardrobeOpenedClosed({
   onOpenedChange: (open: boolean) => void;
 }) {
   const [doubleMounted, setDoubleMounted] = useState(false);
-  useIdlePrefetch(WARM_ASSETS);
+  const [heroReady, setHeroReady] = useState(false);
+  const { ref: rootRef, scaled } = useStageScale();
+  useIdlePrefetch(WARM_ASSETS, scaled && heroReady);
   const [sweaterRun, setSweaterRun] = useState(0);
   const prevOpened = useRef(false);
   const prevIsDouble = useRef(interior === "double");
   const mountExpanded = useRef(false);
   const isDoubleRef = useRef(interior === "double");
   const reduceMotion = useReducedMotion();
-  const rootRef = useStageScale();
+  const ready = scaled && heroReady;
   const fade = { duration: reduceMotion ? 0 : 0.18, ease: "easeOut" as const };
   const swapTransition: MotionTransition = reduceMotion
     ? { duration: 0 }
@@ -710,10 +713,10 @@ export default function BaseWardrobeOpenedClosed({
   }, [isDouble, opened]);
 
   return (
-    <div ref={rootRef} className={styles.root}>
+    <div ref={rootRef} className={styles.root} data-ready={ready ? "true" : undefined}>
       <div className={styles.scene}>
         <div className={styles.room} aria-hidden>
-          <img
+          <StageImage
             src={ASSETS.closedRoom}
             alt=""
             width={840}
@@ -721,6 +724,7 @@ export default function BaseWardrobeOpenedClosed({
             draggable={false}
             fetchPriority="high"
             decoding="async"
+            onReady={() => setHeroReady(true)}
           />
         </div>
 
