@@ -84,3 +84,7 @@ next-env.d.ts
 *.webp
 *.eps
 # Note: PDF files are allowed for resume and documents
+
+# Aarhus case-study media is small and required on deploy
+!/public/projects/aarhus/**/*.webp
+!/public/projects/aarhus/**/*.mp4
