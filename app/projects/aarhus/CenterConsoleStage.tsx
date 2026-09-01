@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import styles from "./center-console.module.css";
+import { isAppleTouchDevice } from "./device";
 import { useIdlePrefetch } from "./useIdlePrefetch";
 import { useStageScale } from "./useStageScale";
 
@@ -51,6 +52,7 @@ export default function CenterConsoleStage({
   onLedChange: (on: boolean) => void;
 }) {
   const reduceMotion = useReducedMotion();
+  const [playTv, setPlayTv] = useState(false);
   const rootRef = useStageScale();
   const row: ConsoleRow = !opened ? "closed" : ledOn ? "light" : "open";
   const target: ConsoleState = `${row}-${config}`;
@@ -98,6 +100,12 @@ export default function CenterConsoleStage({
     }
   }, [frame, reduceMotion]);
 
+  useEffect(() => {
+    if (!reduceMotion && !isAppleTouchDevice()) {
+      setPlayTv(true);
+    }
+  }, [reduceMotion]);
+
   return (
     <div ref={rootRef} className={styles.root}>
       <div className={styles.scene}>
@@ -138,11 +146,11 @@ export default function CenterConsoleStage({
             <video
               className={styles.tvVideo}
               poster="/projects/aarhus/console/tv-poster.webp"
-              autoPlay={!reduceMotion}
+              autoPlay={playTv}
               muted
               loop
               playsInline
-              preload="metadata"
+              preload={playTv ? "metadata" : "none"}
               disablePictureInPicture
             >
               <source src="/projects/aarhus/console/tv.mp4" type="video/mp4" />

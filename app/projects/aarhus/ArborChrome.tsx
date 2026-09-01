@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { isAppleTouchDevice } from "./device";
 import styles from "./aarhus.module.css";
 import { aarhusSans, aarhusSerif } from "./fonts";
 import { NAV_ITEMS, type NavLabel } from "./nav";
@@ -87,19 +88,28 @@ export default function ArborChrome({ children }: { children: ReactNode }) {
     event.preventDefault();
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion || typeof document.startViewTransition !== "function") {
+    // iOS Safari's view-transition snapshot often kills the tab on image-heavy pages.
+    if (
+      reduceMotion ||
+      isAppleTouchDevice() ||
+      typeof document.startViewTransition !== "function"
+    ) {
       router.push(href);
       return;
     }
 
-    document.startViewTransition(
-      () =>
-        new Promise<void>((resolve) => {
-          finishTransition.current = resolve;
-          router.push(href);
-          window.setTimeout(resolve, 800);
-        }),
-    );
+    try {
+      document.startViewTransition(
+        () =>
+          new Promise<void>((resolve) => {
+            finishTransition.current = resolve;
+            router.push(href);
+            window.setTimeout(resolve, 800);
+          }),
+      );
+    } catch {
+      router.push(href);
+    }
   }
 
   return (

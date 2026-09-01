@@ -1,7 +1,10 @@
 html:has([data-aarhus-page]),
 html:has([data-aarhus-page]) body {
   background-color: #f9f8f5 !important;
-  overflow-x: hidden;
+}
+
+html:has([data-aarhus-page]) body {
+  overflow-x: clip;
 }
 
 ::view-transition-old(root) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { isAppleTouchDevice } from "./device";
 
 function loadImage(src: string) {
   return new Promise<void>((resolve) => {
@@ -18,7 +19,7 @@ export function useIdlePrefetch(urls: readonly string[]) {
 
   useEffect(() => {
     const unique = [...new Set(key.split("|").filter(Boolean))];
-    if (unique.length === 0) {
+    if (unique.length === 0 || isAppleTouchDevice()) {
       return;
     }
 
