@@ -59,7 +59,6 @@ export default function AarhusIntroPage() {
               alt=""
               fill
               sizes="(max-width: 720px) 86vw, (max-width: 1100px) 42vw, 360px"
-              quality={70}
               priority
             />
             <span className={styles.introCardCopy}>

@@ -8,7 +8,6 @@ export default function GalleryThumb({ src }: { src: string }) {
       width={94}
       height={94}
       sizes="94px"
-      quality={55}
       draggable={false}
     />
   );
