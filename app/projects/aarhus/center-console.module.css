@@ -1,0 +1,249 @@
+/* Geometry from Figma Console frames 31:147–31:155 (840 × 680). */
+
+.root {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  background: #d9d9d9;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 840px;
+  height: 680px;
+  transform: scale(var(--stage-scale, calc(100cqw / 840)));
+  transform-origin: top left;
+  isolation: isolate;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+}
+
+.layer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.preload {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* TV screen overlay — Figma Console 12:464 Group 11 at (710, 391) on the 840×680 scene at (444, 219). */
+.tv {
+  position: absolute;
+  left: 266px;
+  top: 172px;
+  width: 300px;
+  height: 168px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.tvScreen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #000;
+}
+
+.tvVideo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tvGlow {
+  position: absolute;
+  /* Figma Group 10 inset: -51.18% -22.67% -51.78% -22.67% */
+  inset: -51.18% -22.67% -51.78% -22.67%;
+  width: auto;
+  height: auto;
+  max-width: none;
+  pointer-events: none;
+}
+
+/* Door hotspot — on the cabinet front when closed, on the swung door when open. */
+.hotspot {
+  position: absolute;
+  left: 520px;
+  top: 445px;
+  width: 28px;
+  height: 28px;
+  z-index: 10;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  overflow: visible;
+}
+
+.hotspotClose {
+  left: 628px;
+  top: 430px;
+}
+
+.hotspot:focus-visible {
+  outline: 2px solid #b9a288;
+  outline-offset: 3px;
+}
+
+.hotspot::before,
+.lightBtn::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, calc(44px / var(--stage-scale, calc(100cqw / 840))));
+  height: max(100%, calc(44px / var(--stage-scale, calc(100cqw / 840))));
+  transform: translate(-50%, -50%);
+}
+
+.hotspotBubble {
+  display: block;
+  position: relative;
+  width: 28px;
+  height: 28px;
+  transform-origin: center;
+  animation: hotspotPulse 2.4s ease-in-out infinite;
+}
+
+.hotspot:hover .hotspotBubble,
+.hotspot:focus-visible .hotspotBubble {
+  animation-play-state: paused;
+}
+
+@keyframes hotspotPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.hotspotRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.hotspotDot {
+  position: absolute;
+  left: 9px;
+  top: 9px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #000;
+}
+
+.openPopup {
+  position: absolute;
+  left: 28px;
+  top: -41px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  min-width: 125px;
+  height: 34px;
+  padding: 0 28px 0 27px;
+  border-radius: 6px;
+  background: rgb(0 0 0 / 0.4);
+  backdrop-filter: blur(13px);
+  -webkit-backdrop-filter: blur(13px);
+  font-family: Geist, system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: normal;
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.15s ease;
+}
+
+.hotspotClose .openPopup {
+  left: auto;
+  right: 28px;
+}
+
+.hotspot:hover .openPopup,
+.hotspot:focus-visible .openPopup,
+.hotspot:focus .openPopup {
+  opacity: 1;
+}
+
+/* Interior LED toggle — inside the left bay when the cabinet is open. */
+.lightBtn {
+  position: absolute;
+  left: 270px;
+  top: 418px;
+  width: 40px;
+  height: 40px;
+  z-index: 10;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  overflow: visible;
+}
+
+.lightBtn:focus-visible {
+  outline: 2px solid #b9a288;
+  outline-offset: 3px;
+}
+
+.lightBtnBubble {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.lightBtnBubble img {
+  display: block;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .openPopup {
+    transition: none;
+  }
+
+  .hotspotBubble {
+    animation: none;
+  }
+}

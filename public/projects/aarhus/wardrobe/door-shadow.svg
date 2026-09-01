@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="32.0815" height="128.863" viewBox="0 0 32.0815 128.863" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Door-shadow" filter="url(#filter0_f_0_4)">
+<ellipse cx="16.0408" cy="64.4313" rx="8.04075" ry="56.4313" fill="black" fill-opacity="0.14"/>
+</g>
+<defs>
+<filter id="filter0_f_0_4" x="0" y="0" width="32.0815" height="128.863" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="4" result="effect1_foregroundBlur_0_4"/>
+</filter>
+</defs>
+</svg>

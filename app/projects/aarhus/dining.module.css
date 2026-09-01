@@ -1,0 +1,47 @@
+/* Geometry from Figma dining frames 12:39–12:47 (840 × 680). */
+
+.root {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  background: #d9d9d9;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 840px;
+  height: 680px;
+  transform: scale(var(--stage-scale, calc(100cqw / 840)));
+  transform-origin: top left;
+  isolation: isolate;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+}
+
+.layer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.preload {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
