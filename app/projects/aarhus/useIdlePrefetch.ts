@@ -12,6 +12,30 @@ function loadImage(src: string) {
   });
 }
 
+function scheduleIdle(callback: () => void) {
+  const requestIdle = (
+    window as Window & {
+      requestIdleCallback?: (
+        cb: () => void,
+        opts?: { timeout: number },
+      ) => number;
+      cancelIdleCallback?: (id: number) => void;
+    }
+  ).requestIdleCallback;
+
+  if (typeof requestIdle === "function") {
+    const id = requestIdle(callback, { timeout: 1800 });
+    return () => {
+      (
+        window as Window & { cancelIdleCallback?: (id: number) => void }
+      ).cancelIdleCallback?.(id);
+    };
+  }
+
+  const id = window.setTimeout(callback, 200);
+  return () => window.clearTimeout(id);
+}
+
 /** Warm the cache after the hero is ready so extra frames do not fight first paint. */
 export function useIdlePrefetch(urls: readonly string[], enabled = true) {
   const key = urls.join("|");
@@ -33,13 +57,13 @@ export function useIdlePrefetch(urls: readonly string[], enabled = true) {
       }
     };
 
-    const idleId = window.requestIdleCallback(() => {
+    const cancel = scheduleIdle(() => {
       void run();
-    }, { timeout: 1800 });
+    });
 
     return () => {
       cancelled = true;
-      window.cancelIdleCallback(idleId);
+      cancel();
     };
   }, [key, enabled]);
 }
