@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import styles from "./aarhus.module.css";
+import PrefetchAarhusScenes from "./PrefetchAarhusScenes";
 
 const INTERACTIONS = [
   {
@@ -35,6 +37,7 @@ const INTERACTIONS = [
 export default function AarhusIntroPage() {
   return (
     <main className={styles.intro}>
+      <PrefetchAarhusScenes />
       <div className={styles.introCopy}>
         <h1 className={styles.introTitle}>Modular Living</h1>
         <p className={styles.introLead}>
@@ -51,7 +54,14 @@ export default function AarhusIntroPage() {
             className={styles.introCard}
             aria-label={`${item.title}, ${item.label}`}
           >
-            <img src={item.src} alt="" width={360} height={500} />
+            <Image
+              src={item.src}
+              alt=""
+              fill
+              sizes="(max-width: 720px) 86vw, (max-width: 1100px) 42vw, 360px"
+              quality={70}
+              priority
+            />
             <span className={styles.introCardCopy}>
               <span className={styles.introCardCategory}>{item.category}</span>
               <span className={styles.introCardTitle}>{item.title}</span>

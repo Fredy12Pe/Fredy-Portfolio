@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import styles from "./aarhus.module.css";
+import { aarhusSans, aarhusSerif } from "./fonts";
 import { NAV_ITEMS, type NavLabel } from "./nav";
 
 const CHROME_ASSETS = {
@@ -102,7 +103,11 @@ export default function ArborChrome({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className={styles.page} data-aarhus-page id="top">
+    <div
+      className={`${styles.page} ${aarhusSans.variable} ${aarhusSerif.variable}`}
+      data-aarhus-page
+      id="top"
+    >
       <div className={styles.canvas}>
         <header className={styles.navbar}>
           <div className={styles.navbarItems}>

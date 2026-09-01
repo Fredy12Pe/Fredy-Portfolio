@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Icon } from "../ArborChrome";
 import BaseWardrobeOpenedClosed from "../BaseWardrobeOpenedClosed";
 import DoorToggle from "../DoorToggle";
+import GalleryThumb from "../GalleryThumb";
 import RollingPrice from "../RollingPrice";
 import styles from "../aarhus.module.css";
 
@@ -302,13 +303,7 @@ export default function AarhusPage() {
                       aria-pressed={selected}
                       onClick={() => setActiveThumb(index)}
                     >
-                      <img
-                        src={item.src}
-                        alt=""
-                        width={94}
-                        height={94}
-                        draggable={false}
-                      />
+                      <GalleryThumb src={item.src} />
                     </button>
                   );
 
@@ -371,6 +366,8 @@ export default function AarhusPage() {
                       alt="Hands assembling wardrobe details in the workshop"
                       width={220}
                       height={100}
+                      loading="lazy"
+                      decoding="async"
                     />
                   </span>
                   <button type="button" className={styles.cardLink}>

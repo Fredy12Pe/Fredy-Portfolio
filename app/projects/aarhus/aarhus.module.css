@@ -64,7 +64,7 @@
 
 .logoText {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: normal;
@@ -96,7 +96,7 @@
   border: 0;
   border-bottom: 1px solid transparent;
   background: transparent;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: normal;
@@ -161,7 +161,7 @@
 }
 
 .cartCount {
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 600;
   line-height: normal;
@@ -222,7 +222,7 @@
 
 .category {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 600;
   line-height: normal;
@@ -233,7 +233,7 @@
 .title {
   margin: 0;
   color: #1c1917;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-aarhus-serif), "Cormorant Garamond", serif;
   font-weight: 500;
   font-size: 0;
   line-height: 0;
@@ -266,7 +266,7 @@
 
 .ratingCopy {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: normal;
@@ -277,7 +277,7 @@
 .description {
   margin: 0;
   width: 215px;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 400;
   line-height: normal;
@@ -296,7 +296,7 @@
   display: flex;
   align-items: baseline;
   margin: 0;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-aarhus-serif), "Cormorant Garamond", serif;
   font-size: 32px;
   font-weight: 400;
   line-height: 1;
@@ -338,7 +338,7 @@
 
 .availability {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 600;
   line-height: normal;
@@ -421,7 +421,7 @@
 
 .featureTitle {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 600;
   line-height: normal;
@@ -434,7 +434,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 500;
   line-height: normal;
@@ -461,7 +461,7 @@
   border: 1px solid #e8e4df;
   border-radius: 8px;
   background: transparent;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 500;
   line-height: normal;
@@ -511,7 +511,7 @@
 
 .ledTitle {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 600;
   line-height: normal;
@@ -520,7 +520,7 @@
 
 .ledDescription {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 11px;
   font-weight: 400;
   line-height: normal;
@@ -581,7 +581,7 @@
   height: 50px;
   padding: 16px;
   border-radius: 8px;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 14px;
   line-height: normal;
   white-space: nowrap;
@@ -629,7 +629,7 @@
 
 .trustTitle {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 600;
   line-height: normal;
@@ -639,7 +639,7 @@
 
 .trustDescription {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 10px;
   font-weight: 400;
   line-height: normal;
@@ -753,7 +753,7 @@
 
 .cardTitle {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.2;
@@ -768,7 +768,7 @@
 
 .cardDescription {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: 1.4;
@@ -797,7 +797,7 @@
 .detailRow dt,
 .detailRow dd {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 12px;
   line-height: 1.35;
 }
@@ -848,7 +848,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 500;
   line-height: 1.2;
@@ -877,7 +877,7 @@
 
 .footerTagline {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 400;
   line-height: 1.5;
@@ -899,7 +899,7 @@
 
 .footerHeading {
   margin: 0 0 4px;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -912,7 +912,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 400;
   line-height: 1.4;
@@ -933,7 +933,7 @@
 
 .footerCopy {
   margin: 0;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 400;
   color: #8a847c;
@@ -949,7 +949,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 400;
   color: #8a847c;
@@ -981,7 +981,7 @@
 
 .introTitle {
   margin: 0;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-aarhus-serif), "Cormorant Garamond", serif;
   font-size: 72px;
   font-weight: 500;
   line-height: 1.05;
@@ -991,7 +991,7 @@
 .introLead {
   margin: 18px 0 0;
   max-width: 420px;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.55;
@@ -1042,7 +1042,7 @@
 }
 
 .introCardCategory {
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.06em;
@@ -1051,7 +1051,7 @@
 }
 
 .introCardTitle {
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-aarhus-serif), "Cormorant Garamond", serif;
   font-size: 28px;
   font-weight: 500;
   line-height: 1.1;

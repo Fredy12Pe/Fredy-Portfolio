@@ -11,5 +11,15 @@ export default function LivingRoomLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <link
+        rel="preload"
+        as="image"
+        href="/projects/aarhus/console/closed-2door.webp"
+        fetchPriority="high"
+      />
+      {children}
+    </>
+  );
 }

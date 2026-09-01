@@ -177,7 +177,7 @@
   background: rgb(0 0 0 / 0.4);
   backdrop-filter: blur(13px);
   -webkit-backdrop-filter: blur(13px);
-  font-family: Geist, system-ui, sans-serif;
+  font-family: var(--font-aarhus-sans), Geist, system-ui, sans-serif;
   font-size: 10px;
   font-weight: 400;
   line-height: normal;

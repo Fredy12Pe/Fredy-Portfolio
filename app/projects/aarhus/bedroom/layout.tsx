@@ -11,5 +11,15 @@ export default function BedroomLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <link
+        rel="preload"
+        as="image"
+        href="/projects/aarhus/bedroom/walnut-off.webp"
+        fetchPriority="high"
+      />
+      {children}
+    </>
+  );
 }

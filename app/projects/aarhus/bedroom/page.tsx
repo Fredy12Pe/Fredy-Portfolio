@@ -243,6 +243,8 @@ export default function BedroomPage() {
                       width={94}
                       height={94}
                       draggable={false}
+                      loading="lazy"
+                      decoding="async"
                     />
                   </button>
                 );
@@ -301,6 +303,8 @@ export default function BedroomPage() {
                     alt="Hands assembling furniture details in the workshop"
                     width={220}
                     height={100}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </span>
                 <button type="button" className={styles.cardLink}>

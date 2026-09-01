@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import styles from "./base-wardrobe.module.css";
+import { useIdlePrefetch } from "./useIdlePrefetch";
 import { useStageScale } from "./useStageScale";
 
 const ASSETS = {
@@ -39,6 +40,15 @@ const ASSETS = {
   lightBtnOff: "/projects/aarhus/wardrobe/light-btn-off.svg",
   lightBtnOn: "/projects/aarhus/wardrobe/light-btn-on.svg",
 } as const;
+
+const WARM_ASSETS = [
+  ASSETS.closedMirror,
+  ASSETS.doubleClosed,
+  ASSETS.doubleClosedMirror,
+  ASSETS.openedRoom,
+  ASSETS.openedInterior,
+  ASSETS.openedLight,
+] as const;
 
 function spring(a: number, b: number, c: number) {
   return (t: number) =>
@@ -637,6 +647,7 @@ export default function BaseWardrobeOpenedClosed({
   onOpenedChange: (open: boolean) => void;
 }) {
   const [doubleMounted, setDoubleMounted] = useState(false);
+  useIdlePrefetch(WARM_ASSETS);
   const [sweaterRun, setSweaterRun] = useState(0);
   const prevOpened = useRef(false);
   const prevIsDouble = useRef(interior === "double");
@@ -708,14 +719,13 @@ export default function BaseWardrobeOpenedClosed({
             width={840}
             height={680}
             draggable={false}
+            fetchPriority="high"
+            decoding="async"
           />
         </div>
 
-        <div
-          className={styles.closedDoor}
-          aria-hidden
-          style={{ opacity: showSingleClosed ? 1 : 0 }}
-        >
+        {showSingleClosed ? (
+        <div className={styles.closedDoor} aria-hidden>
           <span className={styles.closedGlass}>
             <img
               src={ASSETS.closedGlass}
@@ -723,9 +733,12 @@ export default function BaseWardrobeOpenedClosed({
               width={883}
               height={883}
               draggable={false}
+              fetchPriority="high"
+              decoding="async"
             />
           </span>
         </div>
+        ) : null}
 
         {opened ? (
           <>
@@ -763,47 +776,44 @@ export default function BaseWardrobeOpenedClosed({
           </>
         ) : null}
 
-        <div
-          className={styles.closedMirror}
-          aria-hidden
-          style={{ opacity: showSingleMirror ? 1 : 0 }}
-        >
+        {showSingleMirror ? (
+        <div className={styles.closedMirror} aria-hidden>
           <img
             src={ASSETS.closedMirror}
             alt=""
             width={840}
             height={680}
             draggable={false}
+            decoding="async"
           />
         </div>
+        ) : null}
 
-        <div
-          className={styles.doubleClosed}
-          aria-hidden
-          style={{ opacity: showDoubleClosed ? 1 : 0 }}
-        >
+        {showDoubleClosed ? (
+        <div className={styles.doubleClosed} aria-hidden>
           <img
             src={ASSETS.doubleClosed}
             alt=""
             width={840}
             height={680}
             draggable={false}
+            decoding="async"
           />
         </div>
+        ) : null}
 
-        <div
-          className={styles.doubleClosedMirror}
-          aria-hidden
-          style={{ opacity: showDoubleMirror ? 1 : 0 }}
-        >
+        {showDoubleMirror ? (
+        <div className={styles.doubleClosedMirror} aria-hidden>
           <img
             src={ASSETS.doubleClosedMirror}
             alt=""
             width={840}
             height={680}
             draggable={false}
+            decoding="async"
           />
         </div>
+        ) : null}
 
         {opened && doubleMounted ? (
           <DoubleColumnScene

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import styles from "./bedroom.module.css";
+import { useIdlePrefetch } from "./useIdlePrefetch";
 import { useStageScale } from "./useStageScale";
 
 const LIGHT_BTN = {
@@ -42,6 +43,7 @@ export default function BedroomStage({
   const reduceMotion = useReducedMotion();
   const rootRef = useStageScale();
   const target: BedState = `${headboard}-${lampOn ? "on" : "off"}`;
+  useIdlePrefetch(BED_STATES.filter((state) => state !== target).map(bedRender));
 
   const [frame, setFrame] = useState<BedState>(target);
   const [settled, setSettled] = useState<BedState>(target);
@@ -78,7 +80,15 @@ export default function BedroomStage({
     <div ref={rootRef} className={styles.root}>
       <div className={styles.scene}>
         <div className={styles.layer} aria-hidden>
-          <img src={bedRender(settled)} alt="" width={840} height={680} draggable={false} />
+          <img
+            src={bedRender(settled)}
+            alt=""
+            width={840}
+            height={680}
+            draggable={false}
+            fetchPriority="high"
+            decoding="async"
+          />
         </div>
 
         {frame !== settled ? (
@@ -122,11 +132,6 @@ export default function BedroomStage({
           </span>
         </button>
 
-        <div className={styles.preload} aria-hidden>
-          {BED_STATES.map((state) => (
-            <img key={state} src={bedRender(state)} alt="" width={1} height={1} />
-          ))}
-        </div>
       </div>
     </div>
   );

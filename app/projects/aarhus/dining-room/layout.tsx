@@ -11,5 +11,15 @@ export default function DiningRoomLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <link
+        rel="preload"
+        as="image"
+        href="/projects/aarhus/dining/walnut-4.png"
+        fetchPriority="high"
+      />
+      {children}
+    </>
+  );
 }

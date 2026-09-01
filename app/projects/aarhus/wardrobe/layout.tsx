@@ -11,5 +11,16 @@ export default function WardrobeLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <link
+        rel="preload"
+        as="image"
+        href="/projects/aarhus/wardrobe/wardrobe-closed.png"
+        fetchPriority="high"
+      />
+      <link rel="preload" as="image" href="/projects/aarhus/wardrobe/closed-glass.png" />
+      {children}
+    </>
+  );
 }

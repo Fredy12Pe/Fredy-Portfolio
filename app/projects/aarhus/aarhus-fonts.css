@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Geist:wght@400;500;600&display=swap");
-
 html:has([data-aarhus-page]),
 html:has([data-aarhus-page]) body {
   background-color: #f9f8f5 !important;

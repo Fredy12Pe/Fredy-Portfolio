@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import styles from "./center-console.module.css";
+import { useIdlePrefetch } from "./useIdlePrefetch";
 import { useStageScale } from "./useStageScale";
 
 const LIGHT_BTN = {
@@ -53,6 +54,7 @@ export default function CenterConsoleStage({
   const rootRef = useStageScale();
   const row: ConsoleRow = !opened ? "closed" : ledOn ? "light" : "open";
   const target: ConsoleState = `${row}-${config}`;
+  useIdlePrefetch(CONSOLE_STATES.filter((state) => state !== target).map(consoleRender));
 
   const [frame, setFrame] = useState<ConsoleState>(target);
   // The settled layer stays opaque while the next frame dissolves in over it,
@@ -100,7 +102,15 @@ export default function CenterConsoleStage({
     <div ref={rootRef} className={styles.root}>
       <div className={styles.scene}>
         <div className={styles.layer} aria-hidden>
-          <img src={consoleRender(settled)} alt="" width={840} height={680} draggable={false} />
+          <img
+            src={consoleRender(settled)}
+            alt=""
+            width={840}
+            height={680}
+            draggable={false}
+            fetchPriority="high"
+            decoding="async"
+          />
         </div>
 
         {frame !== settled ? (
@@ -182,11 +192,6 @@ export default function CenterConsoleStage({
           </button>
         ) : null}
 
-        <div className={styles.preload} aria-hidden>
-          {CONSOLE_STATES.map((state) => (
-            <img key={state} src={consoleRender(state)} alt="" width={1} height={1} />
-          ))}
-        </div>
       </div>
     </div>
   );

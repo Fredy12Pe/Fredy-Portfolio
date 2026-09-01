@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import styles from "./dining.module.css";
+import { useIdlePrefetch } from "./useIdlePrefetch";
 import { useStageScale } from "./useStageScale";
 
 export const TOPS = ["walnut", "stone"] as const;
@@ -15,6 +16,10 @@ export type DiningImage = DiningState | `${TableTop}-6`;
 
 export const DINING_STATES: DiningState[] = TOPS.flatMap((top) =>
   SEATS.map((seats) => `${top}-${seats}` as DiningState),
+);
+
+const DINING_FRAMES: DiningImage[] = TOPS.flatMap((top) =>
+  (["4", "6", "8"] as const).map((seats) => `${top}-${seats}` as DiningImage),
 );
 
 const FADE_SECONDS = 0.22;
@@ -34,6 +39,7 @@ export default function DiningStage({
   const reduceMotion = useReducedMotion();
   const rootRef = useStageScale();
   const target: DiningState = `${top}-${seats}`;
+  useIdlePrefetch(DINING_FRAMES.filter((state) => state !== target).map(diningRender));
 
   const [frame, setFrame] = useState<DiningState>(target);
   const [settled, setSettled] = useState<DiningState>(target);
@@ -76,6 +82,8 @@ export default function DiningStage({
             width={840}
             height={680}
             draggable={false}
+            fetchPriority="high"
+            decoding="async"
           />
         </div>
 
@@ -105,11 +113,6 @@ export default function DiningStage({
           </motion.div>
         ) : null}
 
-        <div className={styles.preload} aria-hidden>
-          {DINING_STATES.map((state) => (
-            <img key={state} src={diningRender(state)} alt="" width={1} height={1} />
-          ))}
-        </div>
       </div>
     </div>
   );

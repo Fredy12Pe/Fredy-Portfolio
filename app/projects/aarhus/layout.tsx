@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./aarhus-fonts.css";
+import ArborChrome from "./ArborChrome";
 
 export const metadata: Metadata = {
   title: "Modular Living · Arbor & Co.",
@@ -10,8 +11,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#F9F8F5",
 };
-
-import ArborChrome from "./ArborChrome";
 
 export default function AarhusLayout({
   children,

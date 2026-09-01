@@ -8,6 +8,7 @@ import DiningStage, {
   type SeatCount,
   type TableTop,
 } from "../DiningStage";
+import GalleryThumb from "../GalleryThumb";
 import RollingPrice from "../RollingPrice";
 import styles from "../aarhus.module.css";
 
@@ -229,13 +230,7 @@ export default function DiningRoomPage() {
                     aria-pressed={selected}
                     onClick={() => setActiveThumb(index)}
                   >
-                    <img
-                      src={diningRender(item.state)}
-                      alt=""
-                      width={94}
-                      height={94}
-                      draggable={false}
-                    />
+                    <GalleryThumb src={diningRender(item.state)} />
                   </button>
                 );
 
@@ -299,6 +294,8 @@ export default function DiningRoomPage() {
                     alt="Hands assembling furniture details in the workshop"
                     width={220}
                     height={100}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </span>
                 <button type="button" className={styles.cardLink}>
