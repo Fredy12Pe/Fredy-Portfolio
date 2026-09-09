@@ -105,7 +105,7 @@ export default function Angry({ reduced }: { reduced?: boolean }) {
       />
 
       <motion.div
-        style={{ position: "absolute", left: -4, top: 373, width: 448, height: 593, transformOrigin: "center" }}
+        style={{ position: "absolute", left: -13, top: 373, width: 466, height: 593, transformOrigin: "center" }}
         initial={reduced ? undefined : { rotate: 0, x: 0, y: 0 }}
         animate={
           reduced
@@ -118,11 +118,11 @@ export default function Angry({ reduced }: { reduced?: boolean }) {
         }
         transition={{ rotate: fullLoop(), x: fullLoop(), y: softLoop() }}
       >
-        <Layer name="ag-shoulders" {...box(0, 0, 448, 593)} reduced />
+        <Layer name="ag-shoulders" {...box(0, 0, 466, 593)} reduced />
       </motion.div>
 
       <motion.div
-        style={{ position: "absolute", left: -4, top: 175.02, width: 448, height: 780.979, transformOrigin: "center" }}
+        style={{ position: "absolute", left: -13, top: 174.95, width: 466, height: 781.053, transformOrigin: "center" }}
         initial={reduced ? undefined : { rotate: 0, x: 0, y: 0 }}
         animate={
           reduced
@@ -135,7 +135,7 @@ export default function Angry({ reduced }: { reduced?: boolean }) {
         }
         transition={{ rotate: fullLoop(), x: fullLoop(), y: fullLoop() }}
       >
-        <Layer name="ag-body" {...box(0, 0, 448, 780.979)} reduced />
+        <Layer name="ag-body" {...box(0, 0, 466, 781.053)} reduced />
       </motion.div>
 
       <motion.div

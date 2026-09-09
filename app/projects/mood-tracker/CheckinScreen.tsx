@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { fredoka } from "./fonts";
-import { MOODS, MOOD_COUNT, type Mood } from "./moods";
+import { MOODS, MOOD_COUNT, type Mood, type MoodHapticPattern } from "./moods";
 import { asset } from "./primitives";
 import MoodArt from "./scenes";
 import { FRAME_HEIGHT, FRAME_WIDTH } from "./useStageScale";
@@ -22,6 +22,8 @@ const TICK_SIZE = 10;
 const KNOB_SIZE = 31;
 const TRACK_FILL = "#d9d9d9";
 const TICK_FILL = "#a1a1a1";
+/** Wait for the mood enter transition to settle before ambient pulses. */
+const AMBIENT_HAPTIC_DELAY_MS = 1000;
 const SCREEN_VARIANTS = {
   enter: (direction: number) => ({
     opacity: 0,
@@ -42,6 +44,14 @@ function isAppleTouchDevice() {
     /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
   );
+}
+
+function canUseAmbientVibration() {
+  if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") return false;
+  if (typeof window === "undefined") return false;
+  // Desktop mice shouldn't buzz; keep ambient pulses on touch-capable devices.
+  if (window.matchMedia("(pointer: fine)").matches && navigator.maxTouchPoints === 0) return false;
+  return true;
 }
 
 /** Off-screen WebKit switch for programmatic ticks (works on iOS 17.4–26.4 only). */
@@ -88,6 +98,12 @@ function triggerMoodHaptic() {
   } catch {
     /* iOS 26.5+ ignores programmatic switch clicks */
   }
+}
+
+/** Soft ambient pulse tied to the active mood animation (Android Vibration API). */
+function triggerAmbientHaptic(pattern: MoodHapticPattern) {
+  if (!canUseAmbientVibration()) return;
+  navigator.vibrate(pattern);
 }
 
 function Header({ mood }: { mood: Mood }) {
@@ -224,7 +240,7 @@ function MoodSlider({
               }}
               transition={{
                 scale: { type: "spring", stiffness: 500, damping: 36, mass: 0.7 },
-                backgroundColor: { duration: 0.12 },
+                backgroundColor: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
               }}
               style={{
                 position: "absolute",
@@ -323,6 +339,30 @@ export default function CheckinScreen({
     day: "numeric",
   }).format(new Date());
 
+  useEffect(() => {
+    if (reduced || !canUseAmbientVibration()) return;
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    let intervalId: number | undefined;
+    const startId = window.setTimeout(() => {
+      const pulse = () => {
+        if (document.visibilityState === "hidden") return;
+        triggerAmbientHaptic(mood.haptic);
+      };
+
+      pulse();
+      intervalId = window.setInterval(pulse, mood.hapticEveryMs);
+    }, AMBIENT_HAPTIC_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(startId);
+      if (intervalId !== undefined) window.clearInterval(intervalId);
+      navigator.vibrate?.(0);
+    };
+  }, [mood.haptic, mood.hapticEveryMs, mood.id, reduced]);
+
   return (
     <div
       className={fredoka.className}
@@ -396,44 +436,38 @@ export default function CheckinScreen({
         style={{
           position: "absolute",
           left: "50%",
-          top: 701,
+          top: 707,
+          zIndex: 3,
+          margin: 0,
+          x: "-50%",
+          fontSize: 22,
+          fontWeight: 500,
+          lineHeight: "normal",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {mood.label}
+      </motion.p>
+
+      <MoodSlider index={index} mood={mood} onChange={onMoodChange} />
+
+      <p
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: 865,
           zIndex: 3,
           margin: 0,
           transform: "translateX(-50%)",
           fontSize: 20,
           fontWeight: 500,
           lineHeight: "normal",
+          color: "#fff",
           whiteSpace: "nowrap",
         }}
       >
         <span suppressHydrationWarning>{currentDate}</span>
-      </motion.p>
-
-      <MoodSlider index={index} mood={mood} onChange={onMoodChange} />
-
-      <AnimatePresence initial={false} mode="popLayout">
-        <motion.p
-          key={mood.id}
-          initial={reduced ? false : { opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={reduced ? undefined : { opacity: 0, y: -8 }}
-          transition={{ duration: reduced ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: 855,
-            zIndex: 3,
-            margin: 0,
-            x: "-50%",
-            fontSize: 24,
-            fontWeight: 500,
-            lineHeight: "normal",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {mood.label}
-        </motion.p>
-      </AnimatePresence>
+      </p>
     </div>
   );
 }

@@ -10,6 +10,9 @@ export type MoodId =
   | "overjoyed"
   | "angry";
 
+/** Soft Vibration API pattern used for ambient mood pulses on Android. */
+export type MoodHapticPattern = number | number[];
+
 export type Mood = {
   id: MoodId;
   label: string;
@@ -20,6 +23,10 @@ export type Mood = {
   knob: string;
   preview: string;
   loopMs: number;
+  /** Ambient pulse after the mood settles. */
+  haptic: MoodHapticPattern;
+  /** How often the ambient pulse repeats while this mood stays active. */
+  hapticEveryMs: number;
 };
 
 export const MOODS: Mood[] = [
@@ -33,6 +40,8 @@ export const MOODS: Mood[] = [
     knob: "#0b2c69",
     preview: "/projects/mood-tracker/previews/freaking-out.png",
     loopMs: 4200,
+    haptic: [10, 50, 10],
+    hapticEveryMs: 2100,
   },
   {
     id: "sad",
@@ -44,6 +53,8 @@ export const MOODS: Mood[] = [
     knob: "#6392d4",
     preview: "/projects/mood-tracker/previews/sad.png",
     loopMs: 4000,
+    haptic: 8,
+    hapticEveryMs: 2000,
   },
   {
     id: "anxious",
@@ -55,6 +66,8 @@ export const MOODS: Mood[] = [
     knob: "#2b6977",
     preview: "/projects/mood-tracker/previews/anxious.png",
     loopMs: 4000,
+    haptic: [6, 40, 6, 40, 6],
+    hapticEveryMs: 2000,
   },
   {
     id: "tired",
@@ -66,6 +79,8 @@ export const MOODS: Mood[] = [
     knob: "#c4c2e0",
     preview: "/projects/mood-tracker/previews/tired.png",
     loopMs: 4800,
+    haptic: [6, 120, 6],
+    hapticEveryMs: 2400,
   },
   {
     id: "meh",
@@ -77,6 +92,8 @@ export const MOODS: Mood[] = [
     knob: "#9aa4b0",
     preview: "/projects/mood-tracker/previews/meh.png",
     loopMs: 4800,
+    haptic: 8,
+    hapticEveryMs: 2400,
   },
   {
     id: "content",
@@ -88,6 +105,8 @@ export const MOODS: Mood[] = [
     knob: "#d4f0c8",
     preview: "/projects/mood-tracker/previews/content.png",
     loopMs: 9600,
+    haptic: 8,
+    hapticEveryMs: 3200,
   },
   {
     id: "happy",
@@ -99,6 +118,8 @@ export const MOODS: Mood[] = [
     knob: "#f9c926",
     preview: "/projects/mood-tracker/previews/happy.png",
     loopMs: 9600,
+    haptic: 8,
+    hapticEveryMs: 3200,
   },
   {
     id: "excited",
@@ -110,6 +131,8 @@ export const MOODS: Mood[] = [
     knob: "#fd6209",
     preview: "/projects/mood-tracker/previews/excited.png",
     loopMs: 12000,
+    haptic: [8, 60, 8],
+    hapticEveryMs: 3000,
   },
   {
     id: "overjoyed",
@@ -121,6 +144,8 @@ export const MOODS: Mood[] = [
     knob: "#f33474",
     preview: "/projects/mood-tracker/previews/overjoyed.png",
     loopMs: 9600,
+    haptic: [8, 60, 8],
+    hapticEveryMs: 2400,
   },
   {
     id: "angry",
@@ -132,6 +157,8 @@ export const MOODS: Mood[] = [
     knob: "#c7102a",
     preview: "/projects/mood-tracker/previews/angry.png",
     loopMs: 9600,
+    haptic: [14, 80, 8],
+    hapticEveryMs: 3200,
   },
 ];
 

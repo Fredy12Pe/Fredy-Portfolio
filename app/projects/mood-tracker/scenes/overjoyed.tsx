@@ -108,10 +108,26 @@ export default function Overjoyed({ reduced }: { reduced?: boolean }) {
       >
         <div style={{ position: "absolute", inset: 0, transform: "scaleY(-1)" }}>
           <img alt="" src={asset("oj-mouth")} draggable={false} style={{ width: "100%", height: "100%" }} />
-          <img alt="" src={asset("oj-mouth-bg")} draggable={false} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+          <img
+            alt=""
+            src={`${asset("oj-mouth-bg")}?v=2d051b`}
+            draggable={false}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+          />
           <MouthFill mask="oj-tongue-mask">
             <div style={{ position: "absolute", inset: 0, transform: "scaleY(-1)" }}>
-              <img alt="" src={asset("oj-tongue")} draggable={false} style={{ position: "absolute", left: 35, top: 58, width: 110, height: 80 }} />
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  left: 35,
+                  top: 58,
+                  width: 110,
+                  height: 80,
+                  borderRadius: "50%",
+                  background: "#F6004D",
+                }}
+              />
               <Tooth name="oj-tooth" left={58} top={-16} />
               <Tooth name="oj-tooth" left={91} top={-16} />
             </div>
