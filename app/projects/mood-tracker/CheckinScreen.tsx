@@ -140,6 +140,11 @@ function Header({ mood }: { mood: Mood }) {
   );
 }
 
+/** Minimum horizontal travel (CSS px) to count as a mood swipe. */
+const SWIPE_MIN_DX = 56;
+/** Horizontal motion must beat vertical by this ratio so page scroll still works. */
+const SWIPE_HORIZONTAL_RATIO = 1.35;
+
 function MoodSlider({
   index,
   mood,
@@ -200,6 +205,7 @@ function MoodSlider({
   return (
     <div
       ref={trackRef}
+      data-mood-slider=""
       style={{
         position: "absolute",
         left: SLIDER.left,
@@ -338,6 +344,7 @@ export default function CheckinScreen({
     month: "long",
     day: "numeric",
   }).format(new Date());
+  const swipeRef = useRef<{ pointerId: number; x: number; y: number } | null>(null);
 
   useEffect(() => {
     if (reduced || !canUseAmbientVibration()) return;
@@ -363,9 +370,38 @@ export default function CheckinScreen({
     };
   }, [mood.haptic, mood.hapticEveryMs, mood.id, reduced]);
 
+  const onSwipePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!onMoodChange || event.button !== 0) return;
+    const target = event.target as Element | null;
+    if (target?.closest?.("[data-mood-slider]")) return;
+    swipeRef.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY };
+  };
+
+  const endSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = swipeRef.current;
+    if (!start || start.pointerId !== event.pointerId) return;
+    swipeRef.current = null;
+    if (!onMoodChange) return;
+
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) < SWIPE_MIN_DX) return;
+    if (Math.abs(dx) < Math.abs(dy) * SWIPE_HORIZONTAL_RATIO) return;
+
+    const next = dx < 0 ? index + 1 : index - 1;
+    if (next < 0 || next >= MOOD_COUNT) return;
+    triggerMoodHaptic();
+    onMoodChange(next);
+  };
+
   return (
     <div
       className={fredoka.className}
+      onPointerDown={onSwipePointerDown}
+      onPointerUp={endSwipe}
+      onPointerCancel={() => {
+        swipeRef.current = null;
+      }}
       style={{
         position: "relative",
         width: FRAME_WIDTH,
@@ -374,6 +410,7 @@ export default function CheckinScreen({
         isolation: "isolate",
         background: mood.background,
         color: "#fff",
+        touchAction: "pan-y",
       }}
     >
       <AnimatePresence custom={direction} mode="sync">
