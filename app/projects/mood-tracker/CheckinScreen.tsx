@@ -36,12 +36,20 @@ const SCREEN_VARIANTS = {
   }),
 };
 
-/** Android: Vibration API. iOS: WebKit switch tick (no-op on 26.5+ for programmatic clicks). */
-let iosHapticSwitch: HTMLInputElement | null = null;
+function isAppleTouchDevice() {
+  if (typeof navigator === "undefined") return false;
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
 
-function getIOSHapticSwitch() {
+/** Off-screen WebKit switch for programmatic ticks (works on iOS 17.4–26.4 only). */
+let iosProgrammaticSwitch: HTMLInputElement | null = null;
+
+function getIOSProgrammaticSwitch() {
   if (typeof document === "undefined") return null;
-  if (iosHapticSwitch?.isConnected) return iosHapticSwitch;
+  if (iosProgrammaticSwitch?.isConnected) return iosProgrammaticSwitch;
 
   const input = document.createElement("input");
   input.type = "checkbox";
@@ -59,17 +67,24 @@ function getIOSHapticSwitch() {
     margin: "0",
   });
   document.body.appendChild(input);
-  iosHapticSwitch = input;
+  iosProgrammaticSwitch = input;
   return input;
 }
 
+/**
+ * Per-tick feedback while dragging.
+ * Android: Vibration API. Older iOS: programmatic switch click. iOS 26.5+: no-op —
+ * the direct-tap overlay on the slider fires the only reliable native tick on press.
+ */
 function triggerMoodHaptic() {
   if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
     navigator.vibrate(12);
   }
 
+  if (!isAppleTouchDevice()) return;
+
   try {
-    getIOSHapticSwitch()?.click();
+    getIOSProgrammaticSwitch()?.click();
   } catch {
     /* iOS 26.5+ ignores programmatic switch clicks */
   }
@@ -122,12 +137,13 @@ function MoodSlider({
   const trackRef = useRef<HTMLDivElement>(null);
   const activePointerId = useRef<number | null>(null);
   const lastIndexRef = useRef(index);
+  const appleTouch = typeof navigator !== "undefined" && isAppleTouchDevice();
 
   useEffect(() => {
     lastIndexRef.current = index;
   }, [index]);
 
-  const updateFromClientX = (clientX: number) => {
+  const updateFromClientX = (clientX: number, { haptic }: { haptic: boolean }) => {
     if (!onChange || !trackRef.current) return;
     const rect = trackRef.current.getBoundingClientRect();
     const scale = rect.width / SLIDER.width;
@@ -136,26 +152,28 @@ function MoodSlider({
 
     if (next !== lastIndexRef.current) {
       lastIndexRef.current = next;
-      triggerMoodHaptic();
+      if (haptic) triggerMoodHaptic();
       onChange(next);
     }
   };
 
-  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+  const onPointerDown = (event: ReactPointerEvent<HTMLElement>) => {
     if (!onChange) return;
-    event.preventDefault();
+    // Don't preventDefault on iOS — the native switch must toggle to fire a haptic.
+    if (!appleTouch) event.preventDefault();
     activePointerId.current = event.pointerId;
     event.currentTarget.setPointerCapture(event.pointerId);
-    updateFromClientX(event.clientX);
+    // On iOS the switch overlay already fired a native tick from this direct tap.
+    updateFromClientX(event.clientX, { haptic: !appleTouch });
   };
 
-  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+  const onPointerMove = (event: ReactPointerEvent<HTMLElement>) => {
     if (activePointerId.current !== event.pointerId) return;
     event.preventDefault();
-    updateFromClientX(event.clientX);
+    updateFromClientX(event.clientX, { haptic: true });
   };
 
-  const onPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+  const onPointerUp = (event: ReactPointerEvent<HTMLElement>) => {
     if (activePointerId.current !== event.pointerId) return;
     activePointerId.current = null;
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
@@ -166,10 +184,6 @@ function MoodSlider({
   return (
     <div
       ref={trackRef}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
       style={{
         position: "absolute",
         left: SLIDER.left,
@@ -191,6 +205,7 @@ function MoodSlider({
           height: SLIDER.height,
           borderRadius: SLIDER.height / 2,
           background: TRACK_FILL,
+          overflow: "hidden",
         }}
       >
         {Array.from({ length: MOOD_COUNT }, (_, tick) => {
@@ -220,35 +235,70 @@ function MoodSlider({
                 borderRadius: "50%",
                 transformOrigin: "center",
                 zIndex: active ? 1 : 0,
+                pointerEvents: "none",
               }}
             />
           );
         })}
         {interactive ? (
-          <input
-            type="range"
-            min={0}
-            max={MOOD_COUNT - 1}
-            step={1}
-            value={index}
-            aria-label="What's your mood like today"
-            onInput={(event) => {
-              const next = Number(event.currentTarget.value);
-              if (next === lastIndexRef.current) return;
-              lastIndexRef.current = next;
-              triggerMoodHaptic();
-              onChange?.(next);
-            }}
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              margin: 0,
-              opacity: 0,
-              pointerEvents: "none",
-            }}
-          />
+          <>
+            <input
+              type="range"
+              min={0}
+              max={MOOD_COUNT - 1}
+              step={1}
+              value={index}
+              aria-label="What's your mood like today"
+              onInput={(event) => {
+                const next = Number(event.currentTarget.value);
+                if (next === lastIndexRef.current) return;
+                lastIndexRef.current = next;
+                triggerMoodHaptic();
+                onChange?.(next);
+              }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                margin: 0,
+                opacity: 0,
+                pointerEvents: "none",
+              }}
+            />
+            {/*
+              iOS 26.5+ only haptics on a direct finger hit to a native WebKit switch.
+              This fills the track so the first press ticks; drag ticks still need vibrate
+              (Android) or the older programmatic path (iOS ≤26.4).
+            */}
+            <input
+              type="checkbox"
+              // @ts-expect-error WebKit `switch` control attribute
+              switch=""
+              aria-hidden
+              tabIndex={-1}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              onChange={(event) => {
+                // Keep checked state flipping so every press can tick again.
+                event.stopPropagation();
+              }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                margin: 0,
+                opacity: 0.01,
+                cursor: "grab",
+                appearance: "auto",
+                WebkitAppearance: "checkbox",
+                zIndex: 2,
+              }}
+            />
+          </>
         ) : null}
       </div>
     </div>
