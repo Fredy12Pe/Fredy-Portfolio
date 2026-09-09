@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-type ProjectId = "grove" | "ecommerce" | "sea-sky" | "tidehaus" | "selah" | "ziplearn";
+type ProjectId = "grove" | "ecommerce" | "sea-sky" | "tidehaus" | "selah" | "ziplearn" | "mood-tracker";
 
 type OtherProjectsProps = {
   currentProject: ProjectId;
@@ -44,6 +44,12 @@ const PROJECTS = [
     href: "/projects/ziplearn",
     image: "/images/case-studies/ziplearn-caseStudy.png",
   },
+  {
+    id: "mood-tracker",
+    title: "Mood Tracker",
+    href: "/projects/mood-tracker",
+    image: "/images/case-studies/mood-tracker-caseStudy.png",
+  },
 ] satisfies Array<{
   id: ProjectId;
   title: string;
@@ -69,7 +75,7 @@ export default function OtherProjects({ currentProject, theme = "light" }: Other
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
             <Link
               key={project.id}

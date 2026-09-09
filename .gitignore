@@ -88,3 +88,6 @@ next-env.d.ts
 # Aarhus case-study media is small and required on deploy
 !/public/projects/aarhus/**/*.webp
 !/public/projects/aarhus/**/*.mp4
+
+# Local screenshot comparisons for the mood-tracker screens
+.screens/

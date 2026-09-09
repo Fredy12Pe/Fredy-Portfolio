@@ -1,0 +1,188 @@
+.root {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--design-width) / var(--design-height);
+}
+
+.stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--design-width) * 1px);
+  height: calc(var(--design-height) * 1px);
+  transform: scale(var(--stage-scale, 1));
+  transform-origin: top left;
+  opacity: 0;
+}
+
+.root[data-ready] .stage {
+  opacity: 1;
+  transition: opacity 240ms ease;
+}
+
+.deviceViewport {
+  width: 100%;
+  height: 100%;
+  max-width: calc(100dvh * 440 / 956);
+}
+
+.carouselShell {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.projectInfo {
+  display: none;
+}
+
+.navControls {
+  display: flex;
+  gap: 16px;
+}
+
+.navButton {
+  z-index: 30;
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #dedee1;
+  color: #56565a;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease,
+    opacity 180ms ease;
+}
+
+.navButton svg {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.navButton:hover:not(:disabled) {
+  background: #d2d2d7;
+  transform: scale(1.06);
+}
+
+.navButton:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.navButton:focus-visible {
+  outline: 3px solid #737379;
+  outline-offset: 4px;
+}
+
+.navButton:disabled {
+  background: #eeeeef;
+  color: #b9b9bc;
+  cursor: default;
+  opacity: 0.75;
+}
+
+@media (max-width: 767px) {
+  .carouselShell,
+  .deviceViewport,
+  .phoneRoot {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    background: #000;
+  }
+
+  .phoneRoot {
+    aspect-ratio: auto;
+    overflow: hidden;
+  }
+
+  .phoneRoot .stage {
+    /* Tiny overshoot kills subpixel gaps against the white body background. */
+    transform: scale(calc(var(--stage-scale, 1) * var(--phone-mobile-scale) * 1.01));
+  }
+
+  .phoneScreen {
+    left: 0 !important;
+    top: 0 !important;
+    width: 440px !important;
+    height: 956px !important;
+    border-radius: 0 !important;
+  }
+
+  .phoneContent {
+    transform: none !important;
+  }
+
+  .phoneFrame,
+  .phoneShadow,
+  .homeIndicator {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .carouselShell {
+    max-width: 1120px;
+    height: auto;
+    gap: clamp(56px, 9vw, 120px);
+  }
+
+  .deviceViewport {
+    flex: 0 1 380px;
+    height: auto;
+    max-width: min(23.75rem, calc((100dvh - 5rem) * 1470 / 3000));
+  }
+
+  .projectInfo {
+    display: block;
+    align-self: flex-start;
+    width: min(450px, 46vw);
+    padding-top: clamp(20px, 5vh, 48px);
+    color: #080808;
+  }
+
+  .projectInfo h1 {
+    margin: 0;
+    font-size: clamp(58px, 7vw, 82px);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+  }
+
+  .projectInfo p {
+    max-width: 430px;
+    margin: 18px 0 0;
+    font-size: clamp(18px, 2vw, 22px);
+    line-height: 1.45;
+  }
+
+  .navControls {
+    margin-top: clamp(110px, 22vh, 190px);
+    margin-left: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-ready] .stage {
+    transition: none;
+  }
+
+  .navButton {
+    transition: none;
+  }
+}

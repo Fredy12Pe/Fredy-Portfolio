@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="130.072" height="120.225" viewBox="0 0 130.072 120.225" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Headpiece">
+<path id="Vector 28" d="M92.3454 117.762C92.4326 117.873 92.5196 117.983 92.6063 118.092C92.5111 118.004 92.4242 117.893 92.3454 117.762C70.1734 89.6087 28.994 10.4204 68.8614 8.0799C117.904 5.20082 87.0269 108.922 92.3454 117.762Z" fill="url(#paint0_linear_0_40)"/>
+<path id="Vector 29" d="M30.3204 66.5349C63.557 65.5122 86.78 101.902 94.2369 120.225C93.1717 117.903 83.627 113.629 53.9697 115.111C24.3125 116.594 7.09744 99.5369 2.19709 90.8232C-2.27707 83.1532 -2.91623 67.5576 30.3204 66.5349Z" fill="url(#paint1_linear_0_40)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_40" x1="60.5867" y1="10.1534" x2="109.235" y2="109.989" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FBC524"/>
+<stop offset="1" stop-color="#957515"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_40" x1="47.1186" y1="66.5138" x2="47.1186" y2="120.225" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FBC524"/>
+<stop offset="1" stop-color="#957515"/>
+</linearGradient>
+</defs>
+</svg>
