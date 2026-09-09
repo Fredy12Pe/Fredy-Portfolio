@@ -36,9 +36,43 @@ const SCREEN_VARIANTS = {
   }),
 };
 
+/** Android: Vibration API. iOS: WebKit switch tick (no-op on 26.5+ for programmatic clicks). */
+let iosHapticSwitch: HTMLInputElement | null = null;
+
+function getIOSHapticSwitch() {
+  if (typeof document === "undefined") return null;
+  if (iosHapticSwitch?.isConnected) return iosHapticSwitch;
+
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.setAttribute("switch", "");
+  input.setAttribute("aria-hidden", "true");
+  input.tabIndex = -1;
+  Object.assign(input.style, {
+    position: "fixed",
+    left: "-100vw",
+    top: "0",
+    width: "44px",
+    height: "44px",
+    opacity: "0.01",
+    pointerEvents: "none",
+    margin: "0",
+  });
+  document.body.appendChild(input);
+  iosHapticSwitch = input;
+  return input;
+}
+
 function triggerMoodHaptic() {
-  if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") return;
-  navigator.vibrate(12);
+  if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+    navigator.vibrate(12);
+  }
+
+  try {
+    getIOSHapticSwitch()?.click();
+  } catch {
+    /* iOS 26.5+ ignores programmatic switch clicks */
+  }
 }
 
 function Header({ mood }: { mood: Mood }) {

@@ -20,7 +20,7 @@ export default function MoodCarousel() {
   };
 
   return (
-    <div className="flex h-dvh w-full items-center justify-center overflow-hidden bg-black md:bg-[#F5F5F7] md:p-6 lg:p-10">
+    <div className="flex h-svh w-full items-center justify-center overflow-hidden bg-black md:h-dvh md:bg-[#F5F5F7] md:p-6 lg:p-10">
       <div className={styles.carouselShell}>
         <div className={styles.deviceViewport}>
           <PhoneMockup>
