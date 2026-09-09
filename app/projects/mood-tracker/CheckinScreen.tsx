@@ -23,7 +23,7 @@ const KNOB_SIZE = 31;
 const TRACK_FILL = "#d9d9d9";
 const TICK_FILL = "#a1a1a1";
 /** Wait for the mood enter transition to settle before ambient pulses. */
-const AMBIENT_HAPTIC_DELAY_MS = 1000;
+const AMBIENT_HAPTIC_DELAY_MS = 700;
 const SCREEN_VARIANTS = {
   enter: (direction: number) => ({
     opacity: 0,
@@ -46,16 +46,17 @@ function isAppleTouchDevice() {
   );
 }
 
-function canUseAmbientVibration() {
-  if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") return false;
-  if (typeof window === "undefined") return false;
-  // Desktop mice shouldn't buzz; keep ambient pulses on touch-capable devices.
-  if (window.matchMedia("(pointer: fine)").matches && navigator.maxTouchPoints === 0) return false;
-  return true;
+function canUseVibrationApi() {
+  return typeof navigator !== "undefined" && typeof navigator.vibrate === "function";
 }
 
-/** Off-screen WebKit switch for programmatic ticks (works on iOS 17.4–26.4 only). */
+function prefersReducedMotion() {
+  return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/** Off-screen WebKit switch for programmatic ticks (works on iOS 17.4–26.4; often blocked on 26.5+). */
 let iosProgrammaticSwitch: HTMLInputElement | null = null;
+let iosPatternTimers: number[] = [];
 
 function getIOSProgrammaticSwitch() {
   if (typeof document === "undefined") return null;
@@ -81,18 +82,12 @@ function getIOSProgrammaticSwitch() {
   return input;
 }
 
-/**
- * Per-tick feedback while dragging.
- * Android: Vibration API. Older iOS: programmatic switch click. iOS 26.5+: no-op —
- * the direct-tap overlay on the slider fires the only reliable native tick on press.
- */
-function triggerMoodHaptic() {
-  if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-    navigator.vibrate(12);
-  }
+function clearIOSPatternTimers() {
+  for (const id of iosPatternTimers) window.clearTimeout(id);
+  iosPatternTimers = [];
+}
 
-  if (!isAppleTouchDevice()) return;
-
+function pulseIOSSwitch() {
   try {
     getIOSProgrammaticSwitch()?.click();
   } catch {
@@ -100,10 +95,36 @@ function triggerMoodHaptic() {
   }
 }
 
-/** Soft ambient pulse tied to the active mood animation (Android Vibration API). */
-function triggerAmbientHaptic(pattern: MoodHapticPattern) {
-  if (!canUseAmbientVibration()) return;
-  navigator.vibrate(pattern);
+/** Expand a vibrate-style pattern into timed iOS switch ticks. */
+function playIOSHapticPattern(pattern: MoodHapticPattern) {
+  clearIOSPatternTimers();
+  if (typeof pattern === "number") {
+    pulseIOSSwitch();
+    return;
+  }
+
+  let delay = 0;
+  for (let i = 0; i < pattern.length; i++) {
+    if (i % 2 === 0) {
+      const id = window.setTimeout(pulseIOSSwitch, delay);
+      iosPatternTimers.push(id);
+    }
+    delay += Math.max(0, pattern[i]);
+  }
+}
+
+/**
+ * Mood-specific haptic. Android uses Vibration API patterns.
+ * iOS uses WebKit switch ticks (best-effort; most reliable when called from a gesture).
+ */
+function triggerEmotionHaptic(pattern: MoodHapticPattern) {
+  if (canUseVibrationApi()) {
+    navigator.vibrate(0);
+    navigator.vibrate(pattern);
+  }
+  if (isAppleTouchDevice()) {
+    playIOSHapticPattern(pattern);
+  }
 }
 
 function Header({ mood }: { mood: Mood }) {
@@ -173,7 +194,7 @@ function MoodSlider({
 
     if (next !== lastIndexRef.current) {
       lastIndexRef.current = next;
-      if (haptic) triggerMoodHaptic();
+      if (haptic) triggerEmotionHaptic(MOODS[next].haptic);
       onChange(next);
     }
   };
@@ -184,8 +205,8 @@ function MoodSlider({
     if (!appleTouch) event.preventDefault();
     activePointerId.current = event.pointerId;
     event.currentTarget.setPointerCapture(event.pointerId);
-    // On iOS the switch overlay already fired a native tick from this direct tap.
-    updateFromClientX(event.clientX, { haptic: !appleTouch });
+    // Always fire the destination mood's pattern when the index changes.
+    updateFromClientX(event.clientX, { haptic: true });
   };
 
   const onPointerMove = (event: ReactPointerEvent<HTMLElement>) => {
@@ -275,7 +296,7 @@ function MoodSlider({
                 const next = Number(event.currentTarget.value);
                 if (next === lastIndexRef.current) return;
                 lastIndexRef.current = next;
-                triggerMoodHaptic();
+                triggerEmotionHaptic(MOODS[next].haptic);
                 onChange?.(next);
               }}
               style={{
@@ -347,16 +368,18 @@ export default function CheckinScreen({
   const swipeRef = useRef<{ pointerId: number; x: number; y: number } | null>(null);
 
   useEffect(() => {
-    if (reduced || !canUseAmbientVibration()) return;
-    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (reduced || prefersReducedMotion()) return;
+    // Desktop mice: skip. Touch phones (Android vibrate + iOS switch best-effort): run.
+    if (typeof window !== "undefined" && window.matchMedia("(pointer: fine)").matches && navigator.maxTouchPoints === 0) {
       return;
     }
+    if (!canUseVibrationApi() && !isAppleTouchDevice()) return;
 
     let intervalId: number | undefined;
     const startId = window.setTimeout(() => {
       const pulse = () => {
         if (document.visibilityState === "hidden") return;
-        triggerAmbientHaptic(mood.haptic);
+        triggerEmotionHaptic(mood.haptic);
       };
 
       pulse();
@@ -366,7 +389,8 @@ export default function CheckinScreen({
     return () => {
       window.clearTimeout(startId);
       if (intervalId !== undefined) window.clearInterval(intervalId);
-      navigator.vibrate?.(0);
+      clearIOSPatternTimers();
+      if (canUseVibrationApi()) navigator.vibrate(0);
     };
   }, [mood.haptic, mood.hapticEveryMs, mood.id, reduced]);
 
@@ -390,7 +414,7 @@ export default function CheckinScreen({
 
     const next = dx < 0 ? index + 1 : index - 1;
     if (next < 0 || next >= MOOD_COUNT) return;
-    triggerMoodHaptic();
+    triggerEmotionHaptic(MOODS[next].haptic);
     onMoodChange(next);
   };
 
