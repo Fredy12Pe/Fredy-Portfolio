@@ -1,0 +1,523 @@
+/* Figma About Me 99:1003 — design frame 1920×1080, content only (nav lives in the header). */
+
+.about {
+  --frame-w: 1920;
+  --frame-h: 1080;
+  --u: min(100vw / var(--frame-w), 100dvh / var(--frame-h));
+
+  position: relative;
+  z-index: 1;
+  height: 100dvh;
+  background: #f7f7f7;
+  color: #000;
+  overflow: visible;
+}
+
+/* Same field as the projects section, revealed at the end of the pin. */
+.wash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: #000;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  background-repeat: repeat;
+}
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--frame-w) * var(--u));
+  height: calc(var(--frame-h) * var(--u));
+  transform: translate(-50%, -50%);
+}
+
+.hey {
+  position: absolute;
+  left: calc(50% - 451 * var(--u));
+  top: calc(362 * var(--u));
+  z-index: 1;
+  margin: 0;
+  transform: translateX(-50%);
+  font-weight: 900;
+  font-size: calc(90 * var(--u));
+  line-height: 0.92;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.cardRig {
+  position: absolute;
+  left: calc(742 * var(--u));
+  top: calc(362 * var(--u));
+  z-index: 2;
+  width: calc(436 * var(--u));
+  height: calc(500 * var(--u));
+  perspective: calc(1600 * var(--u));
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.spin {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 9.17% / 8%;
+  background: #cfcfcf;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Lift each face off the shared plane so the flat start doesn't z-fight. */
+  transform: translateZ(1px);
+}
+
+.back {
+  transform: rotateY(180deg) translateZ(1px);
+}
+
+/* Crop matches Figma mask: 1053×528 image, offset −217, −14, inside 436×500. */
+.photoImg {
+  position: absolute;
+  top: -2.8%;
+  left: -49.77%;
+  display: block;
+  width: 241.51%;
+  max-width: none;
+  height: 105.6%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.overlay .photoImg {
+  filter: grayscale(1) contrast(1.05);
+}
+
+.keepLine {
+  white-space: nowrap;
+}
+
+.bio,
+.lead,
+.invite {
+  position: absolute;
+  z-index: 1;
+  margin: 0;
+  line-height: normal;
+}
+
+.bio {
+  left: calc(405 * var(--u));
+  top: calc(746 * var(--u));
+  width: calc(257 * var(--u));
+  font-weight: 600;
+  font-size: calc(22 * var(--u));
+}
+
+.lead {
+  left: calc(1258 * var(--u));
+  top: calc(656 * var(--u));
+  width: calc(272 * var(--u));
+  font-weight: 400;
+  font-size: calc(18 * var(--u));
+}
+
+.copyRight {
+  position: absolute;
+  left: calc(1258 * var(--u));
+  /* Card bottom is top 362 + height 500. Sit the group on that edge. */
+  bottom: calc((var(--frame-h) - 862) * var(--u));
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: calc(280 * var(--u));
+  gap: calc(22 * var(--u));
+}
+
+.copyRight .lead,
+.copyRight .invite {
+  position: relative;
+  left: auto;
+  top: auto;
+  width: 100%;
+}
+
+.invite {
+  width: calc(260 * var(--u));
+  font-weight: 400;
+  font-size: calc(18 * var(--u));
+}
+
+.reach {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.12em;
+}
+
+.reach:hover {
+  opacity: 0.65;
+}
+
+.reach:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .overlay {
+    opacity: 1;
+  }
+
+  .spin {
+    transform: rotateY(-179.8deg);
+  }
+
+  /* GSAP reveals these once the about pin starts scrolling. */
+  .hey,
+  .bio,
+  .copyRight {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Aaron Iker download button — frosted glass. Type follows the section color. */
+.download {
+  --background: rgba(255, 255, 255, 0.14);
+  --rectangle: rgba(255, 255, 255, 0.1);
+  --success: rgba(255, 255, 255, 0.28);
+  --checkmark: currentColor;
+  --shadow: rgba(0, 0, 0, 0.28);
+  --duration: 3000;
+
+  display: flex;
+  overflow: hidden;
+  margin-top: calc(6 * var(--u));
+  color: inherit;
+  text-decoration: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    var(--background) 100%
+  );
+  border-radius: 8px;
+  backdrop-filter: blur(18px);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 10px 28px -12px var(--shadow);
+  opacity: 0.55;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.download:hover,
+.download:focus-visible {
+  opacity: 1;
+}
+
+.download:active {
+  transform: scale(0.95);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 4px 12px -6px var(--shadow);
+}
+
+.download:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 3px;
+}
+
+.download ul {
+  margin: 0;
+  padding: 16px 28px;
+  list-style: none;
+  text-align: center;
+  position: relative;
+  backface-visibility: hidden;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 28px;
+  white-space: nowrap;
+  color: inherit;
+}
+
+.download li:not(:first-child) {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  right: 0;
+}
+
+.download li:nth-child(2) {
+  top: 76px;
+}
+
+.download li:nth-child(3) {
+  top: 136px;
+}
+
+.downloadIcon {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  background: var(--rectangle);
+}
+
+.downloadIcon::before,
+.downloadIcon::after {
+  content: "";
+  display: block;
+  position: absolute;
+}
+
+.downloadIcon::before {
+  border-radius: 1px;
+  width: 2px;
+  top: 50%;
+  left: 50%;
+  height: 17px;
+  margin: -9px 0 0 -1px;
+  background: currentColor;
+}
+
+.downloadIcon::after {
+  width: 60px;
+  height: 60px;
+  transform-origin: 50% 0;
+  border-radius: 0 0 80% 80%;
+  background: var(--success);
+  top: 0;
+  left: 0;
+  transform: scaleY(0);
+}
+
+.downloadIcon svg {
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 50%;
+  top: 50%;
+  margin: -9px 0 0 -10px;
+  fill: none;
+  z-index: 1;
+  stroke-width: 2px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.loading ul {
+  animation: downloadText calc(var(--duration) * 1ms) linear forwards
+    calc(var(--duration) * 0.065ms);
+}
+
+.loading .downloadIcon::before {
+  animation: downloadLine calc(var(--duration) * 1ms) linear forwards
+    calc(var(--duration) * 0.065ms);
+}
+
+.loading .downloadIcon::after {
+  animation: downloadFill calc(var(--duration) * 1ms) linear forwards
+    calc(var(--duration) * 0.065ms);
+}
+
+.loading .downloadIcon svg {
+  animation: downloadMark calc(var(--duration) * 1ms) linear forwards
+    calc(var(--duration) * 0.065ms);
+}
+
+@keyframes downloadText {
+  10%,
+  85% {
+    transform: translateY(-100%);
+  }
+  95%,
+  100% {
+    transform: translateY(-200%);
+  }
+}
+
+@keyframes downloadLine {
+  5%,
+  10% {
+    transform: translateY(-30px);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  65% {
+    transform: translateY(0);
+  }
+  75%,
+  100% {
+    transform: translateY(30px);
+  }
+}
+
+@keyframes downloadMark {
+  0%,
+  20% {
+    stroke-dasharray: 0;
+    stroke-dashoffset: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  21%,
+  89% {
+    stroke-dasharray: 26px;
+    stroke-dashoffset: 26px;
+    stroke-width: 3px;
+    margin: -10px 0 0 -10px;
+    stroke: var(--checkmark);
+    opacity: 0;
+  }
+  90%,
+  100% {
+    stroke-dasharray: 26px;
+    stroke-dashoffset: 0;
+    margin: -10px 0 0 -10px;
+    stroke: var(--checkmark);
+    opacity: 1;
+  }
+}
+
+@keyframes downloadFill {
+  10% {
+    transform: scaleY(0);
+  }
+  40% {
+    transform: scaleY(0.15);
+  }
+  65% {
+    transform: scaleY(0.5);
+    border-radius: 0 0 50% 50%;
+  }
+  75% {
+    border-radius: 0 0 50% 50%;
+    transform: scaleY(1);
+  }
+  90%,
+  100% {
+    border-radius: 0;
+    transform: scaleY(1);
+  }
+}
+
+@media (max-width: 860px) {
+  .about {
+    height: auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    padding: 5.5rem 1.25rem 3rem;
+  }
+
+  .stage {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+    width: 100%;
+    height: auto;
+    transform: none;
+  }
+
+  .hey {
+    position: relative;
+    left: auto;
+    top: auto;
+    order: 2;
+    font-size: clamp(40px, 12vw, 56px);
+    transform: none;
+  }
+
+  .cardRig {
+    position: relative;
+    left: auto;
+    top: auto;
+    order: 1;
+    align-self: center;
+    width: min(100%, 340px);
+    height: auto;
+    aspect-ratio: 436 / 500;
+    perspective: 900px;
+  }
+
+  .copyRight {
+    position: relative;
+    left: auto;
+    top: auto;
+    bottom: auto;
+    order: 4;
+    width: 100%;
+    max-width: 28rem;
+    gap: 16px;
+  }
+
+  .bio,
+  .lead,
+  .invite {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    max-width: 28rem;
+  }
+
+  .download {
+    margin-top: 4px;
+  }
+
+  .bio {
+    order: 3;
+    font-size: 18px;
+  }
+
+  .lead,
+  .invite {
+    font-size: 16px;
+  }
+}

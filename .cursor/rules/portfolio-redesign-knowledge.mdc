@@ -1,0 +1,49 @@
+---
+description: Prior redesign knowledgebase retained for the portfolio-redesign branch
+alwaysApply: true
+---
+
+# Portfolio redesign knowledgebase
+
+This branch (`portfolio-redesign`) starts from a **blank** home / about / contact surface. Do not delete the prior redesign — reuse it as reference when building the new design.
+
+## Prior UI (reference only)
+
+- Components + board CSS: `app/redesign/`
+- Conventions for animated project cards: `.cursor/rules/redesign-project-cards.mdc` (Grove as reference)
+- Project metadata used by those cards: `app/redesign/projects.ts`
+- Contact links: `app/redesign/contact-links.ts`
+
+## Prior assets (reuse when they fit)
+
+Root: `public/images/redesign/`
+
+| Folder | Contents |
+|--------|----------|
+| `assets/` | Animated avatar SVG parts |
+| `fredy/` | Portrait, California flag, download icon |
+| `grove/` | Phone, plants, widgets, progress card |
+| `tidehaus/` | Desktop, surfboard, snorkel |
+| `sea-sky/` | Phone + feature icons |
+| `selah/` | Phone frames, cross |
+| `ziplearn/` | Phone + feature icons |
+| `samples/` | Storefront + tool icons |
+| `stack/` | Tool tiles (Figma, React, etc.) |
+| `about/` | Photos, flags, activities, Duolingo, map |
+| `contact/` | Portrait, button/media backgrounds |
+| `breathe/` | Rive sprout breathing animation |
+
+Case-study pages and project assets under `app/projects/` and `public/projects/` stay as-is; they are not part of the blank slate.
+
+## Working rule
+
+Build the new portfolio into `app/(portfolio)/` (and new components as needed). Treat `app/redesign/` + `public/images/redesign/` as a library of proven patterns and assets, not as the live site.
+
+## Animation (new redesign)
+
+**Use GSAP only** (`gsap`, plus plugins like `ScrollTrigger` when needed) for all new portfolio-redesign motion.
+
+- Do **not** add new `motion` / `framer-motion` usage in the redesign surface.
+- Prior redesign code in `app/redesign/` still uses `motion/react` — leave that alone as reference; do not port it unless asked.
+- Existing in-repo GSAP examples: `app/webgl-test/demos/ScrollCamera.tsx`, `app/projects/selah-reflect/DotGrid.tsx`.
+- Prefer cleanup in `useEffect` / `useLayoutEffect` (kill tweens, revert contexts, kill ScrollTriggers) and honor `prefers-reduced-motion`.

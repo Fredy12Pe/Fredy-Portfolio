@@ -1,0 +1,415 @@
+.section {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Fully opaque — any transparency here shows the ScrollTrigger pin-spacer / body through while pinned */
+  background-color: #000;
+  font-family: "Poppins", system-ui, sans-serif;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+/* Translated with the filings so the field rises with the rest of the section. */
+.filingsHost {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.screenFade {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.card {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: min(24vw, 380px);
+  aspect-ratio: 360 / 440;
+  will-change: transform, opacity;
+  perspective: 900px;
+  /* GSAP places the bottom-center on the arc (xPercent -50, yPercent -100) */
+}
+
+.cardPivot {
+  width: 100%;
+  height: 100%;
+  /* Arc rotate/scale only — hover/spin live on .cardTilt */
+  transform-origin: center bottom;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.cardLink {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  pointer-events: none;
+  /* Keep hit area stable while the tilt layer moves in 3D */
+}
+
+.card[data-active="true"] .cardLink {
+  pointer-events: auto;
+}
+
+.cardTilt {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: clamp(24px, 2.5vw, 40px);
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  will-change: transform;
+}
+
+.cardFace,
+.cardBack {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+.cardBack {
+  transform: rotateY(180deg);
+}
+
+.cardFace {
+  container-type: inline-size;
+}
+
+/* Dark wash on neighbors only. --shade is 0 on the active card. */
+.cardShade {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(7, 7, 7, 0.72) 0%,
+    rgba(7, 7, 7, 0.4) 46%,
+    rgba(7, 7, 7, 0.16) 100%
+  );
+  opacity: var(--shade, 1);
+}
+
+.cardArt {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardCopy {
+  position: absolute;
+  left: 11.7%; /* 42/360 */
+  right: 8%;
+  top: 9.5%; /* 42/440 */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+  color: inherit;
+}
+
+.cardTitle {
+  margin: 0;
+  /* cqw cap keeps the longest title ("Sea & Sky") on one line as the card scales */
+  font-size: min(2.75rem, max(1.5rem, 2.75vw), 16cqw);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.cardTagline {
+  margin: 0;
+  /* cqw cap keeps the longest tagline ("Tutoring Made Simple") on one line */
+  font-size: min(1.375rem, max(0.875rem, 1.35vw), 6.8cqw);
+  font-weight: 400;
+  line-height: 1.2;
+  opacity: 0.95;
+  white-space: nowrap;
+}
+
+.phoneWrap {
+  position: absolute;
+  left: 21.7%; /* 78/360 */
+  top: 43%; /* 189/440 */
+  width: 56.7%; /* 204/360 */
+  height: 96%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.phoneWrapWide {
+  left: -15%;
+  top: 32%;
+  width: 155%;
+  height: 110%;
+}
+
+.phone {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: top center;
+}
+
+.phoneWrapWide .phone {
+  object-fit: cover;
+  object-position: 35% top;
+  transform: rotate(-7deg);
+  transform-origin: center top;
+}
+
+/* Figma Next-Prev Buttons — concentric semicircle inside the dial (506/840) */
+.controls {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: stretch;
+  width: calc(506 / 840 * 100%);
+  aspect-ratio: 2 / 1;
+  background: transparent;
+  cursor: default;
+  touch-action: manipulation;
+}
+
+.navBtn {
+  --nav-fill: #090909;
+  /* Figma stroke: linear #DEDEDE→#787878 at 34% opacity, 1px inside */
+  --nav-stroke: linear-gradient(
+    155deg,
+    rgba(222, 222, 222, 0.34) 0%,
+    rgba(120, 120, 120, 0.14) 100%
+  );
+  position: relative;
+  flex: 1 1 50%;
+  appearance: none;
+  border: 1px solid transparent;
+  border-bottom-width: 0;
+  padding: 0;
+  cursor: pointer;
+  line-height: 0;
+  background:
+    linear-gradient(var(--nav-fill), var(--nav-fill)) padding-box,
+    var(--nav-stroke) border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: none;
+  transition:
+    background 160ms ease,
+    box-shadow 200ms ease;
+}
+
+/* Quarter-circle halves — outer arcs only; sharp meet at the center divider */
+.navBtnPrev {
+  border-radius: 100% 0 0 0;
+  border-right-width: 0;
+  --nav-stroke: linear-gradient(
+    155deg,
+    rgba(222, 222, 222, 0.34) 0%,
+    rgba(120, 120, 120, 0.14) 100%
+  );
+}
+
+.navBtnNext {
+  border-radius: 0 100% 0 0;
+  border-left-width: 0;
+  --nav-stroke: linear-gradient(
+    205deg,
+    rgba(222, 222, 222, 0.34) 0%,
+    rgba(120, 120, 120, 0.14) 100%
+  );
+}
+
+.navBtn:hover,
+.navBtn:focus-visible {
+  --nav-fill: #0e0e0e;
+  /* Figma hover inner shadow: 0 / 44 / 54 / 10, #FFF 4% */
+  box-shadow: inset 0 44px 54px 10px rgba(255, 255, 255, 0.04);
+}
+
+.navBtn:focus-visible {
+  outline: none;
+}
+
+.navBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.navBtn img {
+  position: absolute;
+  /* Figma: icon frame 43×42 at (80, 140) within each 253×253 half */
+  left: calc(80 / 253 * 100%);
+  top: calc(140 / 253 * 100%);
+  width: calc(43 / 253 * 100%);
+  height: auto;
+  aspect-ratio: 43 / 42;
+  display: block;
+  pointer-events: none;
+}
+
+.navBtnPrev img {
+  /* Skip-forward asset mirrored → skip-back */
+  transform: scaleX(-1);
+  transform-origin: center;
+  /* Mirror keeps the glyph optically centered on the same slot */
+  left: auto;
+  right: calc(80 / 253 * 100%);
+}
+
+.navDivider {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+  background: rgba(222, 222, 222, 0.18);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dial {
+  position: absolute;
+  left: 50%;
+  /* Extends slightly below the stage so the cards can sit low on the arc */
+  bottom: -2%;
+  width: min(74vw, 840px);
+  aspect-ratio: 2 / 1;
+  transform: translateX(-50%);
+  z-index: 3;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  outline: none;
+}
+
+.dial:focus-visible {
+  outline: 2px solid rgba(214, 255, 82, 0.55);
+  outline-offset: 6px;
+}
+
+.dialDragging {
+  cursor: grabbing;
+}
+
+.dialArc {
+  /* Guide arc stroke — hidden; ticks carry the dial read */
+  display: none;
+}
+
+.dialArc img {
+  width: 100%;
+  height: calc(100% / 0.52);
+  display: block;
+  object-fit: fill;
+  object-position: top center;
+}
+
+/* Tick band sits lower under the cards; sides fade out */
+.tickSvg {
+  position: absolute;
+  left: 0;
+  top: 16%;
+  width: 100%;
+  height: 42%;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 14%,
+    #000 86%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 14%,
+    #000 86%,
+    transparent 100%
+  );
+}
+
+.activeTick {
+  position: absolute;
+  left: 50%;
+  top: 16%;
+  width: 2px;
+  height: clamp(22px, 3.5vw, 36px);
+  margin-left: -1px;
+  border-radius: 1px;
+  background: #fff;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.35);
+  z-index: 4;
+  transform-origin: 50% 0%;
+  pointer-events: none;
+  animation: needlePulse 2.4s ease-in-out infinite;
+}
+
+@keyframes needlePulse {
+  0%,
+  100% {
+    opacity: 0.88;
+    box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.25);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 14px 3px rgba(255, 255, 255, 0.55);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activeTick {
+    animation: none;
+  }
+}
+
+/* Hidden until the scroll reveal runs. GSAP writes inline opacity as each layer enters. */
+@media (prefers-reduced-motion: no-preference) {
+  .filingsHost,
+  .stage,
+  .dial {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .card {
+    width: min(54vw, 260px);
+    top: 0;
+  }
+
+  .dial {
+    width: min(96vw, 560px);
+    bottom: -1%;
+  }
+}

@@ -1,23 +1,28 @@
 "use client";
 
-import { useCallback } from "react";
-import RedesignBoard from "../redesign/RedesignBoard";
-import { useBreathingSession } from "../redesign/redesign-nav";
+import AboutIntro from "./AboutIntro";
+import AboutSection from "./AboutSection";
+import ContactSection from "./ContactSection";
+import ProjectsCarousel from "./ProjectsCarousel";
+import ProjectsIntro from "./ProjectsIntro";
+import SiteFooter from "./SiteFooter";
+import SiteHeader from "./SiteHeader";
+import styles from "./home.module.css";
 
 export default function HomePage() {
-  const { breathingActive, setBreathingActive } = useBreathingSession();
-
-  const onBreathingSessionChange = useCallback(
-    (active: boolean) => {
-      setBreathingActive(active);
-    },
-    [setBreathingActive],
-  );
-
   return (
-    <RedesignBoard
-      breathingActive={breathingActive}
-      onBreathingSessionChange={onBreathingSessionChange}
-    />
+    <main className={styles.page}>
+      <div className={styles.stickerRange} data-sticker-bounds>
+        <SiteHeader />
+        <AboutIntro />
+      </div>
+      <ProjectsIntro />
+      <div className={styles.projects} id="work">
+        <ProjectsCarousel />
+      </div>
+      <AboutSection />
+      <ContactSection />
+      <SiteFooter />
+    </main>
   );
 }

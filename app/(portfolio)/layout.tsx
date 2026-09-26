@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import RedesignShell from "../redesign/RedesignShell";
 
 export const metadata: Metadata = {
   title: {
@@ -16,8 +15,6 @@ export default function PortfolioLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen font-poppins antialiased">
-      <RedesignShell>{children}</RedesignShell>
-    </div>
+    <div className="min-h-screen bg-black font-poppins antialiased">{children}</div>
   );
 }

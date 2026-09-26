@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import ContactBoard from "../../redesign/ContactBoard";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -8,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  return <ContactBoard />;
+  return null;
 }

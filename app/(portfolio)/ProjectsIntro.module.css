@@ -1,0 +1,29 @@
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11vh 8vw;
+  background: #000;
+  color: #fff;
+}
+
+.copy {
+  width: 23.15em;
+  max-width: 100%;
+  margin: 0;
+  font-family: "Poppins", system-ui, sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.6vw, 2.35rem);
+  line-height: 1.45;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .section {
+    padding: 3.25rem 1.5rem 1.75rem;
+  }
+
+  .copy {
+    font-size: clamp(1.35rem, 5.4vw, 1.7rem);
+  }
+}

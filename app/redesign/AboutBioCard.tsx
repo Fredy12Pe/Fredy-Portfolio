@@ -47,14 +47,6 @@ export default function AboutBioCard({ className }: AboutBioCardProps) {
         </h2>
         <div className={styles.aboutBioCopy}>
           <p>
-            Hi, I&apos;m <strong>Fredy</strong>, a{" "}
-            <strong>UI/UX designer and developer</strong> based in{" "}
-            <strong>Los Angeles</strong>. I enjoy turning ideas into digital experiences that
-            are easy to use and feel good to interact with. I&apos;m open to{" "}
-            <strong>remote opportunities</strong> and willing to <strong>relocate</strong> for
-            the right role.
-          </p>
-          <p>
             Whether I&apos;m mapping out a <strong>user flow</strong>, designing a screen, or
             building a prototype, I pay attention to the details that make a product feel
             natural. Being able to <strong>design and develop</strong> helps me think through

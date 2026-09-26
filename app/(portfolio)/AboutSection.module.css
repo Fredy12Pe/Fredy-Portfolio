@@ -1,0 +1,19 @@
+.section {
+  color: var(--intro-text, #000);
+  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  scroll-margin-top: 7rem;
+}
+
+@media (max-width: 860px) {
+  .section {
+    scroll-margin-top: 5.5rem;
+    /* Space lives in this section, above the card — not under the projects dial. */
+    padding-top: 1.75rem;
+  }
+}
+
+/* The shell's content offset tucks under the old header. This section
+   sits after the projects carousel, so it should start flush. */
+.content {
+  margin-top: 0;
+}

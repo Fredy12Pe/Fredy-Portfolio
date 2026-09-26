@@ -2020,7 +2020,8 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 1.35rem;
   /* Tighter text measure; even top/bottom inset */
   padding: 7cqh 11.5cqw;
   color: var(--intro-text);
@@ -3629,16 +3630,22 @@ a.card:focus-visible .contactPageOrb,
    * don't crush type, icons, and touch targets at full phone width.
    */
   .aboutBio {
-    /* Tall enough for full bio copy at phone width; stack pushes cards below */
-    aspect-ratio: 759 / 1400;
-    min-height: 560px;
+    /* Hug the copy. Size containment would collapse an auto height, so drop it here.
+       The old 759/1400 ratio left a large empty band under the text. */
+    container-type: normal;
+    aspect-ratio: auto;
+    min-height: 0;
+    height: auto !important;
     overflow: hidden;
   }
 
   .aboutBioScene {
-    padding: clamp(1.35rem, 5.5cqh, 2rem) clamp(1.25rem, 6.5cqw, 1.75rem);
-    gap: 1.1rem;
-    justify-content: space-between;
+    position: relative;
+    inset: auto;
+    height: auto;
+    padding: 1.35rem 1.35rem 1.5rem;
+    gap: 0.95rem;
+    justify-content: flex-start;
   }
 
   .aboutBioHeading {
