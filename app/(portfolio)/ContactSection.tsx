@@ -63,7 +63,7 @@ export default function ContactSection() {
           <div>
             <h2 className={styles.heading}>Let’s talk.</h2>
             <p className={styles.subhead}>
-              Have a project or need help? Fill out the form, and we’ll get back to you soon.
+              Have a project or need help? Fill out the form, and I’ll get back to you soon.
             </p>
           </div>
           <ul className={styles.socials}>
