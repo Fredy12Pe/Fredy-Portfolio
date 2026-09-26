@@ -288,6 +288,8 @@ export default function ProjectsCarousel({
 
   const tiltCard = useCallback(
     (e: ReactPointerEvent<HTMLAnchorElement>, i: number) => {
+      // A touch tilt moves the card under the finger and iOS cancels the tap.
+      if (e.pointerType !== "mouse") return;
       if (reducedMotion.current || navigating.current || dragging.current) return;
       const face = faceRefs.current[i];
       if (!face) return;
@@ -319,19 +321,14 @@ export default function ProjectsCarousel({
     });
   }, []);
 
-  const openCard = useCallback(
-    (e: ReactMouseEvent<HTMLAnchorElement>, i: number, href: string) => {
-      // Let modifier / middle clicks open the case study normally.
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+  const openProject = useCallback(
+    (i: number, href: string) => {
+      if (navigating.current) return;
+      if (reducedMotion.current) {
+        router.push(href);
         return;
       }
-      if (navigating.current || suppressClick.current) {
-        e.preventDefault();
-        return;
-      }
-      if (reducedMotion.current) return;
 
-      e.preventDefault();
       navigating.current = true;
       const face = faceRefs.current[i];
       if (!face) {
@@ -369,6 +366,22 @@ export default function ProjectsCarousel({
       }
     },
     [router],
+  );
+
+  const openCard = useCallback(
+    (e: ReactMouseEvent<HTMLAnchorElement>, i: number, href: string) => {
+      // Let modifier / middle clicks open the case study normally.
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+        return;
+      }
+      if (suppressClick.current) {
+        e.preventDefault();
+        return;
+      }
+      e.preventDefault();
+      openProject(i, href);
+    },
+    [openProject],
   );
 
   const goTo = useCallback(
@@ -672,6 +685,8 @@ export default function ProjectsCarousel({
     if (!stage) return;
 
     const mobileQuery = window.matchMedia("(max-width: 860px)");
+    // Finger jitter is often ~15px. Below this is a tap; past it can be a swipe.
+    const SWIPE_LOCK = 28;
     let pointerId = -1;
     let startX = 0;
     let startY = 0;
@@ -695,7 +710,7 @@ export default function ProjectsCarousel({
       const dy = event.clientY - startY;
 
       if (!axis) {
-        if (Math.hypot(dx, dy) < 8) return;
+        if (Math.hypot(dx, dy) < SWIPE_LOCK) return;
         axis = Math.abs(dx) > Math.abs(dy) ? "h" : "v";
         if (axis === "v") {
           tracking = false;
@@ -725,14 +740,40 @@ export default function ProjectsCarousel({
       applyTicks(next);
     };
 
-    const endSwipe = (event: PointerEvent) => {
+    const openTappedCard = (event: PointerEvent) => {
+      const active = cardRefs.current.find((el) => el?.dataset.active === "true");
+      if (!active) return;
+      const rect = active.getBoundingClientRect();
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+      if (!inside) return;
+      const href = active.querySelector("a")?.getAttribute("href");
+      const index = cardRefs.current.indexOf(active);
+      if (!href || index < 0) return;
+      // The synthesized click is unreliable on the 3D card, so open on release
+      // and drop that click so the project doesn't open twice.
+      suppressClick.current = true;
+      window.setTimeout(() => {
+        suppressClick.current = false;
+      }, 500);
+      openProject(index, href);
+    };
+
+    const endSwipe = (event: PointerEvent, openTap: boolean) => {
       if (event.pointerId !== pointerId) return;
       const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
       const wasDrag = dragging.current;
       tracking = false;
       axis = null;
       pointerId = -1;
-      if (!wasDrag) return;
+      if (!wasDrag) {
+        if (openTap && Math.hypot(dx, dy) < SWIPE_LOCK) openTappedCard(event);
+        return;
+      }
 
       dragging.current = false;
       if (Math.abs(dx) > 10) suppressClick.current = true;
@@ -759,20 +800,23 @@ export default function ProjectsCarousel({
       suppressClick.current = false;
     };
 
+    const onPointerUp = (event: PointerEvent) => endSwipe(event, true);
+    const onPointerCancel = (event: PointerEvent) => endSwipe(event, false);
+
     stage.addEventListener("pointerdown", onPointerDown);
     stage.addEventListener("pointermove", onPointerMove);
-    stage.addEventListener("pointerup", endSwipe);
-    stage.addEventListener("pointercancel", endSwipe);
+    stage.addEventListener("pointerup", onPointerUp);
+    stage.addEventListener("pointercancel", onPointerCancel);
     stage.addEventListener("click", onClickCapture, true);
 
     return () => {
       stage.removeEventListener("pointerdown", onPointerDown);
       stage.removeEventListener("pointermove", onPointerMove);
-      stage.removeEventListener("pointerup", endSwipe);
-      stage.removeEventListener("pointercancel", endSwipe);
+      stage.removeEventListener("pointerup", onPointerUp);
+      stage.removeEventListener("pointercancel", onPointerCancel);
       stage.removeEventListener("click", onClickCapture, true);
     };
-  }, [applyLayout, applyTicks, goTo, snapToNearest, stopDialFollow]);
+  }, [applyLayout, applyTicks, goTo, openProject, snapToNearest, stopDialFollow]);
 
   return (
     <section
