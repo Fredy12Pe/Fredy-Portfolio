@@ -166,6 +166,7 @@ export default function ProjectsCarousel({
   const dragStartX = useRef(0);
   const dragging = useRef(false);
   const suppressClick = useRef(false);
+  const swallowNavClick = useRef(false);
   const [active, setActive] = useState(0);
 
   const count = projects.length;
@@ -571,11 +572,27 @@ export default function ProjectsCarousel({
     const dial = dialRef.current;
     if (!dial) return;
 
+    let navPress: { id: number; x: number; y: number; dir: 1 | -1 } | null = null;
+
+    const navDir = (target: EventTarget | null): 1 | -1 | null => {
+      if (!(target instanceof Element)) return null;
+      const button = target.closest("button");
+      if (!button || !dial.contains(button)) return null;
+      if (button.classList.contains(styles.navBtnPrev)) return -1;
+      if (button.classList.contains(styles.navBtnNext)) return 1;
+      return null;
+    };
+
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
-      // Nav buttons live inside the dial; don't steal their clicks for drag.
-      const target = e.target as Element | null;
-      if (target?.closest?.(`.${styles.controls}`)) return;
+      const dir = navDir(e.target);
+      if (dir) {
+        // A click inside this drag surface is dropped on the first phone tap
+        // (touch-action plus sticky hover). Record the press and step on release.
+        navPress = { id: e.pointerId, x: e.clientX, y: e.clientY, dir };
+        e.preventDefault();
+        return;
+      }
       dragging.current = true;
       dragStartX.current = e.clientX;
       dragStartProgress.current = progress.current.value;
@@ -612,18 +629,42 @@ export default function ProjectsCarousel({
       snapToNearest();
     };
 
+    const onPointerUp = (e: PointerEvent) => {
+      if (!navPress || e.pointerId !== navPress.id) {
+        endDrag(e);
+        return;
+      }
+      const press = navPress;
+      navPress = null;
+      const moved = Math.hypot(e.clientX - press.x, e.clientY - press.y);
+      if (moved > 18) return;
+      swallowNavClick.current = true;
+      step(press.dir);
+      window.setTimeout(() => {
+        swallowNavClick.current = false;
+      }, 450);
+    };
+
+    const onPointerCancel = (e: PointerEvent) => {
+      if (navPress && e.pointerId === navPress.id) {
+        navPress = null;
+        return;
+      }
+      endDrag(e);
+    };
+
     dial.addEventListener("pointerdown", onPointerDown);
     dial.addEventListener("pointermove", onPointerMove);
-    dial.addEventListener("pointerup", endDrag);
-    dial.addEventListener("pointercancel", endDrag);
+    dial.addEventListener("pointerup", onPointerUp);
+    dial.addEventListener("pointercancel", onPointerCancel);
 
     return () => {
       dial.removeEventListener("pointerdown", onPointerDown);
       dial.removeEventListener("pointermove", onPointerMove);
-      dial.removeEventListener("pointerup", endDrag);
-      dial.removeEventListener("pointercancel", endDrag);
+      dial.removeEventListener("pointerup", onPointerUp);
+      dial.removeEventListener("pointercancel", onPointerCancel);
     };
-  }, [applyLayout, applyTicks, snapToNearest, stopDialFollow]);
+  }, [applyLayout, applyTicks, snapToNearest, step, stopDialFollow]);
 
   // Phone: swipe the cards themselves. A vertical move still scrolls the page.
   useEffect(() => {
@@ -904,7 +945,13 @@ export default function ProjectsCarousel({
             type="button"
             className={`${styles.navBtn} ${styles.navBtnPrev}`}
             aria-label="Previous project"
-            onClick={() => step(-1)}
+            onClick={() => {
+              if (swallowNavClick.current) {
+                swallowNavClick.current = false;
+                return;
+              }
+              step(-1);
+            }}
           >
             <img
               src="/images/portfolio-v3/nav-skip.svg"
@@ -918,7 +965,13 @@ export default function ProjectsCarousel({
             type="button"
             className={`${styles.navBtn} ${styles.navBtnNext}`}
             aria-label="Next project"
-            onClick={() => step(1)}
+            onClick={() => {
+              if (swallowNavClick.current) {
+                swallowNavClick.current = false;
+                return;
+              }
+              step(1);
+            }}
           >
             <img
               src="/images/portfolio-v3/nav-skip.svg"

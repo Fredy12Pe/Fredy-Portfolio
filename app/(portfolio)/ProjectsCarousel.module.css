@@ -248,14 +248,18 @@
   );
 }
 
-.navBtn:hover,
-.navBtn:focus-visible {
-  --nav-fill: #0e0e0e;
-  /* Figma hover inner shadow: 0 / 44 / 54 / 10, #FFF 4% */
-  box-shadow: inset 0 44px 54px 10px rgba(255, 255, 255, 0.04);
+/* Hover on touch sticks after the first tap and swallows that click. */
+@media (hover: hover) and (pointer: fine) {
+  .navBtn:hover {
+    --nav-fill: #0e0e0e;
+    /* Figma hover inner shadow: 0 / 44 / 54 / 10, #FFF 4% */
+    box-shadow: inset 0 44px 54px 10px rgba(255, 255, 255, 0.04);
+  }
 }
 
 .navBtn:focus-visible {
+  --nav-fill: #0e0e0e;
+  box-shadow: inset 0 44px 54px 10px rgba(255, 255, 255, 0.04);
   outline: none;
 }
 
@@ -311,7 +315,8 @@
   z-index: 3;
   overflow: hidden;
   cursor: grab;
-  touch-action: none;
+  /* pan-y keeps vertical scrolling. `none` made iOS drop the first tap on the buttons. */
+  touch-action: pan-y;
   outline: none;
 }
 
