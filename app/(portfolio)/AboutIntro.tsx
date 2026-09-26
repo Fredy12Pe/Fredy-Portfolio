@@ -180,7 +180,7 @@ export default function AboutIntro() {
     if (!root || !lift || !spin) return;
 
     const overlays = root.querySelectorAll<HTMLElement>("[data-bw]");
-    let mm: { revert: () => void } | null = null;
+    let mm: ReturnType<typeof gsap.matchMedia> | null = null;
     let timer = 0;
 
     const setup = () => {

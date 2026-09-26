@@ -753,7 +753,7 @@ export default function SiteHeader() {
       if (event.key === "Escape") setMenuOpen(false);
     }
 
-    function onPointer(event: MouseEvent) {
+    function onPointer(event: globalThis.MouseEvent) {
       const panel = panelRef.current;
       const target = event.target as Node | null;
       if (!panel || !target) return;

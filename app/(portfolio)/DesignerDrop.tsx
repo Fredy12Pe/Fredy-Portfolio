@@ -374,21 +374,25 @@ export default function DesignerDrop({
     const start = performance.now();
     const tick = () => {
       if (!rtA || !rtB) return;
+      let front: THREE.WebGLRenderTarget = rtA;
+      let back: THREE.WebGLRenderTarget = rtB;
       const time = (performance.now() - start) / 1000;
       updatePill();
       renderer.setClearColor(0x000000, 0);
       for (let step = 0; step < 4; step += 1) {
-        simMat.uniforms.uPrev.value = rtA.texture;
+        simMat.uniforms.uPrev.value = front.texture;
         simMat.uniforms.uTime.value = time;
-        renderer.setRenderTarget(rtB);
+        renderer.setRenderTarget(back);
         renderer.render(simScene, simCam);
-        const previous = rtA;
-        rtA = rtB;
-        rtB = previous;
+        const previous = front;
+        front = back;
+        back = previous;
       }
+      rtA = front;
+      rtB = back;
       renderer.setRenderTarget(null);
       renderer.setViewport(0, 0, canvas.width, canvas.height);
-      compMat.uniforms.uSim.value = rtA.texture;
+      compMat.uniforms.uSim.value = front.texture;
       compMat.uniforms.uTime.value = time;
       renderer.clear();
       renderer.render(compScene, simCam);
