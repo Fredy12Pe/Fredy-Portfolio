@@ -15,17 +15,27 @@ const inter = Inter({
 
 const LINKS = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About Me" },
   { href: "/#work", label: "Works" },
-  { href: "/contact", label: "Contact" },
+  { href: "/#about", label: "About Me" },
+  { href: "/#contact", label: "Contact" },
 ] as const;
 
 function onSamePageHash(event: MouseEvent<HTMLAnchorElement>, href: string) {
-  if (!href.startsWith("/#") || window.location.pathname !== "/") return;
+  if (window.location.pathname !== "/") return;
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (href === "/") {
+    event.preventDefault();
+    window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+    window.history.pushState(null, "", href);
+    return;
+  }
+
+  if (!href.startsWith("/#")) return;
   const target = document.getElementById(href.slice(2));
   if (!target) return;
   event.preventDefault();
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
   window.history.pushState(null, "", href);
 }

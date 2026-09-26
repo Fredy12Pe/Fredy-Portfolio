@@ -299,12 +299,15 @@
 
 .dial {
   position: absolute;
-  left: 50%;
+  /* Center with auto margins. A translateX(-50%) here gets parsed again by
+     GSAP on iOS and the two offsets stack, shoving the buttons off-screen. */
+  left: 0;
+  right: 0;
+  margin-inline: auto;
   /* Extends slightly below the stage so the cards can sit low on the arc */
   bottom: -2%;
   width: min(74vw, 840px);
   aspect-ratio: 2 / 1;
-  transform: translateX(-50%);
   z-index: 3;
   overflow: hidden;
   cursor: grab;

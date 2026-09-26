@@ -473,13 +473,13 @@ export default function ProjectsCarousel({
     const ctx = gsap.context(() => {
       if (reduced) {
         gsap.set([filings, stage], { autoAlpha: 1, y: 0 });
-        gsap.set(dial, { autoAlpha: 1, y: 0, xPercent: -50 });
+        gsap.set(dial, { autoAlpha: 1, x: 0, xPercent: 0, y: 0 });
         return;
       }
 
       gsap.set(filings, { y: 40, autoAlpha: 0 });
       gsap.set(stage, { y: 72, autoAlpha: 0 });
-      gsap.set(dial, { y: 56, autoAlpha: 0, xPercent: -50 });
+      gsap.set(dial, { y: 56, autoAlpha: 0, x: 0, xPercent: 0 });
 
       const mm = gsap.matchMedia();
 
@@ -496,7 +496,7 @@ export default function ProjectsCarousel({
 
         tl.to(filings, { y: 0, autoAlpha: 1 }, 0)
           .to(stage, { y: 0, autoAlpha: 1 }, 0)
-          .to(dial, { y: 0, autoAlpha: 1, xPercent: -50 }, 0);
+          .to(dial, { y: 0, autoAlpha: 1, x: 0, xPercent: 0 }, 0);
       };
 
       // Desktop cards sit high in a full-viewport section, so the fade
