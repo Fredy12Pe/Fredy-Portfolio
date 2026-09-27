@@ -3,10 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Inter } from "next/font/google";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import { gsap } from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { InteractiveTiltCard } from "@/components/ui/tilt-card";
+import { markPortfolioLayout } from "./reload-scroll";
 import styles from "./AboutIntro.module.css";
 
 const inter = Inter({
@@ -15,7 +17,41 @@ const inter = Inter({
   display: "swap",
 });
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+function scrollToContact(event: MouseEvent<HTMLAnchorElement>) {
+  if (window.location.pathname !== "/") return;
+
+  const target = document.getElementById("contact");
+  if (!target) return;
+
+  event.preventDefault();
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const offset = Number.parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+  const y = Math.max(0, window.scrollY + target.getBoundingClientRect().top - offset);
+  const distance = Math.abs(y - window.scrollY);
+  if (distance < 2) {
+    window.history.pushState(null, "", "/#contact");
+    return;
+  }
+
+  const root = document.documentElement;
+  const restore = () => {
+    root.style.scrollBehavior = "";
+  };
+  root.style.scrollBehavior = "auto";
+  gsap.to(window, {
+    duration: reduced ? 0 : gsap.utils.clamp(0.75, 1.35, distance / 1400),
+    ease: "power2.inOut",
+    scrollTo: { y, autoKill: true },
+    overwrite: "auto",
+    onInterrupt: restore,
+    onComplete: () => {
+      restore();
+      window.history.pushState(null, "", "/#contact");
+    },
+  });
+}
 
 const PORTRAIT = "/images/portfolio-v3/about-portrait.png";
 
@@ -425,6 +461,7 @@ export default function AboutIntro() {
           });
         },
       );
+      markPortfolioLayout("about");
     };
 
     // After the layout effect (and a strict-mode remount) so the section is in normal flow.
@@ -496,7 +533,11 @@ export default function AboutIntro() {
           <p className={styles.invite}>
             If you’re interested in collaborating, or have any questions, feel
             free to{" "}
-            <Link className={`${styles.reach} ${styles.keepLine}`} href="/contact">
+            <Link
+              className={`${styles.reach} ${styles.keepLine}`}
+              href="/#contact"
+              onClick={scrollToContact}
+            >
               reach out here.
             </Link>
           </p>

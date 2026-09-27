@@ -1,0 +1,33 @@
+.root {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  pointer-events: auto;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+}
+
+.mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(240px, 52vw, 480px);
+  height: auto;
+  aspect-ratio: 68.98 / 39.8003;
+  overflow: visible;
+  color: #111;
+  transform: translate(-50%, -50%);
+}
+
+.mark path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 8000;
+  stroke-dashoffset: 8000;
+}

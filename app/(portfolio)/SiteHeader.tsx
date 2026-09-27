@@ -8,7 +8,9 @@ import { memo, useEffect, useId, useLayoutEffect, useRef, useState, type MouseEv
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { holdingReloadPosition } from "./reload-scroll";
 import styles from "./SiteHeader.module.css";
+import WelcomeSignature from "./WelcomeSignature";
 
 const interBlack = Inter({
   weight: "900",
@@ -616,6 +618,11 @@ function mountTitleWarp(title: HTMLHeadingElement, canvas: HTMLCanvasElement) {
 }
 
 
+function userIsAtHeader(header: HTMLElement) {
+  const top = header.getBoundingClientRect().top;
+  return top > -window.innerHeight * 0.45 && top < window.innerHeight * 0.25;
+}
+
 export default function SiteHeader() {
   const pathname = usePathname();
   const menuId = useId();
@@ -623,7 +630,9 @@ export default function SiteHeader() {
   const navRef = useRef<HTMLElement>(null);
   const iconRef = useRef<HTMLSpanElement>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const logoRef = useRef<HTMLAnchorElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [introOn, setIntroOn] = useState<boolean | null>(null);
   const reducedMotion = useRef(false);
   const menuReady = useRef(false);
   const iconReady = useRef(false);
@@ -632,6 +641,24 @@ export default function SiteHeader() {
     reducedMotion.current = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+  }, []);
+
+  // The signature draw only covers the header, and only while that header
+  // is the view. A reload further down the page keeps that exact position.
+  useLayoutEffect(() => {
+    const header = headerRef.current;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || holdingReloadPosition() || !header || !userIsAtHeader(header)) {
+      setIntroOn(false);
+      return;
+    }
+
+    setIntroOn(true);
+    const onScroll = () => {
+      if (!userIsAtHeader(header)) setIntroOn(false);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -1119,6 +1146,9 @@ export default function SiteHeader() {
 
   return (
     <header ref={headerRef} className={styles.header} data-node-id="89:648">
+      {introOn ? (
+        <WelcomeSignature logoRef={logoRef} onDone={() => setIntroOn(false)} />
+      ) : null}
       <div className={styles.grain} aria-hidden />
 
       <div className={styles.sideFrame} aria-hidden>
@@ -1143,7 +1173,13 @@ export default function SiteHeader() {
       </div>
 
       <nav ref={navRef} className={styles.nav} data-tone="dark" aria-label="Site">
-        <Link className={styles.logo} href="/" aria-label="Fredy — Home">
+        <Link
+          ref={logoRef}
+          className={styles.logo}
+          href="/"
+          aria-label="Fredy — Home"
+          data-intro={introOn !== false ? "on" : undefined}
+        >
           <Image
             className={styles.logoImg}
             src="/images/portfolio-v3/signature.svg"

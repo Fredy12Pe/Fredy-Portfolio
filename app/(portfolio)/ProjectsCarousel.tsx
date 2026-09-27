@@ -558,8 +558,53 @@ export default function ProjectsCarousel({
       }
     });
 
-    applyLayout(0);
-    applyTicks(0);
+    const last = count - 1;
+    const playIntro =
+      !reducedMotion.current && last > 0 && sectionRef.current != null;
+
+    if (playIntro) {
+      progress.current.value = last;
+      dialProgress.current.value = last;
+      applyLayout(last);
+      applyTicks(last);
+    } else {
+      applyLayout(0);
+      applyTicks(0);
+    }
+
+    let playedIntro = false;
+    const playScrollHint = () => {
+      if (playedIntro || reducedMotion.current) return;
+      playedIntro = true;
+      tweenRef.current?.kill();
+      tweenRef.current = gsap.to(progress.current, {
+        value: 0,
+        duration: 3.2,
+        ease: "power1.inOut",
+        overwrite: true,
+        onUpdate: () => applyLayout(progress.current.value),
+        onComplete: () => applyLayout(progress.current.value),
+      });
+      beginDialFollow();
+    };
+
+    const introMedia = gsap.matchMedia();
+    if (playIntro) {
+      const arm = (start: string) => {
+        const hint = ScrollTrigger.create({
+          trigger: sectionRef.current,
+          start,
+          once: true,
+          onEnter: playScrollHint,
+        });
+        if (hint.isActive) playScrollHint();
+        return () => hint.kill();
+      };
+      // After the entrance fade. Desktop cards sit high; on a phone they
+      // sit on the dial at the bottom of a shorter section.
+      introMedia.add("(min-width: 861px)", () => arm("top 6%"));
+      introMedia.add("(max-width: 860px)", () => arm("bottom 80%"));
+    }
 
     const onResize = () => {
       applyLayout(progress.current.value);
@@ -569,6 +614,7 @@ export default function ProjectsCarousel({
 
     return () => {
       window.removeEventListener("resize", onResize);
+      introMedia.revert();
       tweenRef.current?.kill();
       dialTweenRef.current?.kill();
       gsap.ticker.remove(stepDial);
@@ -578,7 +624,7 @@ export default function ProjectsCarousel({
       });
       openTimelineRef.current?.kill();
     };
-  }, [applyLayout, applyTicks, stepDial]);
+  }, [applyLayout, applyTicks, beginDialFollow, count, stepDial]);
 
   // Horizontal drag on the dial — same interaction model as UICapsule.
   useEffect(() => {

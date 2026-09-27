@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
+import { markPortfolioLayout } from "./reload-scroll";
 import styles from "./ProjectsIntro.module.css";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -21,6 +22,7 @@ export default function ProjectsIntro() {
 
     if (reduced) {
       gsap.set(text, { autoAlpha: 1 });
+      markPortfolioLayout("projects");
       return;
     }
 
@@ -51,6 +53,7 @@ export default function ProjectsIntro() {
         },
       });
       ScrollTrigger.refresh();
+      markPortfolioLayout("projects");
     };
 
     timer = window.setTimeout(setup, 0);
