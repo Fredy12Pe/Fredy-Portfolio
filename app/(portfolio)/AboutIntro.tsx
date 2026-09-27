@@ -3,7 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Inter } from "next/font/google";
-import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -19,7 +24,7 @@ const inter = Inter({
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-function scrollToContact(event: MouseEvent<HTMLAnchorElement>) {
+function scrollToContact(event: ReactMouseEvent<HTMLAnchorElement>) {
   if (window.location.pathname !== "/") return;
 
   const target = document.getElementById("contact");
