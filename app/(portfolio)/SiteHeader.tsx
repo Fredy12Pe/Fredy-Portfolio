@@ -123,7 +123,7 @@ type StickerProps = {
   height: number;
   priority?: boolean;
   rotate?: number;
-  /** One sticker peels slightly after load, as a cue that the set can be moved. */
+  /** One sticker peels slightly after the set lands, as a cue that it can be moved. */
   hint?: boolean;
 };
 
@@ -165,28 +165,30 @@ function LetterPeel({
       role="button"
       aria-label="Move sticker"
     >
-      <div className={styles.peelTilt} style={{ rotate: `${rotate}deg` }}>
-        <div className={styles.peelHop}>
-          <div className={styles.peelMain}>
-            <Image
-              className={styles.peelFace}
-              src={src}
-              alt=""
-              width={width}
-              height={height}
-              priority={priority}
-              unoptimized
-            />
-          </div>
-          <div className={styles.peelFlap} aria-hidden>
-            <Image
-              className={styles.peelFlapImg}
-              src={src}
-              alt=""
-              width={width}
-              height={height}
-              unoptimized
-            />
+      <div className={styles.peelEnter}>
+        <div className={styles.peelTilt} style={{ rotate: `${rotate}deg` }}>
+          <div className={styles.peelHop}>
+            <div className={styles.peelMain}>
+              <Image
+                className={styles.peelFace}
+                src={src}
+                alt=""
+                width={width}
+                height={height}
+                priority={priority}
+                unoptimized
+              />
+            </div>
+            <div className={styles.peelFlap} aria-hidden>
+              <Image
+                className={styles.peelFlapImg}
+                src={src}
+                alt=""
+                width={width}
+                height={height}
+                unoptimized
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -995,10 +997,10 @@ export default function SiteHeader() {
         intro = null;
       };
 
-      // Front sticker folds a little once the entrance fade has settled,
+      // Front sticker folds a little once the stickers have landed,
       // then lays flat again. Hovering or grabbing cancels it.
       if (peel.dataset.peelHint === "true") {
-        intro = gsap.timeline({ delay: 1.15 });
+        intro = gsap.timeline({ paused: true, delay: 0.22 });
         intro
           .call(() => {
             peel.dataset.peelActive = "true";
@@ -1012,6 +1014,10 @@ export default function SiteHeader() {
           .call(() => {
             delete peel.dataset.peelActive;
           });
+
+        const playHint = () => intro?.play();
+        root.addEventListener("stickersplaced", playHint);
+        cleanups.push(() => root.removeEventListener("stickersplaced", playHint));
       }
 
       const enter = () => {
@@ -1124,25 +1130,82 @@ export default function SiteHeader() {
   useLayoutEffect(() => {
     const root = headerRef.current;
     if (!root) return;
-    const stickers = root.querySelectorAll<HTMLElement>("[data-enter-sticker]");
-    if (!stickers.length) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    gsap.fromTo(
-      stickers,
-      { opacity: 0 },
-      {
-        opacity: 1,
-        duration: 0.85,
-        ease: "power2.out",
-        stagger: 0.06,
+    const tilts = root.querySelectorAll<HTMLElement>(`.${styles.peelEnter}`);
+    const letters = root.querySelectorAll<HTMLElement>("[data-letter-peel]");
+    const sideLeft = root.querySelector<HTMLElement>(`.${styles.sideLeft}`);
+    const sideRight = root.querySelector<HTMLElement>(`.${styles.sideRight}`);
+    const sides = [sideLeft, sideRight].filter((el): el is HTMLElement => !!el);
+
+    // Hold them back while the signature intro covers the header,
+    // so the placement reads after that scrim is gone.
+    if (introOn !== false) {
+      gsap.set(tilts, { opacity: 0 });
+      if (sides.length) gsap.set(sides, { opacity: 0 });
+      return;
+    }
+
+    if (!tilts.length && !sides.length) return;
+
+    // Placement runs on an inner layer so the designed tilt and drag x/y stay put.
+    // Left half slides in from the left edge, right half from the right.
+    const count = tilts.length;
+    const center = (count - 1) / 2;
+
+    gsap.set(letters, { pointerEvents: "none" });
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        gsap.set(tilts, { clearProps: "opacity,x,y,rotation,scale" });
+        if (sides.length) gsap.set(sides, { clearProps: "opacity,x" });
+        gsap.set(letters, { clearProps: "pointerEvents" });
+        root.dispatchEvent(new Event("stickersplaced"));
       },
-    );
+    });
+
+    tilts.forEach((tilt, index) => {
+      const fromLeft = index < count / 2;
+      const rect = tilt.getBoundingClientRect();
+      const x = fromLeft ? -rect.right - 36 : window.innerWidth - rect.left + 36;
+      const at = (center - Math.abs(index - center)) * 0.09;
+      tl.fromTo(
+        tilt,
+        { opacity: 1, x, y: 0, rotation: fromLeft ? -8 : 8 },
+        {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          rotation: 0,
+          duration: 0.95,
+          ease: "power3.out",
+        },
+        at,
+      );
+    });
+
+    if (sideLeft) {
+      tl.fromTo(
+        sideLeft,
+        { opacity: 0, x: -56 },
+        { opacity: 1, x: 0, duration: 0.95, ease: "power3.out" },
+        0,
+      );
+    }
+    if (sideRight) {
+      tl.fromTo(
+        sideRight,
+        { opacity: 0, x: 56 },
+        { opacity: 1, x: 0, duration: 0.95, ease: "power3.out" },
+        0.06,
+      );
+    }
 
     return () => {
-      gsap.killTweensOf(stickers);
+      tl.kill();
+      gsap.set(letters, { clearProps: "pointerEvents" });
     };
-  }, []);
+  }, [introOn]);
 
   return (
     <header ref={headerRef} className={styles.header} data-node-id="89:648">
