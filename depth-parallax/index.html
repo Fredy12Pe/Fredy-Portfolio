@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Depth Parallax Test</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  /* A 19:6 frame, as large as the viewport allows, centered */
+  canvas {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(100vw, calc(100vh * 19 / 6));
+    aspect-ratio: 19 / 6;
+    display: block;
+  }
+  .hint {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    pointer-events: none;
+    transition: opacity 0.6s;
+  }
+  .hint.hidden { opacity: 0; }
+  .fallback {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    padding: 16px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<canvas id="view" aria-label="Photo with depth-based parallax"></canvas>
+<div class="hint" id="hint">Move your cursor to shift the scene</div>
+<div class="fallback" id="fallback">WebGL is not available in this browser.</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('view');
+  const hint = document.getElementById('hint');
+  const gl = canvas.getContext('webgl', { antialias: false, premultipliedAlpha: false });
+
+  if (!gl) {
+    document.getElementById('fallback').style.display = 'flex';
+    canvas.style.display = 'none';
+    hint.style.display = 'none';
+    return;
+  }
+
+  // Tuning knobs
+  const STRENGTH = 0.08;   // max shift as a fraction of the image size
+  const FOCUS = 0.5;       // depth value that stays put (0 = far, 1 = near)
+  const EASE = 0.06;       // smoothing factor per frame (lower = smoother/laggier)
+
+  const vertSrc = `
+    attribute vec2 aPos;
+    varying vec2 vUv;
+    void main() {
+      vUv = aPos * 0.5 + 0.5;
+      vUv.y = 1.0 - vUv.y;           // image row 0 is at the top
+      gl_Position = vec4(aPos, 0.0, 1.0);
+    }
+  `;
+
+  const fragSrc = `
+    precision highp float;
+    varying vec2 vUv;
+    uniform sampler2D uPhoto;
+    uniform sampler2D uDepth;
+    uniform vec2 uOffset;      // cursor offset, -1..1 per axis
+    uniform float uStrength;
+    uniform float uFocus;
+    uniform vec2 uScale;       // cover-fit scale for the image
+    uniform vec2 uMaxShift;    // largest shift in uv units (keeps edges covered)
+
+    void main() {
+      // Map screen uv to image uv, cropping to keep the aspect ratio ("cover")
+      // uScale is the fraction of the image visible on each axis
+      vec2 uv = (vUv - 0.5) * uScale + 0.5;
+
+      float depth = texture2D(uDepth, uv).r;
+      // Nearer pixels (brighter in the depth map) move more than far ones
+      float k = (depth - uFocus) * uStrength;
+      vec2 shift = clamp(-uOffset * k, -uMaxShift, uMaxShift);
+
+      vec2 srcUv = clamp(uv + shift, 0.0, 1.0);
+      vec3 col = texture2D(uPhoto, srcUv).rgb;
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  function compile(type, src) {
+    const sh = gl.createShader(type);
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+      throw new Error(gl.getShaderInfoLog(sh));
+    }
+    return sh;
+  }
+
+  const program = gl.createProgram();
+  gl.attachShader(program, compile(gl.VERTEX_SHADER, vertSrc));
+  gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragSrc));
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    throw new Error(gl.getProgramInfoLog(program));
+  }
+  gl.useProgram(program);
+
+  // Full-screen quad
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  const aPos = gl.getAttribLocation(program, 'aPos');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  const u = {
+    photo: gl.getUniformLocation(program, 'uPhoto'),
+    depth: gl.getUniformLocation(program, 'uDepth'),
+    offset: gl.getUniformLocation(program, 'uOffset'),
+    strength: gl.getUniformLocation(program, 'uStrength'),
+    focus: gl.getUniformLocation(program, 'uFocus'),
+    scale: gl.getUniformLocation(program, 'uScale'),
+    maxShift: gl.getUniformLocation(program, 'uMaxShift'),
+  };
+
+  gl.uniform1f(u.strength, STRENGTH);
+  gl.uniform1f(u.focus, FOCUS);
+
+  function loadTexture(unit, url, onLoad) {
+    const tex = gl.createTexture();
+    const img = new Image();
+    img.onload = () => {
+      gl.activeTexture(gl.TEXTURE0 + unit);
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      onLoad(img);
+    };
+    img.onerror = () => {
+      const fb = document.getElementById('fallback');
+      fb.textContent = 'Could not load ' + url + '. Serve this folder over http (for example: python3 -m http.server).';
+      fb.style.display = 'flex';
+    };
+    img.src = url;
+    return tex;
+  }
+
+  let imgAspect = 1.5;
+  let loaded = 0;
+  const onLoaded = (img) => {
+    if (img.width) imgAspect = img.width / img.height;
+    if (++loaded === 2) { resize(); requestAnimationFrame(frame); }
+  };
+  loadTexture(0, 'photo-19x6.jpg', onLoaded);
+  loadTexture(1, 'depth-19x6.png', onLoaded);
+  gl.uniform1i(u.photo, 0);
+  gl.uniform1i(u.depth, 1);
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    const w = Math.max(1, Math.floor(rect.width * dpr));
+    const h = Math.max(1, Math.floor(rect.height * dpr));
+    canvas.width = w;
+    canvas.height = h;
+    gl.viewport(0, 0, w, h);
+
+    // Cover-fit: scale the image so it fills the screen, cropping the overflow
+    const screenAspect = w / h;
+    let sx = 1, sy = 1;
+    if (screenAspect > imgAspect) {
+      sy = imgAspect / screenAspect;   // crop top and bottom
+    } else {
+      sx = screenAspect / imgAspect;   // crop left and right
+    }
+    // Scale the image up slightly and clamp the shift to stay inside the frame
+    // Just enough extra zoom to hide the edges at the largest shift
+    const zoom = 1 - STRENGTH;
+    sx *= zoom;
+    sy *= zoom;
+    gl.uniform2f(u.scale, sx, sy);
+    // Free margin between the visible region and the image edge, per axis
+    gl.uniform2f(u.maxShift, (1 - sx) / 2 * 0.98, (1 - sy) / 2 * 0.98);
+  }
+  window.addEventListener('resize', () => { if (loaded === 2) resize(); });
+
+  // Cursor tracking, smoothed each frame
+  const target = { x: 0, y: 0 };
+  const current = { x: 0, y: 0 };
+  let hintHidden = false;
+
+  function setTarget(clientX, clientY) {
+    // Cursor position relative to the 19:6 frame, from -1 to 1
+    const rect = canvas.getBoundingClientRect();
+    const x = (clientX - rect.left) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
+    target.x = Math.max(-1, Math.min(1, x * 2 - 1));
+    target.y = Math.max(-1, Math.min(1, y * 2 - 1));
+    if (!hintHidden) { hint.classList.add('hidden'); hintHidden = true; }
+  }
+  window.addEventListener('pointermove', (e) => setTarget(e.clientX, e.clientY));
+  window.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if (t) setTarget(t.clientX, t.clientY);
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => { target.x = 0; target.y = 0; });
+
+  function frame() {
+    current.x += (target.x - current.x) * EASE;
+    current.y += (target.y - current.y) * EASE;
+    gl.uniform2f(u.offset, current.x, current.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>

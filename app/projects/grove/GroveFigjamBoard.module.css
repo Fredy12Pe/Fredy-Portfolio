@@ -1,0 +1,136 @@
+/* The exported FigJam board, and the live components placed over its device areas. */
+.board {
+  position: relative;
+  width: 9754px;
+  height: 6847px;
+  user-select: none;
+}
+
+/* The picture has no controls of its own, so clicks pass through it to the live text and sticky notes under it */
+.base {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 9754px;
+  height: 6847px;
+  display: block;
+  pointer-events: none;
+}
+
+.cover {
+  position: absolute;
+  overflow: hidden;
+}
+
+/* A live text block from the board. Sized and placed from the FigJam text node. */
+.text {
+  position: absolute;
+  display: flex;
+  white-space: pre-line;
+  line-height: 1.25;
+  color: #1a1a1a;
+  user-select: text;
+}
+
+/* The screen picker: the label, title and description, then the screen buttons in a grid.
+   Positioned to match the exported layout; the buttons are larger than the exported ones. */
+.picker {
+  position: absolute;
+  color: #1a1a1a;
+  user-select: text;
+}
+
+.pickerLabel,
+.pickerTitle,
+.pickerText {
+  position: absolute;
+  left: 0;
+  margin: 0;
+}
+
+.pickerLabel {
+  top: 0;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5c5c5c;
+}
+
+.pickerTitle {
+  top: 26px;
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 600;
+}
+
+.pickerText {
+  top: 66px;
+  width: 400px;
+  font-size: 16px;
+  line-height: 22px;
+  color: #3a3a3a;
+}
+
+.pickerGrid {
+  position: absolute;
+  left: 0;
+  top: 136px;
+  display: grid;
+  grid-template-columns: 232px 232px;
+  gap: 12px 16px;
+}
+
+.pickerButton {
+  position: relative;
+  height: 52px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #1a1a1a;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+/* A larger invisible tap area, so the buttons are easier to hit on touch screens */
+.pickerButton::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+}
+
+.pickerButton:hover {
+  background: #f7fbe9;
+}
+
+.pickerButton:focus-visible {
+  outline: 2px solid #1a1a1a;
+  outline-offset: 3px;
+}
+
+.pickerButtonActive,
+.pickerButtonActive:hover {
+  background: #eef3e0;
+  color: #1fae0c;
+}
+
+
+/* The FigJam dot grid. It sits underneath the board's content: the picture's background is
+   transparent, so the dots show on the canvas only, never over the cards or text. */
+.board::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* A plain translucent dot: a blend mode would make the browser recomposite the whole board on every frame */
+  background-image: radial-gradient(rgba(201, 201, 196, 0.6) 1.2px, transparent 1.2px);
+  background-size: 28px 28px;
+}

@@ -4,9 +4,10 @@ import styles from "./redesign.module.css";
 export default function BoardAtmosphere() {
   return (
     <div className={styles.pageAtmosphere} aria-hidden>
-      <span className={styles.pageAtmosphereBlob} data-blob="a" />
-      <span className={styles.pageAtmosphereBlob} data-blob="b" />
-      <span className={styles.pageAtmosphereBlob} data-blob="c" />
+      {/* data-decor: these drift forever, so they hold still once the section is away */}
+      <span className={styles.pageAtmosphereBlob} data-blob="a" data-decor />
+      <span className={styles.pageAtmosphereBlob} data-blob="b" data-decor />
+      <span className={styles.pageAtmosphereBlob} data-blob="c" data-decor />
     </div>
   );
 }

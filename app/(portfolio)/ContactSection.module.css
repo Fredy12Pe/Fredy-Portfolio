@@ -3,7 +3,21 @@
   overflow: hidden;
   background: #fff;
   color: #111;
-  padding: clamp(4.5rem, 10vh, 7.5rem) clamp(1.25rem, 6vw, 6.5rem);
+  /* Space from the bottom of the About cards down to this section's top: the sticky frame's
+     space around the tallest card (720 artboard units, scaled to the board width), plus the
+     About section's bottom padding. The board width mirrors --board-w in AboutSection.module.css. */
+  --about-gap: calc(
+    (100vh - 720 / 1920 * min(calc(100vw - 80px), 1620px, calc((100vh - 140px) * 1.98))) / 2
+      + clamp(4rem, 9vh, 6rem)
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* The bottom padding makes the space below the form, down to the footer, equal to the
+     space above it. The footer overlaps the section by its top-corner radius. */
+  padding:
+    clamp(4rem, 9vh, 6rem) clamp(1.25rem, 6vw, 6.5rem)
+    calc(clamp(4rem, 9vh, 6rem) + clamp(3rem, 6vw, 5rem) + var(--about-gap));
   scroll-margin-top: 7rem;
 }
 
@@ -239,4 +253,34 @@
   .submit {
     font-size: 16px;
   }
+}
+
+/* Tablets: the space above this section is the room the pinned About frame leaves under its cards
+   (the tallest card is 720 of 1920 units of the tablet board width in AboutSection.module.css).
+   No padding is added above, and the same room is mirrored below, so the form sits centred between
+   the cards and the footer. The footer overlaps by its top-corner radius, which is added back. */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .section {
+    padding:
+      0 clamp(1.25rem, 6vw, 6.5rem)
+      calc(
+        (100vh - 0.375 * min(calc((100vw - 96px) * 2.13), calc((100vh - 200px) * 2.4))) / 2
+          + clamp(3rem, 6vw, 5rem)
+      );
+  }
+}
+
+/* Phones: the gap above the form is about 52px: the row's last card sits centred in the frame, and the
+   frame ends about 20px below it (AboutSection.module.css). The footer overlaps this section by 48px, so
+   the bottom padding is 52px plus that overlap, which centres the form between the two. */
+@media (max-width: 767px) {
+  .section {
+    padding: 0 1.25rem 6.25rem;
+  }
+}
+
+/* The About and Contact sections are both white, but they can meet on a fraction of a pixel, where
+   the black page behind them blends into a thin grey line. Overlapping by 1px closes that seam. */
+.section {
+  margin-top: -1px;
 }

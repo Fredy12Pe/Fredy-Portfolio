@@ -20,6 +20,8 @@
     "@tsparticles/engine": "^3.9.1",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
+    "butterchurn": "^2.6.7",
+    "butterchurn-presets": "^2.4.7",
     "clsx": "^2.1.1",
     "framer-motion": "^11",
     "gsap": "^3.13.0",

@@ -2,16 +2,19 @@
 
 import { motion } from "framer-motion";
 import { loop, loopTimes } from "../motion";
-import { Layer, asset, box, inset } from "../primitives";
+import { Layer, asset, box, inset, useCharacterOnly } from "../primitives";
 
 export default function Content({ reduced }: { reduced?: boolean }) {
+  const characterOnly = useCharacterOnly();
   return (
     <>
-      <motion.div
-        style={{ position: "absolute", inset: 0, background: "#5d8961" }}
-        animate={reduced ? undefined : { background: ["#5D8961", "#649069", "#5D8961", "#56815B", "#5D8961"] }}
-        transition={loopTimes(9.6, [0, 0.25, 0.5, 0.75, 1], "easeInOut")}
-      />
+      {!characterOnly && (
+        <motion.div
+          style={{ position: "absolute", inset: 0, background: "#5d8961" }}
+          animate={reduced ? undefined : { background: ["#5D8961", "#649069", "#5D8961", "#56815B", "#5D8961"] }}
+          transition={loopTimes(9.6, [0, 0.25, 0.5, 0.75, 1], "easeInOut")}
+        />
+      )}
       <Layer name="ct-leaf-1" {...inset(29.29, -21.59, 31.28, 81.59)} reduced={reduced} animate={reduced ? undefined : { rotate: [0, 1.5, 0, -1.5, 0], x: [0, -9, 2, 10, 0], y: [0, -14, -3, 9, 0] }} transition={loop(9.6)} />
       <Layer name="ct-leaf-2" {...inset(10.15, -10.95, 66.1, 59.32)} reduced={reduced} flipX rotate={47.47} animate={reduced ? undefined : { x: [0, 12, 1, -10, 0], y: [0, -8, -2, 7, 0] }} transition={loop(9.6)} />
       <Layer name="ct-leaf-3" {...inset(7.83, 71.19, 71.62, -16.03)} reduced={reduced} rotate={-105} animate={reduced ? undefined : { x: [0, -12, -1, 10, 0], y: [0, 8, 2, -7, 0] }} transition={loop(9.6)} />

@@ -32,24 +32,39 @@ export default function ProjectsIntro() {
     const setup = () => {
       // After the about pin exists, so this start position is the real one.
       split = SplitText.create(text, {
-        type: "words, lines",
+        type: "words, chars",
         autoSplit: true,
         onSplit(self) {
-          // Word rise + fade from the GreenSock onSplit pen.
+          // Typewriter: each character appears in turn, with a caret while it types.
           // Trigger the paragraph, not the section, so it plays on screen
           // instead of underneath the pinned about panel.
-          return gsap.from(self.words, {
-            autoAlpha: 0,
-            y: 25,
-            duration: 1,
-            stagger: { amount: 1 },
-            ease: "power2.out",
+          gsap.set(self.chars, { autoAlpha: 0 });
+          // The caret is a zero-width element moved to sit after the newest character,
+          // so it follows the text as it types instead of sitting at the end of the paragraph.
+          const chars = self.chars;
+          const caret = document.createElement("span");
+          caret.className = styles.caret;
+          caret.setAttribute("aria-hidden", "true");
+          let tween: gsap.core.Tween | undefined;
+          tween = gsap.to(chars, {
+            autoAlpha: 1,
+            duration: 0.01,
+            stagger: 0.028,
+            ease: "none",
+            paused: true,
+            onUpdate: () => {
+              const typed = Math.floor((tween?.progress() ?? 0) * chars.length);
+              const index = Math.min(chars.length - 1, Math.max(0, typed - 1));
+              chars[index]?.after(caret);
+            },
+            onComplete: () => caret.remove(),
             scrollTrigger: {
               trigger: text,
               start: "top 90%",
               toggleActions: "play none none reverse",
             },
           });
+          return tween;
         },
       });
       ScrollTrigger.refresh();

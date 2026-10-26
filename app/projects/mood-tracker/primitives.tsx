@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, type MotionProps } from "framer-motion";
+import { createContext, useContext } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { ASSET_SIZE } from "./assetSizes";
 import { ASSET } from "./motion";
@@ -55,6 +56,13 @@ function transformOf(rotate?: number, flipX?: boolean, flipY?: boolean) {
   ].filter(Boolean);
   return parts.length ? parts.join(" ") : undefined;
 }
+
+/** When true, scenes drop their sky and weather art and keep only the character. */
+export const CharacterOnlyContext = createContext(false);
+export const useCharacterOnly = () => useContext(CharacterOnlyContext);
+
+/** Weather, sky, and light layers (clouds, lightning, stars) and the leaves around Content. */
+const BACKGROUND_LAYER = /-(cloud|star|bolt|leaf)\b/;
 
 export function Pos({
   left,
@@ -117,6 +125,9 @@ export function Layer({
   style,
   ...motionProps
 }: ArtProps) {
+  const characterOnly = useCharacterOnly();
+  if (characterOnly && BACKGROUND_LAYER.test(name)) return null;
+
   const [naturalWidth, naturalHeight] = assetSize(name);
   const drawWidth = stretch ? width : naturalWidth;
   const drawHeight = stretch ? height : naturalHeight;

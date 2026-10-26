@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { observeVisibility } from "@/lib/visibility";
 
 const flairImages = [
   "https://cdn.21st.dev/assets/mirror/7f/7fa03f07d6ecc851e6f9ecfc2fa3d401ee781e1c3ac345d57697b9792a349b32.png",
@@ -94,9 +95,16 @@ export function CursorTrail({
       );
     };
 
+    // The container's box only moves when the page is resized or scrolled, so it is
+    // measured then rather than on every mouse move. Measuring per move made every
+    // movement anywhere on the page wait for layout, trail visible or not.
+    let rect: DOMRect | null = containerRef.current?.getBoundingClientRect() ?? null;
+    const measure = () => {
+      rect = containerRef.current?.getBoundingClientRect() ?? null;
+    };
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
+      if (!rect) return;
       const currentX = e.clientX - rect.left;
       const currentY = e.clientY - rect.top;
       const inside =
@@ -135,8 +143,35 @@ export function CursorTrail({
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    // The listener is only attached while the trail's own section is near the screen.
+    // It used to run for the whole page, so moving the mouse over the header paid for
+    // a trail four screens further down.
+    let listening = false;
+    const listen = (on: boolean) => {
+      if (on === listening) return;
+      listening = on;
+      if (on) {
+        measure();
+        window.addEventListener("mousemove", handleMouseMove);
+      } else {
+        window.removeEventListener("mousemove", handleMouseMove);
+      }
+    };
+
+    const host = containerRef.current;
+    const stopObserving = host
+      ? observeVisibility(host, listen, { rootMargin: "100px 0px" })
+      : undefined;
+
+    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure);
+
+    return () => {
+      stopObserving?.();
+      listen(false);
+      window.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+    };
   }, [distance, duration, imageSize]);
 
   return (

@@ -7,11 +7,13 @@ import ProjectsCarousel from "./ProjectsCarousel";
 import ProjectsIntro from "./ProjectsIntro";
 import SiteFooter from "./SiteFooter";
 import SiteHeader from "./SiteHeader";
+import StickyMenu from "./StickyMenu";
 import styles from "./home.module.css";
 
 export default function HomePage() {
   return (
     <main className={styles.page}>
+      <StickyMenu />
       <div className={styles.stickerRange} data-sticker-bounds>
         <SiteHeader />
         <AboutIntro />

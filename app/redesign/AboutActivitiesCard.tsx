@@ -18,8 +18,8 @@ const ACCENT = { size: 500, left: (CARD.w - 500) / 2, top: 220 } as const;
 const ASSET_V = "3";
 /** App icon frame (172:237) — 90×90; art overflows and clips */
 const APP_ICON = { w: 90, h: 90 } as const;
-/** Nested art — 117.61×105.34 at (−12.27, −7.16) */
-const APP_ICON_ART = { left: -12.27, top: -7.16, w: 117.61, h: 105.34 } as const;
+/** Nested art — fills the icon's box, so the whole icon shows instead of being cropped at the edges */
+const APP_ICON_ART = { left: 0, top: 0, w: 90, h: 90 } as const;
 
 const REST_TRANSITION = { type: "spring", duration: 0.28, bounce: 0 } as const;
 const HOVER_SPRING = { type: "spring", duration: 0.4, bounce: 0.28 } as const;
@@ -163,8 +163,11 @@ export default function AboutActivitiesCard({ className }: AboutActivitiesCardPr
         style={{
           left: pct(627, CARD.w),
           top: pct(42, CARD.h),
-          width: pct(APP_ICON.w, CARD.w),
-          height: pct(APP_ICON.h, CARD.h),
+          // Sized in board units, the same as the Photos icon on its card, so the icons match
+          width: `calc(${APP_ICON.w} / 1920 * var(--board-w))`,
+          // Square: the height follows the width, not the card's own height, which would stretch it
+          height: "auto",
+          aspectRatio: "1",
         }}
       >
         <div

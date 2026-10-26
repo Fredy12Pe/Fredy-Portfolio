@@ -2,11 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
-  scroll-behavior: smooth;
-}
-
 body {
   @apply bg-white text-zinc-900 antialiased;
   overflow-x: hidden;
+}
+
+/* Decoration that loops forever holds still once it is off screen. Paused rather than
+   removed, so it carries on from where it was instead of jumping when it returns.
+   Mark the looping element with data-decor; the gate comes from src/lib/visibility.ts. */
+[data-visible="false"] [data-decor],
+[data-decor][data-visible="false"] {
+  animation-play-state: paused;
+}
+
+/* Fade-up on arrival: children with .fade-up rise into place once their parent carries
+   data-revealed (see src/lib/reveal.ts). --fade-i staggers siblings; --fade-delay holds
+   them back, e.g. until a parent has finished fading. */
+.fade-up {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--fade-delay, 0ms) + var(--fade-i, 0) * 110ms);
+}
+
+.fade-up[data-revealed],
+[data-revealed] .fade-up {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-up {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }

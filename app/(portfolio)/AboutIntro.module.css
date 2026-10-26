@@ -6,7 +6,10 @@
   --u: min(100vw / var(--frame-w), 100dvh / var(--frame-h));
 
   position: relative;
-  z-index: 1;
+  /* Pulls the section up over the lower part of the header; the grow in AboutIntro.tsx covers this range */
+  margin-top: -40vh;
+  /* Above the header (z-index 50) so the box can sit over it */
+  z-index: 60;
   height: 100dvh;
   background: #f7f7f7;
   color: #000;
@@ -21,6 +24,42 @@
   opacity: 0;
   pointer-events: none;
   background: #000;
+}
+
+/* "Hey!" metal paint, shown once the section has turned black. The canvas sits in a
+   box sized to the text so the reveal mask and centring stay where they were. */
+.heyMetal {
+  position: relative;
+  display: block;
+  width: calc(260 * var(--u));
+  height: calc(124 * var(--u));
+}
+
+/* Light field over the black background, fading in once the section has turned black */
+.lightfall {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  animation: lightfall-in 0.9s ease-out both;
+}
+
+@keyframes lightfall-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.35;
+  }
+}
+
+@keyframes lightfall-in-phone {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.8;
+  }
 }
 
 .grain {
@@ -184,6 +223,26 @@
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.12em;
+}
+
+/* The closing " here." is left out on tablets and phones, which end on "reach out." with a period
+   and no underline */
+.touchOnly {
+  display: none;
+}
+
+@media (max-width: 1279px) {
+  .reach {
+    text-decoration: none;
+  }
+
+  .desktopOnly {
+    display: none;
+  }
+
+  .touchOnly {
+    display: inline;
+  }
 }
 
 .reach:hover {
@@ -446,7 +505,9 @@
 @media (max-width: 860px) {
   .about {
     height: auto;
-    min-height: 0;
+    /* A full screen: the section is held at the top while the photo turns in */
+    min-height: 100dvh;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     padding: 5.5rem 1.25rem 3rem;
@@ -472,6 +533,18 @@
     order: 2;
     font-size: clamp(40px, 12vw, 56px);
     transform: none;
+  }
+
+  /* The metal heading's box in the heading's own size (260 × 124 against 90px type on the board),
+     since the board unit leaves it a fraction of the plain text's size on a phone */
+  .heyMetal {
+    width: 2.89em;
+    height: 1.38em;
+  }
+
+  /* The streaks are thin on a small screen and all but vanish at the desktop's strength */
+  .lightfall {
+    animation-name: lightfall-in-phone;
   }
 
   .cardRig {
@@ -519,5 +592,23 @@
   .lead,
   .invite {
     font-size: 16px;
+  }
+}
+
+/* Tablets: the board is scaled by the width its content uses (about 1230 of its 1920 units) rather
+   than the whole board, so the text and photo read at a tablet size. The unused edges are clipped. */
+@media (min-width: 861px) and (max-width: 1279px) {
+  .about {
+    --u: min(100vw / 1230, 100dvh / 1080);
+    overflow-x: clip;
+  }
+
+  .bio {
+    font-size: max(19px, calc(22 * var(--u)));
+  }
+
+  .lead,
+  .invite {
+    font-size: max(16px, calc(18 * var(--u)));
   }
 }

@@ -2,13 +2,14 @@
   position: absolute;
   inset: 0;
   z-index: 80;
-  pointer-events: auto;
+  /* The intro is purely visual: clicks pass through so the header's controls work during it */
+  pointer-events: none;
 }
 
 .scrim {
   position: absolute;
   inset: 0;
-  background: #fff;
+  background: #000;
 }
 
 .mark {
@@ -19,7 +20,7 @@
   height: auto;
   aspect-ratio: 68.98 / 39.8003;
   overflow: visible;
-  color: #111;
+  color: #fff;
   transform: translate(-50%, -50%);
 }
 

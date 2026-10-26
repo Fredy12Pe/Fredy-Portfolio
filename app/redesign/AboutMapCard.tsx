@@ -211,6 +211,7 @@ export default function AboutMapCard({ className }: AboutMapCardProps) {
               <circle
                 key={`radar-${i}`}
                 className={styles.aboutMapRadarRing}
+                data-decor
                 cx={DEST.x}
                 cy={DEST.y}
                 r={r}
@@ -218,8 +219,12 @@ export default function AboutMapCard({ className }: AboutMapCardProps) {
               />
             ))}
 
+          {/* data-decor on both: the route redraws its dash offset and the rings breathe,
+              and neither is something the browser can hand to the compositor, so each
+              frame re-rasterises the map. They hold still while the board is away. */}
           <path
             ref={routeRef}
+            data-decor
             className={`${styles.aboutMapRouteStroke}${animateRoute ? ` ${styles.aboutMapRoute}` : ""}`}
             d={ROUTE_D}
             fill="none"

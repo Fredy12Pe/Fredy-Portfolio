@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Inter } from "next/font/google";
+import { roboto } from "@/lib/fonts";
 import {
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -13,14 +14,12 @@ import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { InteractiveTiltCard } from "@/components/ui/tilt-card";
+import Lightfall from "@/components/ui/lightfall";
+import MetallicPaint from "@/components/ui/metallic-paint";
 import { markPortfolioLayout } from "./reload-scroll";
+import { isScrolling, markScrolling } from "./scroll-flag";
+import { observeVisibility } from "@/lib/visibility";
 import styles from "./AboutIntro.module.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "600", "900"],
-  display: "swap",
-});
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -59,6 +58,36 @@ function scrollToContact(event: ReactMouseEvent<HTMLAnchorElement>) {
 }
 
 const PORTRAIT = "/images/portfolio-v3/about-portrait.png";
+
+// Wraps every word of an element in its own inline-block span so the words can be
+// animated one at a time. Runs once per element; spaces stay as plain text.
+function splitWords(el: HTMLElement) {
+  if (el.dataset.split) return;
+  el.dataset.split = "true";
+  const walk = (node: Node) => {
+    Array.from(node.childNodes).forEach((child) => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const fragment = document.createDocumentFragment();
+        (child.textContent ?? "").split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) {
+            fragment.append(part);
+            return;
+          }
+          const word = document.createElement("span");
+          word.dataset.word = "";
+          word.style.display = "inline-block";
+          word.textContent = part;
+          fragment.append(word);
+        });
+        child.replaceWith(fragment);
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        walk(child);
+      }
+    });
+  };
+  walk(el);
+}
 
 // The photo is cropped inside a 436×500 card, but the bitmap itself is drawn
 // at ~2.42× the card (~1053px on the 1920 frame, larger on big screens).
@@ -213,6 +242,17 @@ export default function AboutIntro() {
   const liftRef = useRef<HTMLDivElement>(null);
   const spinRef = useRef<HTMLDivElement>(null);
   const [tiltReady, setTiltReady] = useState(false);
+  const [lightOn, setLightOn] = useState(false);
+  // lightOn only ever turns on: it is set from the pin's timeline, which stops
+  // reporting once the scroll has passed. So the two shaders are told whether the
+  // section is near from here instead, which keeps answering for as long as the page is open.
+  const [aboutNear, setAboutNear] = useState(false);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    return observeVisibility(root, setAboutNear, { rootMargin: "200px 0px" });
+  }, []);
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -221,6 +261,7 @@ export default function AboutIntro() {
     if (!root || !lift || !spin) return;
 
     const overlays = root.querySelectorAll<HTMLElement>("[data-bw]");
+    root.querySelectorAll<HTMLElement>("[data-focus]").forEach(splitWords);
     let mm: ReturnType<typeof gsap.matchMedia> | null = null;
     let timer = 0;
 
@@ -231,6 +272,103 @@ export default function AboutIntro() {
         gsap.set(lift, { x: 0, y: 0, z: 0 });
         gsap.set(spin, { rotationX: 0, rotationY: 0, rotationZ: 0 });
         gsap.set(overlays, { autoAlpha: 0 });
+      });
+
+      // The header holds still while the section appears over it: the box pops
+      // into view in place (the top margin on .about puts it over the lower part
+      // of the header), then expands to full size. The header is released when
+      // the section reaches the top and the pin begins.
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const stage = root.querySelector<HTMLElement>("[data-stage]");
+        const range = () => `+=${Math.round(window.innerHeight * 0.6)}`;
+        // Until the box has fully opened, the section and its pin wrapper let clicks through,
+        // so the header's controls underneath (such as the music player) stay usable.
+        // This runs on every frame of the scrub but the answer only changes once, so the
+        // last one is kept and an unchanged frame writes nothing: a style write here
+        // invalidates a full-screen subtree.
+        let clickThrough: boolean | null = null;
+        const setClickThrough = (progress: number) => {
+          const open = progress >= 1;
+          if (open === clickThrough) return;
+          clickThrough = open;
+          root.style.pointerEvents = open ? "" : "none";
+          const wrapper = root.parentElement;
+          if (wrapper?.classList.contains("pin-spacer")) {
+            wrapper.style.pointerEvents = open ? "" : "none";
+          }
+        };
+        const header = root.parentElement?.querySelector("header") ?? null;
+        if (header) {
+          ScrollTrigger.create({
+            trigger: header,
+            start: "top top",
+            end: range,
+            pin: true,
+            pinSpacing: false,
+          });
+        }
+        const grow = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: {
+            // The sticker range wraps the header and is never pinned, so it gives a
+            // steady start point for the scrub while the header is held in place.
+            trigger: root.parentElement ?? root,
+            start: "top top",
+            end: range,
+            scrub: true,
+            // Until the box has fully opened, the section and its pin wrapper let clicks through,
+            // so the header's controls underneath (such as the music player) stay usable
+            onRefresh: (self) => setClickThrough(self.progress),
+            onUpdate: (self) => {
+              // This scrub keeps animating after the wheel stops, so it keeps the
+              // page marked as moving — otherwise the decoration would start up
+              // again while the most expensive part of the sequence is still running.
+              markScrolling();
+              setClickThrough(self.progress);
+            },
+          },
+        });
+        // Appear: the box comes into view over the header in its resting spot.
+        grow.fromTo(
+          root,
+          { clipPath: "inset(100% 20% 0% 20% round 32px)" },
+          { clipPath: "inset(12% 20% 6% 20% round 32px)", duration: 0.2 },
+          0,
+        );
+        // Expand: the box grows to the full section, with the copy scaling up too.
+        grow.fromTo(
+          root,
+          { clipPath: "inset(12% 20% 6% 20% round 32px)" },
+          {
+            clipPath: "inset(0% 0% 0% 0% round 0px)",
+            duration: 0.8,
+            immediateRender: false,
+          },
+          0.2,
+        );
+        if (stage) {
+          grow.fromTo(stage, { scale: 0.6 }, { scale: 1, duration: 1 }, 0);
+        }
+        // The white box comes in first. The photo fades in once the box has
+        // appeared and is part-way open, and fades back out when scrolling up.
+        const card = root.querySelector<HTMLElement>("[data-card]");
+        // The photo starts lower in the box, where the open box has room for it,
+        // and settles into its place as the box finishes expanding.
+        if (card) {
+          grow.fromTo(
+            card,
+            { autoAlpha: 0 },
+            { autoAlpha: 1, duration: 0.25 },
+            0.35,
+          );
+          grow.fromTo(
+            card,
+            { y: 260 },
+            { y: 0, duration: 0.65 },
+            0.35,
+          );
+        }
+
       });
 
       const playSpin = (pin: boolean) => {
@@ -267,6 +405,8 @@ export default function AboutIntro() {
             pin,
             scrub: pin ? 1.4 : 0.25,
             anticipatePin: pin ? 1 : 0,
+            // The long scrub outlives the gesture, so it keeps the page marked as moving
+            onUpdate: markScrolling,
           },
         });
 
@@ -293,14 +433,78 @@ export default function AboutIntro() {
           0.62,
         );
 
-        // Image only at rest. Copy fades in as soon as the pin starts moving.
+        // Image only at rest. "Hey!" rises out of a mask, then the body copy comes
+        // in word by word, each word going from soft and blurred to sharp.
         const copy = root.querySelectorAll<HTMLElement>("[data-copy]");
-        tl.fromTo(
-          copy,
-          { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.4, ease: "sine.out" },
-          0,
-        );
+        const hey = root.querySelector<HTMLElement>("[data-hey]");
+        const words = root.querySelectorAll<HTMLElement>("[data-word]");
+        if (hey) {
+          tl.fromTo(
+            hey,
+            // The mask is padded past the text box so descenders (the "y") aren't cut off.
+            { autoAlpha: 0, yPercent: 40, clipPath: "inset(-30% -20% 100% -20%)" },
+            {
+              autoAlpha: 1,
+              yPercent: 0,
+              clipPath: "inset(-30% -20% -30% -20%)",
+              duration: 0.5,
+              ease: "power3.out",
+            },
+            0,
+          );
+        }
+        // Everything except "Hey!" waits until the photo has landed (the lift and
+        // spin above both finish at 1), then fades in. The bio and right-hand copy
+        // are hidden by CSS until GSAP reveals them, so their containers fade too.
+        const blocks = root.querySelectorAll<HTMLElement>("[data-copy]:not([data-hey])");
+        if (blocks.length) {
+          tl.fromTo(
+            blocks,
+            { autoAlpha: 0 },
+            { autoAlpha: 1, duration: 0.3, ease: "sine.out" },
+            1,
+          );
+        }
+        if (words.length) {
+          // Fade and lift travel together: both are cheap to animate.
+          tl.fromTo(
+            words,
+            { autoAlpha: 0, y: 6 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.45,
+              ease: "sine.out",
+              stagger: 0.01,
+            },
+            1,
+          );
+
+          // The blur is kept apart from them. Every word that carries one is a surface
+          // the browser has to blur again each time the radius moves, and there are
+          // about fifty of them going at once. Rounding to whole pixels and skipping
+          // repeats cuts most of that work; the focus pull looks the same.
+          words.forEach((word, index) => {
+            word.style.filter = "blur(8px)";
+            const focus = { blur: 8 };
+            let written = 8;
+            tl.to(
+              focus,
+              {
+                blur: 0,
+                duration: 0.45,
+                ease: "sine.out",
+                onUpdate: () => {
+                  const next = Math.round(focus.blur);
+                  if (next === written) return;
+                  written = next;
+                  word.style.filter = next > 0 ? `blur(${next}px)` : "";
+                },
+              },
+              1 + index * 0.01,
+            );
+          });
+        }
 
         // The card holds, then the panel itself becomes the same solid black
         // as the projects section — finished before that section scrolls in.
@@ -316,12 +520,10 @@ export default function AboutIntro() {
           at: number,
           duration: number,
         ) => {
-          timeline.fromTo(
-            root,
-            { backgroundColor: "#f7f7f7" },
-            { backgroundColor: "#000000", duration, ease: "sine.inOut" },
-            at,
-          );
+          // The wash below does this already: it covers the same box over the same
+          // stretch and ends up solid black. Tinting the section underneath it as well
+          // repainted the whole panel on every frame to produce a colour nothing could
+          // see, while the wash only changes its opacity, which costs nothing.
           if (wash) {
             timeline.fromTo(
               wash,
@@ -346,126 +548,31 @@ export default function AboutIntro() {
 
         // The spin finishes at t=1. Tilt stays off until the card is sitting there.
         let settled = false;
+        let lit = false;
         tl.eventCallback("onUpdate", () => {
           const next = tl.time() >= 1;
-          if (next === settled) return;
-          settled = next;
-          setTiltReady(next);
+          if (next !== settled) {
+            settled = next;
+            setTiltReady(next);
+          }
+          // The light field mounts once the background has finished turning black (1.12).
+          const nowLit = tl.time() >= 1.12;
+          if (nowLit !== lit) {
+            lit = nowLit;
+            setLightOn(nowLit);
+          }
         });
 
         ScrollTrigger.refresh();
       };
 
-      mm.add(
-        "(min-width: 861px) and (prefers-reduced-motion: no-preference)",
-        () => {
-          playSpin(true);
-        },
-      );
+      // Every width, phones included: once the box has opened over the header, the section holds
+      // while the photo turns in and the copy appears, as on desktop. A phone-only sequence that
+      // ran without the hold played out while the box was still opening.
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        playSpin(true);
+      });
 
-      mm.add(
-        "(max-width: 860px) and (prefers-reduced-motion: no-preference)",
-        () => {
-          const rig = lift.parentElement ?? root;
-          const copy = root.querySelectorAll<HTMLElement>("[data-copy]");
-          const wash = root.querySelector<HTMLElement>("[data-wash]");
-          const grain = root.querySelector<HTMLElement>("[data-grain]");
-
-          gsap.set(lift, { x: 0, y: -48, z: 0, force3D: true });
-          gsap.set(spin, {
-            rotationY: -179.8,
-            transformOrigin: "50% 50%",
-            transformStyle: "preserve-3d",
-            force3D: true,
-          });
-
-          // One scrub from the moment the photo enters until it sits in the
-          // settled layout. The turn finishes early; the field reaches black
-          // at the end of that same gesture.
-          const tl = gsap.timeline({
-            defaults: { ease: "none" },
-            scrollTrigger: {
-              trigger: rig,
-              start: "top 90%",
-              end: "top 22%",
-              scrub: 0.45,
-            },
-          });
-
-          tl.to(
-            lift,
-            { y: 0, duration: 0.48, ease: "sine.inOut", immediateRender: false },
-            0,
-          );
-          tl.to(
-            spin,
-            {
-              rotationY: 0,
-              duration: 0.48,
-              ease: "sine.inOut",
-              immediateRender: false,
-            },
-            0,
-          );
-
-          // Color comes in as the card opens past the edge-on sliver.
-          tl.fromTo(
-            overlays,
-            { autoAlpha: 1 },
-            { autoAlpha: 0, duration: 0.2, ease: "sine.inOut" },
-            0.28,
-          );
-          tl.fromTo(
-            copy,
-            { autoAlpha: 0 },
-            { autoAlpha: 1, duration: 0.26, ease: "sine.out" },
-            0.24,
-          );
-
-          const washAt = 0.36;
-          const washDur = 0.64;
-          tl.fromTo(
-            root,
-            { backgroundColor: "#f7f7f7" },
-            {
-              backgroundColor: "#000000",
-              duration: washDur,
-              ease: "sine.inOut",
-            },
-            washAt,
-          );
-          if (wash) {
-            tl.fromTo(
-              wash,
-              { autoAlpha: 0 },
-              { autoAlpha: 1, duration: washDur, ease: "sine.inOut" },
-              washAt,
-            );
-          }
-          if (grain) {
-            tl.to(
-              grain,
-              { opacity: 0, duration: washDur, ease: "sine.inOut" },
-              washAt,
-            );
-          }
-          if (copy.length) {
-            tl.to(
-              copy,
-              { color: "#ffffff", duration: washDur, ease: "sine.inOut" },
-              washAt,
-            );
-          }
-
-          let settled = false;
-          tl.eventCallback("onUpdate", () => {
-            const next = tl.time() >= 0.48;
-            if (next === settled) return;
-            settled = next;
-            setTiltReady(next);
-          });
-        },
-      );
       markPortfolioLayout("about");
     };
 
@@ -482,18 +589,65 @@ export default function AboutIntro() {
   return (
     <section
       ref={rootRef}
-      className={`${styles.about} ${inter.className}`}
+      className={`${styles.about} ${roboto.className}`}
       aria-label="About"
       data-node-id="99:1003"
     >
       <div className={styles.wash} data-wash aria-hidden />
       <div className={styles.grain} data-grain aria-hidden />
-      <div className={styles.stage}>
-        <p className={styles.hey} data-copy>
-          Hey!
-        </p>
+      {/* Light field: mounted only once the section has turned black, so it isn't running while the page is light */}
+      {lightOn ? (
+        <div className={styles.lightfall} aria-hidden>
+          <Lightfall
+            // One device pixel, not two: this is a soft field drawn at a third of full
+            // strength over black, and the shader is costly per pixel, so rendering it
+            // at screen density was four times the work for no visible gain.
+            dpr={1}
+            // Stops entirely once the section is away, and holds still while the page
+            // is moving. Without this it runs from the moment it appears until reload.
+            paused={!aboutNear}
+            shouldPause={isScrolling}
+            colors={["#ffffff"]}
+            backgroundColor="#94a3b8"
+            speed={0.3}
+            streakCount={2}
+            streakWidth={0.8}
+            twinkle={0.3}
+            backgroundGlow={0.1}
+            headGlow={0.6}
+            bloom={0.35}
+            mouseInteraction
+            mouseStrength={0.15}
+            lens={0.2}
+            holdToWarp
+            intro
+          />
+        </div>
+      ) : null}
+      <div className={styles.stage} data-stage>
+        <div className={styles.hey} data-copy data-hey>
+          {/* Metal paint once the section has turned black; plain text until then */}
+          {lightOn ? (
+            <div className={styles.heyMetal}>
+              <MetallicPaint
+                // Same treatment as the light field: the sheen only moves while the
+                // heading is in front of someone and the page is still
+                paused={!aboutNear}
+                shouldPause={isScrolling}
+                text="Hey!"
+                fontFamily="Roboto, sans-serif"
+                fontWeight={900}
+                scale={1}
+                density={2}
+                edgeBend={0.9}
+              />
+            </div>
+          ) : (
+            "Hey!"
+          )}
+        </div>
 
-        <div className={styles.cardRig}>
+        <div className={styles.cardRig} data-card>
           <div ref={liftRef} className={styles.card}>
             <div ref={spinRef} className={styles.spin}>
               <InteractiveTiltCard
@@ -526,16 +680,16 @@ export default function AboutIntro() {
           </div>
         </div>
 
-        <p className={styles.bio} data-copy>
+        <p className={styles.bio} data-copy data-focus>
           I’m Fredy, a UI/UX Designer & Front-End vibe Coder based in{" "}
           <span className={styles.keepLine}>Los Angeles</span>.
         </p>
         <div className={styles.copyRight} data-copy>
-          <p className={styles.lead}>
+          <p className={styles.lead} data-focus>
             I am a passionate designer dedicated to building modern, scaleable,
             interactive mobile and web experiences.
           </p>
-          <p className={styles.invite}>
+          <p className={styles.invite} data-focus>
             If you’re interested in collaborating, or have any questions, feel
             free to{" "}
             <Link
@@ -543,8 +697,10 @@ export default function AboutIntro() {
               href="/#contact"
               onClick={scrollToContact}
             >
-              reach out here.
+              reach out
+              <span className={styles.desktopOnly}> here.</span>
             </Link>
+            <span className={styles.touchOnly}>.</span>
           </p>
           <ResumeDownload />
         </div>

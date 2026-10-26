@@ -1,4 +1,10 @@
 import "./globals.css";
+import { orbitron, roboto } from "@/lib/fonts";
+
+// Lets the page draw under the notch and home bar, so the safe-area insets used by the phone menu are real values
+export const viewport = {
+  viewportFit: "cover",
+};
 
 export const metadata = {
   title: "Fredy · Portfolio",
@@ -8,16 +14,20 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${orbitron.variable} ${roboto.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){
+  document.write('<style id="portfolio-boot">html{background:#000}body{visibility:hidden}</style>');
   var PREFIX="portfolio-scroll:";
   var AWAY=48;
   function key(){return PREFIX+location.pathname}
   var stored=NaN;
   try{stored=Number(sessionStorage.getItem(key()))}catch(e){}
+  if(!(stored>AWAY)){
+    try{if(history.state&&Number.isFinite(history.state.portfolioScroll))stored=history.state.portfolioScroll}catch(e){}
+  }
   var away=Number.isFinite(stored)&&stored>AWAY;
   var y=away?stored:0;
   window.__portfolioScrollY=y;
@@ -31,6 +41,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   var sheet=document.createElement("style");
   function write(value){
     try{sessionStorage.setItem(key(),String(Math.round(value)))}catch(e){}
+    // Also kept in the history entry, which survives a reload even when sessionStorage is blocked
+    try{history.replaceState(Object.assign({},history.state,{portfolioScroll:Math.round(value)}),"")}catch(e){}
   }
   var queued=false;
   function queueWrite(){
@@ -42,6 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     });
   }
   if(!away){
+    var boot=document.getElementById("portfolio-boot");
+    if(boot)boot.remove();
     var nav=performance.getEntriesByType("navigation")[0];
     if(nav&&nav.type==="reload"){
       sheet.textContent="html,body{scroll-behavior:auto!important}";
@@ -53,7 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return;
   }
   if("scrollRestoration" in history)history.scrollRestoration="manual";
-  sheet.textContent="html,body{scroll-behavior:auto!important}html{visibility:hidden}";
+  sheet.textContent="html,body{scroll-behavior:auto!important}html{background:#000!important}body{visibility:hidden!important}";
   document.head.appendChild(sheet);
   function place(){
     if(placing||!holding||userMoved)return;
@@ -80,6 +94,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         placing=false;
       }
     }
+    window.dispatchEvent(new Event("portfolio-reveal"));
+    var bootStyle=document.getElementById("portfolio-boot");
+    if(bootStyle)bootStyle.remove();
     sheet.textContent="html,body{scroll-behavior:auto!important}";
     write(fromUser?window.scrollY:y);
     var until=performance.now()+2500;
@@ -102,7 +119,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     },50);
   }
   function onUserScroll(event){
-    if(!holding)return;
+    if(userMoved)return;
     if(event.type==="keydown"){
       var k=event.key;
       if(k!=="ArrowDown"&&k!=="ArrowUp"&&k!=="PageDown"&&k!=="PageUp"&&k!=="Home"&&k!=="End"&&k!==" ")return;
@@ -155,21 +172,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   document.addEventListener("DOMContentLoaded",place);
 })();`,
           }}
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@500;700&family=Poppins:wght@400;500;600;700;800;900&display=swap"
-          as="style"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@500;700&family=Poppins:wght@400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
         />
       </head>
       <body className="bg-white text-zinc-900 antialiased">{children}</body>

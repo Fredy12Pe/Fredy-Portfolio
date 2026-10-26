@@ -3,28 +3,31 @@
 import { motion } from "framer-motion";
 import SunBurst from "../SunBurst";
 import { loopTimes, springA, springB } from "../motion";
-import { Layer, MouthFill, Pos, Tooth, asset, box } from "../primitives";
+import { Layer, MouthFill, Pos, Tooth, asset, box, useCharacterOnly } from "../primitives";
 
 export default function Happy({ reduced }: { reduced?: boolean }) {
+  const characterOnly = useCharacterOnly();
   const bounce = loopTimes(1.6, [0, 0.175, 0.325, 0.475, 0.638, 0.8, 1], [springA, "easeInOut", springA, "easeInOut", springB, "easeOut"]);
 
   return (
     <>
-      <motion.div
-        style={{ position: "absolute", left: -139, top: 134.58, width: 332, height: 203, transformOrigin: "top left" }}
-        initial={false}
-        animate={
-          reduced
-            ? { rotate: -18.36 }
-            : {
-                rotate: [-18.36, -18.66, -16.86, -19.56, -17.46, -18.96, -18.06, -18.36, -18.36],
-                x: [0, 1.8, -9, 7.2, -5.4, 3.6, -1.8, 0, 0],
-              }
-        }
-        transition={loopTimes(1.2, [0, 0.083, 0.183, 0.283, 0.383, 0.483, 0.583, 0.7, 1], ["easeInOut", [0.45, 1.45, 0.8, 1], springA, springA, springA, springA, "easeInOut", "linear"])}
-      >
-        <img alt="" src={asset("hp-cloud")} draggable={false} style={{ width: 332, height: 203, display: "block" }} />
-      </motion.div>
+      {!characterOnly && (
+        <motion.div
+          style={{ position: "absolute", left: -139, top: 134.58, width: 332, height: 203, transformOrigin: "top left" }}
+          initial={false}
+          animate={
+            reduced
+              ? { rotate: -18.36 }
+              : {
+                  rotate: [-18.36, -18.66, -16.86, -19.56, -17.46, -18.96, -18.06, -18.36, -18.36],
+                  x: [0, 1.8, -9, 7.2, -5.4, 3.6, -1.8, 0, 0],
+                }
+          }
+          transition={loopTimes(1.2, [0, 0.083, 0.183, 0.283, 0.383, 0.483, 0.583, 0.7, 1], ["easeInOut", [0.45, 1.45, 0.8, 1], springA, springA, springA, springA, "easeInOut", "linear"])}
+        >
+          <img alt="" src={asset("hp-cloud")} draggable={false} style={{ width: 332, height: 203, display: "block" }} />
+        </motion.div>
+      )}
       <SunBurst
         reduced={reduced}
         color="#fee081"

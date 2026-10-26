@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Roboto } from "next/font/google";
+import { roboto } from "@/lib/fonts";
 import {
   useCallback,
   useEffect,
@@ -17,17 +17,9 @@ import {
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CAROUSEL_PROJECTS, type CarouselProject } from "./carousel-projects";
-import MagneticFilings from "./MagneticFilings";
 import styles from "./ProjectsCarousel.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const robotoBold = Roboto({
-  weight: "700",
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-roboto",
-});
 
 /** Degrees between neighboring cards on the ring. */
 const ANGLE_STEP_DEG = 45;
@@ -145,7 +137,6 @@ export default function ProjectsCarousel({
 }: Props) {
   const router = useRouter();
   const sectionRef = useRef<HTMLElement>(null);
-  const filingsRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const dialRef = useRef<HTMLDivElement>(null);
   const ticksTravelRef = useRef<SVGGElement>(null);
@@ -193,16 +184,41 @@ export default function ProjectsCarousel({
     [],
   );
 
+  // The stage and card sizes only change when the window does, so they are measured
+  // then and kept. readMetrics() measures on demand the first time and after a resize.
+  const metricsRef = useRef<{
+    w: number;
+    h: number;
+    cardW: number;
+    cardH: number;
+  } | null>(null);
+
+  const measureMetrics = useCallback(() => {
+    const stage = stageRef.current;
+    if (!stage) return null;
+    const { width: w, height: h } = stage.getBoundingClientRect();
+    const sample = cardRefs.current.find((el) => el);
+    const cardW = sample?.offsetWidth ?? w * 0.28;
+    const cardH = sample?.offsetHeight ?? cardW * (440 / 360);
+    metricsRef.current = { w, h, cardW, cardH };
+    return metricsRef.current;
+  }, []);
+
+  const readMetrics = useCallback(
+    () => metricsRef.current ?? measureMetrics() ?? { w: 0, h: 0, cardW: 0, cardH: 0 },
+    [measureMetrics],
+  );
+
   const applyLayout = useCallback(
     (raw: number) => {
       const stage = stageRef.current;
       if (!stage) return;
-      const { width: w, height: h } = stage.getBoundingClientRect();
+      // Measurements come from the last resize, not from here. This runs on every frame
+      // of the opening sweep and on every pointer move of a drag, and asking the browser
+      // for a size mid-frame makes it stop and redo the page's layout to answer.
+      const { w, h, cardW, cardH } = readMetrics();
       const idx = wrapIndex(raw, count);
       const nearest = Math.round(idx) % count;
-      const sample = cardRefs.current.find((el) => el);
-      const cardW = sample?.offsetWidth ?? w * 0.28;
-      const cardH = sample?.offsetHeight ?? cardW * (440 / 360);
       // Match .dial bottom: -2% (−1% on small screens) — the dial's bottom
       // edge sits that far below the stage. Cards sit just above the arc.
       const dialBottomFrac = w <= 900 ? 0.01 : 0.02;
@@ -237,10 +253,23 @@ export default function ProjectsCarousel({
           });
         }
 
-        el.dataset.active =
-          i === nearest && Math.abs(offset) < 0.4 ? "true" : "false";
-        el.style.setProperty("--shade", String(clamp(Math.abs(offset), 0, 1)));
-        el.setAttribute("aria-hidden", layout.opacity < 0.2 ? "true" : "false");
+        // These three only change as a card passes the front, roughly nine times across
+        // the whole sweep rather than on each of its hundreds of frames. Writing them
+        // regardless was the expensive part: --shade is a custom property, so setting it
+        // makes the browser recheck the styles of everything inside the card.
+        const isActive = i === nearest && Math.abs(offset) < 0.4 ? "true" : "false";
+        if (el.dataset.active !== isActive) el.dataset.active = isActive;
+
+        const shade = clamp(Math.abs(offset), 0, 1).toFixed(2);
+        if (el.dataset.shade !== shade) {
+          el.dataset.shade = shade;
+          el.style.setProperty("--shade", shade);
+        }
+
+        const hidden = layout.opacity < 0.2 ? "true" : "false";
+        if (el.getAttribute("aria-hidden") !== hidden) {
+          el.setAttribute("aria-hidden", hidden);
+        }
       });
 
       setActive((prev) => (prev === nearest ? prev : nearest));
@@ -248,10 +277,17 @@ export default function ProjectsCarousel({
     [count, projects],
   );
 
+  // The ticks live inside an SVG mask, which the browser has to redraw from scratch
+  // every time this moves. The ring eases into place, so it spends most of its travel
+  // barely moving — rounding to a quarter of a degree drops most of those redraws and
+  // is far finer than anything the eye can pick out on a 120-line ring.
+  const lastTickDeg = useRef<string | null>(null);
   const applyTicks = useCallback((raw: number) => {
     const ticks = ticksTravelRef.current;
     if (!ticks) return;
-    const deg = -raw * DIAL_DEGREES_PER_PROJECT;
+    const deg = (Math.round(-raw * DIAL_DEGREES_PER_PROJECT * 4) / 4).toFixed(2);
+    if (deg === lastTickDeg.current) return;
+    lastTickDeg.current = deg;
     ticks.setAttribute("transform", `rotate(${deg} ${TICK_CX} ${TICK_CY})`);
   }, []);
 
@@ -357,7 +393,10 @@ export default function ProjectsCarousel({
         tl.to(
           fadeRef.current,
           {
-            opacity: 1,
+            // autoAlpha, not opacity: the fade rests at visibility:hidden so it isn't a
+            // screen-sized layer the rest of the time, and this brings it back for the
+            // transition. Plain opacity would leave it hidden.
+            autoAlpha: 1,
             duration: SPIN_DURATION * (1 - SPIN_FADE_AT),
             ease: "power1.inOut",
           },
@@ -475,10 +514,9 @@ export default function ProjectsCarousel({
   // Cards keep their own arc transforms; this only moves their parent stage.
   useLayoutEffect(() => {
     const section = sectionRef.current;
-    const filings = filingsRef.current;
     const stage = stageRef.current;
     const dial = dialRef.current;
-    if (!section || !filings || !stage || !dial) return;
+    if (!section || !stage || !dial) return;
 
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -486,12 +524,11 @@ export default function ProjectsCarousel({
 
     const ctx = gsap.context(() => {
       if (reduced) {
-        gsap.set([filings, stage], { autoAlpha: 1, y: 0 });
+        gsap.set(stage, { autoAlpha: 1, y: 0 });
         gsap.set(dial, { autoAlpha: 1, x: 0, xPercent: 0, y: 0 });
         return;
       }
 
-      gsap.set(filings, { y: 40, autoAlpha: 0 });
       gsap.set(stage, { y: 72, autoAlpha: 0 });
       gsap.set(dial, { y: 56, autoAlpha: 0, x: 0, xPercent: 0 });
 
@@ -508,9 +545,11 @@ export default function ProjectsCarousel({
           },
         });
 
-        tl.to(filings, { y: 0, autoAlpha: 1 }, 0)
-          .to(stage, { y: 0, autoAlpha: 1 }, 0)
-          .to(dial, { y: 0, autoAlpha: 1, x: 0, xPercent: 0 }, 0);
+        tl.to(stage, { y: 0, autoAlpha: 1 }, 0).to(
+          dial,
+          { y: 0, autoAlpha: 1, x: 0, xPercent: 0 },
+          0,
+        );
       };
 
       // Desktop cards sit high in a full-viewport section, so the fade
@@ -579,7 +618,7 @@ export default function ProjectsCarousel({
       tweenRef.current?.kill();
       tweenRef.current = gsap.to(progress.current, {
         value: 0,
-        duration: 3.2,
+        duration: 5.5,
         ease: "power1.inOut",
         overwrite: true,
         onUpdate: () => applyLayout(progress.current.value),
@@ -602,18 +641,26 @@ export default function ProjectsCarousel({
       };
       // After the entrance fade. Desktop cards sit high; on a phone they
       // sit on the dial at the bottom of a shorter section.
-      introMedia.add("(min-width: 861px)", () => arm("top 6%"));
+      introMedia.add("(min-width: 861px)", () => arm("top 60%"));
       introMedia.add("(max-width: 860px)", () => arm("bottom 80%"));
     }
 
+    // The one place the stage is measured: a resize is the only thing that changes it,
+    // so the layout below can then run without touching the page's geometry at all.
     const onResize = () => {
+      measureMetrics();
       applyLayout(progress.current.value);
       applyTicks(dialProgress.current.value);
     };
+    const remeasure = () => {
+      measureMetrics();
+    };
     window.addEventListener("resize", onResize);
+    ScrollTrigger.addEventListener("refresh", remeasure);
 
     return () => {
       window.removeEventListener("resize", onResize);
+      ScrollTrigger.removeEventListener("refresh", remeasure);
       introMedia.revert();
       tweenRef.current?.kill();
       dialTweenRef.current?.kill();
@@ -867,12 +914,9 @@ export default function ProjectsCarousel({
   return (
     <section
       ref={sectionRef}
-      className={`${styles.section} ${robotoBold.variable}`}
+      className={`${styles.section} ${roboto.variable}`}
       aria-label="Featured projects carousel"
     >
-      <div ref={filingsRef} className={styles.filingsHost}>
-        <MagneticFilings />
-      </div>
       <div ref={fadeRef} className={styles.screenFade} aria-hidden />
 
       <div ref={stageRef} className={styles.stage}>

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { loopTimes } from "./motion";
+import { useCharacterOnly } from "./primitives";
 
 type SunBurstProps = {
   reduced?: boolean;
@@ -16,7 +17,7 @@ type SunBurstProps = {
 
 const RAY_ANGLES = [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5];
 
-export default function SunBurst({
+function SunBurstArt({
   reduced,
   color,
   left,
@@ -97,4 +98,11 @@ export default function SunBurst({
       {sun}
     </motion.div>
   );
+}
+
+/** Sun rays are sky art, so they only show in the full scene. */
+export default function SunBurst(props: SunBurstProps) {
+  const characterOnly = useCharacterOnly();
+  if (characterOnly) return null;
+  return <SunBurstArt {...props} />;
 }

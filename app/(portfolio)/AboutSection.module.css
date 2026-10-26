@@ -1,6 +1,11 @@
 .section {
+  /* Rounded top corners, so the white section meets the black projects section like a sheet
+     lifting over it. It sits flush, not overlapping, so the dial's controls stay visible. */
+  border-radius: clamp(3rem, 6vw, 5rem) clamp(3rem, 6vw, 5rem) 0 0;
   color: var(--intro-text, #000);
-  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  /* Room between the projects section above and the cards, and between the cards and the contact below */
+  padding-top: clamp(4rem, 9vh, 6rem);
+  padding-bottom: clamp(4rem, 9vh, 6rem);
   scroll-margin-top: 7rem;
 }
 
@@ -16,4 +21,268 @@
    sits after the projects carousel, so it should start flush. */
 .content {
   margin-top: 0;
+}
+
+/* Horizontal About: the cards sit side by side in a row that is pinned and slid sideways
+   while the page scrolls. The cards' artboard variables are set here, since they no longer
+   inherit them from the old board. */
+.hScroll {
+  position: relative;
+}
+
+.hViewport {
+  --art-w: 1920;
+  --art-h: 2099;
+  /* The width of the original board, so every card keeps its designed proportions. Limited
+     by the window's width and by its height (the tallest card needs the most height). */
+  --board-w: min(calc(100vw - 80px), 1620px, calc((100vh - 140px) * 1.98));
+  /* As tall as the cards need, so no empty half-screen is left beneath them */
+  height: auto;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* A full-screen frame sticks to the top of the page while the section scrolls past, and the cards
+   sit centred within it. With reduced motion the row is swiped instead, so nothing sticks. */
+.hSticky {
+  display: flex;
+  align-items: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hSticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+}
+
+/* Phones and small tablets: the frame is only as tall as the row, with room around it for the cards'
+   shadows. AboutHorizontal centres it on the screen while it is pinned, rather than filling the screen
+   with space around the cards. */
+@media (max-width: 860px) and (prefers-reduced-motion: no-preference) {
+  .hSticky {
+    height: auto;
+    padding-block: 1.5rem;
+    box-sizing: border-box;
+  }
+}
+
+.hTrack {
+  display: flex;
+  align-items: center;
+  gap: 4vw;
+  /* No vertical padding: the cards are centred by align-items, so the space above and below matches */
+  padding: 0 8vw;
+  width: max-content;
+  will-change: transform;
+}
+
+.hPanel {
+  position: relative;
+  flex: 0 0 auto;
+  /* Each card's design size (--pw × --ph, in artboard units) scaled to the board's width */
+  width: calc(var(--pw) / 1920 * var(--board-w));
+  height: calc(var(--ph) / 1920 * var(--board-w));
+}
+
+/* Each card keeps its own design but fills its panel instead of placing itself on the
+   shared artboard */
+.hPanel > * {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  /* The stacked About page gives its cards a minimum height on small screens; here the panel sets it */
+  min-height: 0 !important;
+}
+
+/* Phones and small tablets: room above and below keeps the cards' shadows inside the clip, and the
+   negative margin takes that room back out of the layout. */
+@media (max-width: 860px) {
+  .hViewport {
+    height: auto;
+    padding-block: 1.5rem;
+    margin-block: -1.5rem;
+  }
+
+  /* The full width of the screen, so the cards slide out to its edges rather than stopping a margin short */
+  .hSticky {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
+}
+
+/* Reduced motion on phones and small tablets: nothing is pinned. The row is a native swipe that snaps one
+   card at a time. */
+@media (max-width: 860px) and (prefers-reduced-motion: reduce) {
+  .hViewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    cursor: grab;
+  }
+
+  .hPanel {
+    scroll-snap-align: center;
+  }
+}
+
+/* Phones: the Activities card lays its title, text and icons out in rows, instead of the Figma layout
+   with the icons scattered over the card. Only the home page's row is changed; the About page keeps its own. */
+@media (max-width: 860px) {
+  /* The bio and Activities cards hold text at fixed sizes, which scale differently from the cards' own
+     size, so on a narrower phone they ran past their height. Their height follows their content instead,
+     the way the About page's stacked cards do. */
+  .hTrack > :nth-child(1),
+  .hTrack > :nth-child(5) {
+    height: auto !important;
+  }
+
+  /* The bio card is as wide as the widest cards (900 units, not its own 759), so its text has room */
+  .hTrack > :nth-child(1) {
+    width: calc(900 / 1920 * var(--board-w));
+  }
+
+  .hTrack > :nth-child(1) > *,
+  .hTrack > :nth-child(5) > * {
+    container-type: normal !important;
+    aspect-ratio: auto;
+    height: auto !important;
+  }
+
+  .hTrack > :nth-child(1) [class*="aboutBioScene"] {
+    position: relative;
+    inset: auto;
+    height: auto;
+    padding: 1.4rem 1.35rem 1.5rem;
+  }
+
+  .hTrack > :nth-child(1) [class*="aboutBioHeading"] {
+    font-size: clamp(2rem, 9vw, 2.5rem);
+  }
+
+  .hTrack > :nth-child(1) [class*="aboutBioCopy"] p {
+    font-size: 16px !important;
+  }
+
+  .hTrack [data-node-id="145:574"] {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    gap: 10px 0;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  .hTrack [data-node-id="145:574"] > [class*="aboutActivitiesCopy"] {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    padding-right: 52px;
+    box-sizing: border-box;
+  }
+
+  .hTrack [data-node-id="145:574"] > [class*="aboutActivitiesIcon"] {
+    position: absolute !important;
+    left: auto !important;
+    right: 16px;
+    top: 16px;
+    width: 40px !important;
+  }
+
+  .hTrack [data-node-id="145:574"] > [class*="aboutActivitiesAccent"] {
+    display: none;
+  }
+
+  .hTrack [data-node-id="145:574"] > [class*="aboutActivitiesItem"] {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 33.33% !important;
+    height: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .hTrack [data-node-id="145:574"] [class*="aboutActivitiesCircle"] {
+    width: 56px !important;
+    height: 56px !important;
+    margin: 0 auto;
+  }
+
+  .hTrack [data-node-id="145:574"] [class*="aboutActivitiesBody"] {
+    font-size: 13px !important;
+    line-height: 1.35;
+  }
+
+  .hTrack [data-node-id="145:574"] [class*="aboutActivitiesLabel"] {
+    margin-top: 4px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+}
+
+/* Small screens: the row slides sideways with the page's scroll, like the wider screens */
+@media (max-width: 860px) {
+  .hTrack {
+    gap: 5vw;
+    padding: 0 6vw;
+    height: auto;
+    padding-block: 1rem;
+  }
+
+  /* Each card in its designed shape, on one scale: the widest (900 units) spans the screen less
+     its margins. The cards scale their contents with their own size. */
+  .hViewport {
+    --board-w: calc((100vw - 48px) * 1920 / 900);
+  }
+
+  .hPanel {
+    width: calc(var(--pw) / 1920 * var(--board-w));
+    height: calc(var(--ph) / 1920 * var(--board-w));
+  }
+
+  /* The bio card's text keeps a readable minimum size, so at this scale it needs about the card's
+     full designed height (970 units on the original board) rather than the row's 720 */
+  .hPanel:first-child {
+    height: calc(1000 / 1920 * var(--board-w));
+  }
+}
+
+/* Tablets: the row already slides sideways, so the cards are sized as large as the screen allows,
+   with the widest (900 units) still fitting across and the tallest (720 units) fitting in the
+   height. This roughly doubles them on a portrait tablet and fills the white space around them. */
+@media (min-width: 861px) and (max-width: 1279px) {
+  .hViewport {
+    --board-w: min(calc((100vw - 96px) * 2.13), calc((100vh - 200px) * 2.4));
+  }
+}
+
+/* Small tablets (768–860px) keep the phone's row, with the cards on the tablet's larger scale */
+@media (min-width: 768px) and (max-width: 860px) {
+  .hViewport {
+    --board-w: min(calc((100vw - 96px) * 2.13), calc((100vh - 200px) * 2.4));
+  }
+
+  /* The shared page shell makes the section at least a screen tall; with these shorter cards that
+     left a blank band before Contact, so the section is as tall as its cards (doubled for priority) */
+  .section.section {
+    min-height: 0;
+  }
+}
+
+/* Phones and tablets: no padding under the pinned cards; the frame already leaves room below them, and
+   Contact mirrors that room under its form (see ContactSection.module.css) */
+@media (max-width: 1279px) {
+  .section {
+    padding-bottom: 0;
+  }
 }

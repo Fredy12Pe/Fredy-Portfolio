@@ -1,0 +1,185 @@
+/* A FigJam-style board on a dotted canvas. Every position is in board units (--u), so the board
+   scales with the window. */
+.board {
+  /* Fixed size: the canvas (GroveCanvas) scales and moves it */
+  --u: 1px;
+  position: relative;
+  width: calc(1920 * var(--u));
+  height: calc(5000 * var(--u));
+  margin: 0 auto;
+  background-color: #fafaf8;
+  background-image: radial-gradient(#cfcfca 1.5px, transparent 1.5px);
+  background-size: calc(28 * var(--u)) calc(28 * var(--u));
+  border-radius: calc(40 * var(--u));
+}
+
+.arrows {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.arrow {
+  fill: none;
+  stroke: #11B30B;
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+/* A section: a pale green frame with a dashed edge, tilted a little, with a label pill on top */
+.frame {
+  position: absolute;
+  box-sizing: border-box;
+  padding: calc(72 * var(--u)) calc(26 * var(--u)) calc(26 * var(--u));
+  border: calc(3 * var(--u)) dashed rgba(17, 179, 11, 0.45);
+  border-radius: calc(36 * var(--u));
+  background: #f0fbdb;
+  overflow: hidden;
+  transform: rotate(var(--frame-tilt, 0deg));
+}
+
+.label {
+  position: absolute;
+  top: calc(-24 * var(--u));
+  left: calc(34 * var(--u));
+  padding: calc(8 * var(--u)) calc(24 * var(--u));
+  border-radius: 999px;
+  background: #11B30B;
+  color: #fff;
+  font-size: calc(28 * var(--u));
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(16 * var(--u));
+}
+
+/* Stickies: pale tones with a slight tilt and a soft shadow */
+.note {
+  position: relative;
+  box-sizing: border-box;
+  padding: calc(18 * var(--u)) calc(22 * var(--u));
+  border-radius: calc(8 * var(--u));
+  font-size: calc(22 * var(--u));
+  line-height: 1.35;
+  color: #27272a;
+  transform: rotate(var(--tilt, 0deg));
+  box-shadow: 0 calc(6 * var(--u)) calc(16 * var(--u)) rgba(0, 0, 0, 0.08);
+}
+
+.note strong {
+  display: block;
+  margin-bottom: calc(4 * var(--u));
+  font-size: calc(24 * var(--u));
+  color: #18181b;
+}
+
+/* Small notes, packed in a grid: short labels rather than sentences */
+.tiny {
+  padding: calc(10 * var(--u)) calc(14 * var(--u));
+  font-size: calc(19 * var(--u));
+  line-height: 1.25;
+}
+
+.tinyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(12 * var(--u));
+}
+
+.cream { background: #fffbe3; }
+.mint { background: #e5f7b3; }
+.white { background: #ffffff; }
+.grey { background: #e4e4e7; }
+.accent { background: #11B30B; color: #ffffff; }
+.accent strong { color: #ffffff; }
+
+.num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: calc(6 * var(--u));
+  width: calc(34 * var(--u));
+  height: calc(34 * var(--u));
+  border-radius: 999px;
+  background: #11B30B;
+  color: #fff;
+  font-size: calc(18 * var(--u));
+  font-weight: 700;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(10 * var(--u));
+}
+
+.chip {
+  padding: calc(6 * var(--u)) calc(16 * var(--u));
+  border-radius: 999px;
+  background: #ffffff;
+  color: #11B30B;
+  font-size: calc(20 * var(--u));
+  font-weight: 600;
+  box-shadow: 0 calc(3 * var(--u)) calc(8 * var(--u)) rgba(0, 0, 0, 0.06);
+}
+
+/* The hub: a circle at the centre of the loop, with a core and notes orbiting it */
+.hub {
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: calc(3 * var(--u)) dashed rgba(17, 179, 11, 0.5);
+  background: #f0fbdb;
+}
+
+.core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(190 * var(--u));
+  height: calc(190 * var(--u));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(16 * var(--u));
+  border-radius: 50%;
+  background: #11B30B;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 calc(10 * var(--u)) calc(24 * var(--u)) rgba(0, 0, 0, 0.15);
+}
+
+.core strong {
+  font-size: calc(40 * var(--u));
+  font-weight: 800;
+}
+
+.core span {
+  margin-top: calc(6 * var(--u));
+  font-size: calc(19 * var(--u));
+  line-height: 1.25;
+}
+
+.orbit {
+  position: absolute;
+  box-sizing: border-box;
+  width: calc(200 * var(--u));
+  transform: translate(-50%, -50%);
+  padding: calc(12 * var(--u)) calc(14 * var(--u));
+  border-radius: calc(8 * var(--u));
+  background: #fffbe3;
+  color: #27272a;
+  font-size: calc(19 * var(--u));
+  line-height: 1.25;
+  box-shadow: 0 calc(6 * var(--u)) calc(14 * var(--u)) rgba(0, 0, 0, 0.1);
+}

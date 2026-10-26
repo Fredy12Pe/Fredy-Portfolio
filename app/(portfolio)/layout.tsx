@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SmoothScroll from "./SmoothScroll";
 
 export const metadata: Metadata = {
   title: {
@@ -15,6 +16,9 @@ export default function PortfolioLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-black font-poppins antialiased">{children}</div>
+    <div className="min-h-screen bg-black font-roboto antialiased">
+      <SmoothScroll />
+      {children}
+    </div>
   );
 }

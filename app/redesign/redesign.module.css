@@ -193,7 +193,7 @@
   background: transparent;
   box-shadow: none;
   color: var(--intro-text);
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   transition: opacity 320ms ease, visibility 320ms ease;
 }
 
@@ -518,7 +518,7 @@
   z-index: 30;
   width: min(420px, calc(100vw - 2rem));
   color: var(--menu-text);
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -661,7 +661,21 @@
   display: block;
   border-radius: 50%;
   filter: blur(72px);
-  will-change: transform;
+  /* No will-change: it would keep three large blurred surfaces in memory even while
+     nothing moves, and the browser promotes a transform animation on its own anyway. */
+}
+
+/* Out of view the wash is taken out of the picture, not merely paused. A blurred shape
+   that is only standing still is still something for the frosted cards above to blur. */
+.page[data-visible="false"] .pageAtmosphere {
+  visibility: hidden;
+}
+
+/* With the wash gone there is nothing behind the cards but flat page colour, so the
+   frosted blur has nothing left to show and only costs a readback and a blur per card. */
+.page[data-visible="false"] .card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .pageAtmosphereBlob[data-blob="a"] {
@@ -803,7 +817,7 @@ a.card:focus-visible {
   z-index: 2;
   overflow: hidden;
   container-type: size;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
 }
 
 .card.intro {
@@ -2240,7 +2254,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
   background: transparent;
   cursor: pointer;
   color: #000;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
 }
 
 .aboutPhotoNav:disabled {
@@ -2373,7 +2387,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
   width: calc(229 / 900 * 100%);
   transform: translateX(-50%);
   color: #fff6ed;
-  font-family: "Nunito", "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   line-height: normal;
   text-align: center;
   white-space: nowrap;
@@ -2425,7 +2439,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
   z-index: 2;
   margin: 0;
   color: #fff6ed;
-  font-family: "Nunito", "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   /* 30 ÷ 900 */
   font-size: 3.33cqw;
   font-weight: 700;
@@ -2463,7 +2477,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
   border-radius: 999px;
   background: #fff;
   color: #1a1a1a;
-  font-family: "Nunito", "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   font-size: 2.4cqw; /* ~22px at 900 */
   font-weight: 700;
   line-height: 1;
@@ -2509,7 +2523,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
     rgba(255, 255, 255, 0) 100%
   );
   color: var(--intro-text);
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
 }
 
 .page[data-theme="dark"] .aboutMap {
@@ -2718,7 +2732,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
   overflow: hidden;
   container-type: size;
   color: var(--intro-text);
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
 }
 
 .page[data-theme="dark"] .aboutActivities {
@@ -2736,7 +2750,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
 
 .aboutActivitiesTitle {
   margin: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   /* Shared title system (Skills / project cards) */
   font-size: clamp(0.875rem, 1.3vw, 1.375rem);
   font-weight: 700;
@@ -2746,7 +2760,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
 
 .aboutActivitiesBody {
   margin: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   /* Shared tagline system */
   font-size: clamp(0.75rem, 1.05vw, 1.125rem);
   font-weight: 500;
@@ -2830,7 +2844,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
 .aboutActivitiesLabel {
   margin: 0;
   width: 100%;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   font-size: clamp(0.625rem, 0.9vw, 0.9375rem);
   font-weight: 500;
   line-height: 1.25;
@@ -2851,7 +2865,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
   overflow: hidden;
   container-type: size;
   color: var(--intro-text);
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
 }
 
 .aboutSkillsScene {
@@ -2914,7 +2928,7 @@ a.tidehaus[data-card-active="true"] .tidehausTagline {
   padding: 0 1.5%;
   box-sizing: border-box;
   color: var(--intro-text);
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   line-height: 1.2;
   text-align: center;
   will-change: top, opacity;
@@ -3245,7 +3259,7 @@ a.card:focus-visible .contactPageOrb,
 .contactPageLabel {
   position: relative;
   color: #919191;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   font-size: clamp(0.875rem, 1.3vw, 1.375rem);
   font-weight: 700;
   line-height: 1.2;
@@ -3282,7 +3296,7 @@ a.card:focus-visible .contactPageOrb,
   margin: 0;
   padding: 8% 10%;
   color: #fff;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   font-size: clamp(0.875rem, 1.3vw, 1.375rem);
   font-weight: 700;
   line-height: 1.2;
@@ -3628,8 +3642,10 @@ a.card:focus-visible .contactPageOrb,
   /*
    * About Me (mobile): stack needs taller cards so %-based Figma layouts
    * don't crush type, icons, and touch targets at full phone width.
+   * Scoped to the stacked board (the About page): the home page's sliding row keeps each card's
+   * designed layout and scales it with the card (AboutSection.module.css).
    */
-  .aboutBio {
+  .aboutBoard .aboutBio {
     /* Hug the copy. Size containment would collapse an auto height, so drop it here.
        The old 759/1400 ratio left a large empty band under the text. */
     container-type: normal;
@@ -3639,7 +3655,7 @@ a.card:focus-visible .contactPageOrb,
     overflow: hidden;
   }
 
-  .aboutBioScene {
+  .aboutBoard .aboutBioScene {
     position: relative;
     inset: auto;
     height: auto;
@@ -3648,22 +3664,22 @@ a.card:focus-visible .contactPageOrb,
     justify-content: flex-start;
   }
 
-  .aboutBioHeading {
+  .aboutBoard .aboutBioHeading {
     font-size: clamp(2rem, 9vw, 2.875rem);
     flex-shrink: 0;
   }
 
-  .aboutBioCopy {
+  .aboutBoard .aboutBioCopy {
     display: contents;
   }
 
-  .aboutBioCopy p {
+  .aboutBoard .aboutBioCopy p {
     max-width: 100%;
     font-size: clamp(0.9375rem, 3.8vw, 1.125rem);
     line-height: 1.6;
   }
 
-  .card.aboutPhoto {
+  .aboutBoard .card.aboutPhoto {
     /* Near design ratio so camera layers aren’t distorted; a bit of extra
        height + bottom-pinned nav keeps Prev/Next labels visible */
     aspect-ratio: 900 / 800;
@@ -3672,12 +3688,12 @@ a.card:focus-visible .contactPageOrb,
   }
 
   /* Lock camera assembly to design aspect — card height overrides were stretching layers */
-  .aboutPhotoCameraGroup {
+  .aboutBoard .aboutPhotoCameraGroup {
     height: auto !important;
     aspect-ratio: 1001.78 / 780;
   }
 
-  .aboutPhotoNav {
+  .aboutBoard .aboutPhotoNav {
     --photo-nav-inset: 1.25rem;
     --photo-nav-size: 3.5rem;
     --photo-nav-gap: 0.5rem;
@@ -3690,26 +3706,26 @@ a.card:focus-visible .contactPageOrb,
     gap: 0.15rem;
   }
 
-  .aboutPhotoNav[aria-label="Next photo"] {
+  .aboutBoard .aboutPhotoNav[aria-label="Next photo"] {
     left: calc(
       var(--photo-nav-inset) + var(--photo-nav-size) + var(--photo-nav-gap)
     ) !important;
   }
 
-  .aboutPhotoNavBtn {
+  .aboutBoard .aboutPhotoNavBtn {
     height: 2.5rem;
     border-radius: 12px;
   }
 
-  .aboutPhotoNavLabel {
+  .aboutBoard .aboutPhotoNavLabel {
     font-size: clamp(0.6875rem, 2.8vw, 0.8125rem);
   }
 
   /* Corner app icons — same size + top/right inset on every About card */
-  .aboutPhotosIcon,
-  .aboutDuoIcon,
-  .aboutMapIcon,
-  .aboutActivitiesIcon {
+  .aboutBoard .aboutPhotosIcon,
+  .aboutBoard .aboutDuoIcon,
+  .aboutBoard .aboutMapIcon,
+  .aboutBoard .aboutActivitiesIcon {
     top: 1rem !important;
     right: 1rem !important;
     left: auto !important;
@@ -3717,43 +3733,43 @@ a.card:focus-visible .contactPageOrb,
     height: 3.25rem !important;
   }
 
-  .aboutDuo {
+  .aboutBoard .aboutDuo {
     /* Match design 900×586 so fire %-geometry stays correct */
     aspect-ratio: 900 / 586;
     min-height: 320px;
   }
 
-  .aboutDuoFlameOuter img,
-  .aboutDuoFlameInner img,
-  .aboutDuoSpark img {
+  .aboutBoard .aboutDuoFlameOuter img,
+  .aboutBoard .aboutDuoFlameInner img,
+  .aboutBoard .aboutDuoSpark img {
     object-fit: fill;
   }
 
   /* Flags were huge on full-bleed width — keep rail width (hover math) but shrink chips */
-  .aboutDuoFlag {
+  .aboutBoard .aboutDuoFlag {
     width: 2.85rem !important;
     height: 1.5rem !important;
     border-radius: 5px;
   }
 
-  .aboutDuoLangTitle {
+  .aboutBoard .aboutDuoLangTitle {
     font-size: clamp(0.75rem, 3.2vw, 0.9375rem) !important;
   }
 
   /* Keep design streak placement so the flame sits directly above the number */
-  .aboutDuoStreak {
+  .aboutBoard .aboutDuoStreak {
     top: calc(303 / 586 * 100%);
   }
 
-  .aboutDuoCount {
+  .aboutBoard .aboutDuoCount {
     font-size: 13.56cqw; /* match desktop design scale */
   }
 
-  .aboutDuoLabel {
+  .aboutBoard .aboutDuoLabel {
     font-size: 4.67cqw;
   }
 
-  .aboutDuoConnect {
+  .aboutBoard .aboutDuoConnect {
     width: min(56%, 12.5rem);
     height: auto;
     min-height: 2.5rem;
@@ -3762,56 +3778,56 @@ a.card:focus-visible .contactPageOrb,
     font-size: clamp(0.875rem, 3.6vw, 1.0625rem);
   }
 
-  .aboutMap,
-  .aboutSlotMid {
+  .aboutBoard .aboutMap,
+  .aboutBoard .aboutSlotMid {
     aspect-ratio: 759 / 480;
     min-height: 220px;
   }
 
-  .aboutMapCity {
+  .aboutBoard .aboutMapCity {
     font-size: clamp(1.125rem, 4.8vw, 1.5rem);
   }
 
-  .aboutMapCoords {
+  .aboutBoard .aboutMapCoords {
     font-size: clamp(0.8125rem, 3.2vw, 1rem);
   }
 
-  .aboutActivities,
-  .aboutSlotBL {
+  .aboutBoard .aboutActivities,
+  .aboutBoard .aboutSlotBL {
     aspect-ratio: 759 / 760;
     min-height: 340px;
   }
 
   /* Idle green bubble is desktop-only — activity icons show at rest on mobile */
-  .aboutActivitiesAccent {
+  .aboutBoard .aboutActivitiesAccent {
     display: none;
   }
 
-  .aboutActivitiesCopy {
+  .aboutBoard .aboutActivitiesCopy {
     width: min(72%, 18rem) !important;
   }
 
-  .aboutActivitiesCircle {
+  .aboutBoard .aboutActivitiesCircle {
     width: clamp(3.5rem, 16cqw, 4.5rem); /* was 11.86cqw — too small full-bleed */
   }
 
-  .aboutSkills,
-  .aboutSlotBR {
+  .aboutBoard .aboutSkills,
+  .aboutBoard .aboutSlotBR {
     aspect-ratio: 900 / 640;
     min-height: 320px;
   }
 
-  .aboutSkillsTitle {
+  .aboutBoard .aboutSkillsTitle {
     font-size: clamp(1.125rem, 4.8vw, 1.5rem);
   }
 
   /* Leave room for the enlarged side controls */
-  .aboutSkillsWheelFrame {
+  .aboutBoard .aboutSkillsWheelFrame {
     width: calc(100% - 5.25rem) !important;
   }
 
   /* Side pills were ~19×30px at phone width — force real touch targets */
-  .aboutSkillsBtn {
+  .aboutBoard .aboutSkillsBtn {
     left: auto !important;
     right: clamp(0.65rem, 3.5%, 1rem) !important;
     width: 3rem !important;
@@ -3819,27 +3835,27 @@ a.card:focus-visible .contactPageOrb,
   }
 
   /* Pair midpoint = selector pill center (294 ÷ 502); 3.5rem pills, 0.55rem gap */
-  .aboutSkillsBtn[aria-label="Previous skill"] {
+  .aboutBoard .aboutSkillsBtn[aria-label="Previous skill"] {
     top: calc(100% * 294 / 502 - 3.775rem) !important;
   }
 
-  .aboutSkillsBtn[aria-label="Next skill"] {
+  .aboutBoard .aboutSkillsBtn[aria-label="Next skill"] {
     top: calc(100% * 294 / 502 + 0.275rem) !important;
   }
 
-  .aboutSkillsArrow {
+  .aboutBoard .aboutSkillsArrow {
     width: 0.7rem;
   }
 
-  .aboutActivitiesTitle {
+  .aboutBoard .aboutActivitiesTitle {
     font-size: clamp(1.125rem, 4.8vw, 1.5rem);
   }
 
-  .aboutActivitiesBody {
+  .aboutBoard .aboutActivitiesBody {
     font-size: clamp(0.875rem, 3.4vw, 1.0625rem);
   }
 
-  .aboutActivitiesLabel {
+  .aboutBoard .aboutActivitiesLabel {
     font-size: clamp(0.75rem, 3vw, 0.9375rem);
   }
 
@@ -4101,5 +4117,46 @@ a.card:focus-visible .contactPageOrb,
 
   .overlayMenuItem {
     padding: 0 0.35rem;
+  }
+}
+
+/* Phones: the home page's About row scales each card down whole, and its smallest labels fall to
+   9–10px. They are held at a minimum here. The About page's stacked board sets its own sizes. */
+@media (max-width: 767px) {
+  /* Sized from the window width, these sit at their 9–10px floor on any phone */
+  .aboutPhotoNavLabel,
+  .aboutActivitiesLabel {
+    font-size: 11px;
+  }
+
+  .aboutDuoConnect {
+    font-size: max(12px, 2.4cqw);
+  }
+
+  /* At its 12px floor the Activities line wraps to four lines and runs into the icons; at 11px it
+     keeps to three, clear of them */
+  .aboutActivitiesBody {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+}
+
+/* Tablets: the cards' smallest labels are sized from the window width and fall to 9–12px.
+   They are held at a readable size here. */
+@media (min-width: 861px) and (max-width: 1279px) {
+  .aboutPhotoNavLabel {
+    font-size: 13px;
+  }
+
+  .aboutMapCoords {
+    font-size: 14px;
+  }
+
+  .aboutActivitiesLabel {
+    font-size: 13px;
+  }
+
+  .aboutActivitiesBody {
+    font-size: 15px;
   }
 }

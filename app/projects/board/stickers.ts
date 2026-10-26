@@ -1,0 +1,28 @@
+// Stickers from the slackmoji collection (github.com/seanprashad/slackmoji). Each set is the work of its own artists.
+// The Pokémon set is left out. Generated from the sticker files in public/projects/grove/stickers.
+export const STICKERS: { src: string; set: string }[] = [
+  { src: "/projects/grove/stickers/blob-blob-amused.png", set: "blob" },
+  { src: "/projects/grove/stickers/blob-blob-fist-bump-right.png", set: "blob" },
+  { src: "/projects/grove/stickers/blob-blob-no-mouth.png", set: "blob" },
+  { src: "/projects/grove/stickers/blob-blob-shy-laugh.png", set: "blob" },
+  { src: "/projects/grove/stickers/blob-sign-blob-sign-af.png", set: "blob-sign" },
+  { src: "/projects/grove/stickers/blob-sign-blob-sign-hah.png", set: "blob-sign" },
+  { src: "/projects/grove/stickers/blob-sign-blob-sign-lmao.png", set: "blob-sign" },
+  { src: "/projects/grove/stickers/blob-sign-blob-sign-rip.png", set: "blob-sign" },
+  { src: "/projects/grove/stickers/froge-froge-angry2.png", set: "froge" },
+  { src: "/projects/grove/stickers/froge-froge-eyes.png", set: "froge" },
+  { src: "/projects/grove/stickers/froge-froge-nah.png", set: "froge" },
+  { src: "/projects/grove/stickers/froge-froge-salty.png", set: "froge" },
+  { src: "/projects/grove/stickers/froggie-froggie-angry.png", set: "froggie" },
+  { src: "/projects/grove/stickers/froggie-froggie-confused.png", set: "froggie" },
+  { src: "/projects/grove/stickers/froggie-froggie-heart.png", set: "froggie" },
+  { src: "/projects/grove/stickers/froggie-froggie-sip.png", set: "froggie" },
+  { src: "/projects/grove/stickers/meow-meow-0w0.png", set: "meow" },
+  { src: "/projects/grove/stickers/meow-meow-flower.png", set: "meow" },
+  { src: "/projects/grove/stickers/meow-meow-no-u.png", set: "meow" },
+  { src: "/projects/grove/stickers/meow-meow-reach-sob.png", set: "meow" },
+  { src: "/projects/grove/stickers/shiblob-shiblob-ban.png", set: "shiblob" },
+  { src: "/projects/grove/stickers/shiblob-shiblob-heart-2.png", set: "shiblob" },
+  { src: "/projects/grove/stickers/shiblob-shiblob-ok-wink.png", set: "shiblob" },
+  { src: "/projects/grove/stickers/shiblob-shiblob-reach.png", set: "shiblob" },
+];

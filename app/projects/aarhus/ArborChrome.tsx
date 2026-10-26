@@ -1,11 +1,12 @@
 "use client";
 
+import { roboto } from "@/lib/fonts";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { isAppleTouchDevice } from "./device";
 import styles from "./aarhus.module.css";
-import { aarhusSans, aarhusSerif } from "./fonts";
 import { NAV_ITEMS, type NavLabel } from "./nav";
 
 const CHROME_ASSETS = {
@@ -114,7 +115,7 @@ export default function ArborChrome({ children }: { children: ReactNode }) {
 
   return (
     <div
-      className={`${styles.page} ${aarhusSans.variable} ${aarhusSerif.variable}`}
+      className={`${styles.page} ${roboto.variable}`}
       data-aarhus-page
       id="top"
     >

@@ -1,0 +1,41 @@
+/* The menu pill on the case studies. It is sized from the same unit as the home page's menu, so it looks the
+   same on each page: the 1920 board unit on a desktop, and the tablet's 1px unit (see StickyMenu) below 1280px. */
+.pill {
+  --u: min(100vw / 1920, 100dvh / 1080);
+  /* The home page's menu uses the font's own line height, not the page's 24px */
+  line-height: normal;
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .pill {
+    --u: 1px;
+  }
+}
+
+/* The mini player on the case studies. It has no menu to sit beside, so it stands at the top right
+   and stays there, so the music can always be started from it. Phones use the round play button
+   instead (see BoardNav). */
+.playhead {
+  --u: min(100vw / 1920, 100dvh / 1080);
+  position: fixed !important;
+  top: 12px;
+  right: 24px;
+  left: auto !important;
+  transform: none !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  z-index: 50;
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .playhead {
+    --u: 1px;
+  }
+}
+
+@media (max-width: 767px) {
+  .playhead {
+    display: none;
+  }
+}

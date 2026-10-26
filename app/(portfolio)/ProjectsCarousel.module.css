@@ -5,25 +5,21 @@
   overflow: hidden;
   /* Fully opaque — any transparency here shows the ScrollTrigger pin-spacer / body through while pinned */
   background-color: #000;
-  font-family: "Poppins", system-ui, sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   user-select: none;
   touch-action: pan-y;
 }
 
-/* Translated with the filings so the field rises with the rest of the section. */
-.filingsHost {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
+/* Covers the screen for the transition into a project. Hidden rather than merely
+   transparent, so it isn't a viewport-sized layer the compositor carries the rest of
+   the time; GSAP's autoAlpha sets both opacity and visibility when it plays. */
 .screenFade {
   position: fixed;
   inset: 0;
   z-index: 30;
   background: #000;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 }
 
@@ -283,6 +279,44 @@
   pointer-events: none;
 }
 
+/* The next arrow hops on a short cycle so it reads as something to press. Each hop is a clear
+   lift, then a smaller bounce, then a rest until the next cycle. */
+@keyframes nextHop {
+  0% {
+    transform: translateY(0);
+  }
+  10% {
+    transform: translateY(-9px);
+  }
+  20% {
+    transform: translateY(0);
+  }
+  27% {
+    transform: translateY(-3px);
+  }
+  34%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.navBtnNext img {
+  animation: nextHop 1.8s ease-out infinite;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .navBtnNext:hover img {
+    animation: none;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navBtnNext img {
+    animation: none;
+  }
+}
+
 .navBtnPrev img {
   /* Skip-forward asset mirrored → skip-back */
   transform: scaleX(-1);
@@ -406,7 +440,6 @@
 
 /* Hidden until the scroll reveal runs. GSAP writes inline opacity as each layer enters. */
 @media (prefers-reduced-motion: no-preference) {
-  .filingsHost,
   .stage,
   .dial {
     opacity: 0;
@@ -422,5 +455,12 @@
   .dial {
     width: min(96vw, 560px);
     bottom: -1%;
+  }
+}
+
+/* Tablets: larger cards than the desktop's quarter-width, so their titles read clearly */
+@media (min-width: 901px) and (max-width: 1279px) {
+  .card {
+    width: min(30vw, 340px);
   }
 }

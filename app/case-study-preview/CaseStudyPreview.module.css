@@ -1,0 +1,192 @@
+/* A FigJam-style board. Every position is in board units (--u), so the whole board scales with
+   the window and keeps its layout. */
+.page {
+  --u: calc(min(100vw - 32px, 1600px) / 1600);
+  min-height: 100vh;
+  padding: 24px 16px 64px;
+  background-color: #f5f5f3;
+  background-image: radial-gradient(#d4d4d0 1px, transparent 1px);
+  background-size: calc(24 * var(--u)) calc(24 * var(--u));
+  color: #1e1e1e;
+  font-family: var(--font-roboto, system-ui, sans-serif);
+}
+
+.board {
+  position: relative;
+  width: calc(1600 * var(--u));
+  height: calc(1200 * var(--u));
+  margin: 0 auto;
+}
+
+.connectors {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.connector {
+  fill: none;
+  stroke: #1e1e1e;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.title {
+  position: absolute;
+  width: calc(620 * var(--u));
+}
+
+.kicker {
+  margin: 0;
+  font-size: calc(18 * var(--u));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b6b6b;
+}
+
+.heading {
+  margin: calc(8 * var(--u)) 0;
+  font-size: calc(88 * var(--u));
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.lede {
+  margin: 0;
+  font-size: calc(24 * var(--u));
+  line-height: 1.4;
+  color: #3a3a3a;
+}
+
+/* Sticky notes: a little tilt, a soft shadow, and a pale tone */
+.sticky {
+  position: absolute;
+  box-sizing: border-box;
+  padding: calc(22 * var(--u));
+  border-radius: calc(4 * var(--u));
+  transform: rotate(var(--rot, 0deg));
+  box-shadow: 0 calc(8 * var(--u)) calc(18 * var(--u)) rgba(0, 0, 0, 0.12);
+  font-size: calc(20 * var(--u));
+  line-height: 1.4;
+}
+
+.sticky strong {
+  display: block;
+  margin-bottom: calc(8 * var(--u));
+  font-size: calc(26 * var(--u));
+}
+
+.sticky p {
+  margin: 0;
+}
+
+.yellow {
+  background: #fff3a3;
+}
+
+.pink {
+  background: #ffd1dc;
+}
+
+.blue {
+  background: #cfe6ff;
+}
+
+.green {
+  background: #d4f5d0;
+}
+
+/* Image cards: a white frame with a thin border, as FigJam frames show images */
+.card {
+  position: absolute;
+  margin: 0;
+  box-sizing: border-box;
+  padding: calc(12 * var(--u)) calc(12 * var(--u)) calc(16 * var(--u));
+  border: 1px solid #d9d9d6;
+  border-radius: calc(6 * var(--u));
+  background: #ffffff;
+  transform: rotate(var(--rot, 0deg));
+  box-shadow: 0 calc(6 * var(--u)) calc(16 * var(--u)) rgba(0, 0, 0, 0.1);
+}
+
+.cardImage {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  border-radius: calc(3 * var(--u));
+}
+
+.caption {
+  margin-top: calc(10 * var(--u));
+  font-size: calc(18 * var(--u));
+  color: #555;
+}
+
+/* Dashed section frame with a label on its top edge */
+.frame {
+  position: absolute;
+  box-sizing: border-box;
+  border: calc(2 * var(--u)) dashed #8a8a86;
+  border-radius: calc(10 * var(--u));
+}
+
+.frameLabel {
+  position: absolute;
+  top: calc(-18 * var(--u));
+  left: calc(20 * var(--u));
+  padding: 0 calc(10 * var(--u));
+  background: #f5f5f3;
+  font-size: calc(20 * var(--u));
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #4a4a4a;
+}
+
+/* On small screens the board stops being a canvas: blocks stack in one column */
+@media (max-width: 860px) {
+  .page {
+    --u: 1px;
+  }
+
+  .board {
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .connectors,
+  .frame {
+    display: none;
+  }
+
+  .title,
+  .sticky,
+  .card {
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    transform: none;
+  }
+
+  .heading {
+    font-size: 44px;
+  }
+
+  .sticky,
+  .card img {
+    font-size: 16px;
+  }
+
+  .cardImage {
+    height: auto !important;
+  }
+}

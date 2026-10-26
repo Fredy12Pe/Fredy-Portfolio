@@ -2,7 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 11vh 8vw;
+  /* Extra space above so this reads as its own section, away from the light field */
+  padding: 22vh 8vw 11vh;
   background: #000;
   color: #fff;
 }
@@ -11,19 +12,47 @@
   width: 23.15em;
   max-width: 100%;
   margin: 0;
-  font-family: "Poppins", system-ui, sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   font-weight: 400;
-  font-size: clamp(1.5rem, 2.6vw, 2.35rem);
+  font-size: clamp(1.4rem, 2.2vw, 2rem);
   line-height: 1.45;
   text-align: center;
 }
 
+/* Blinking caret shown while the text is typing. Zero width, so it never shifts the text. */
+.caret {
+  position: relative;
+}
+
+/* Positioned from the text line itself, so the bar sits at the letters' height */
+.caret::after {
+  content: "|";
+  position: absolute;
+  left: 0.12em;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: caret-blink 0.8s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
 @media (max-width: 860px) {
   .section {
-    padding: 3.25rem 1.5rem 1.75rem;
+    padding: 6.5rem 1.5rem 1.75rem;
   }
 
   .copy {
     font-size: clamp(1.35rem, 5.4vw, 1.7rem);
+  }
+}
+
+/* Portrait tablets: less space under the paragraph, so the project cards follow it closely */
+@media (min-width: 861px) and (max-width: 1279px) and (orientation: portrait) {
+  .section {
+    padding: 14vh 8vw 2vh;
   }
 }

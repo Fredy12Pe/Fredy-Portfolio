@@ -67,19 +67,25 @@ function RedesignShellInner({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // The page height is only read on resize. Reading it on every scroll makes the browser
+    // redo layout in the middle of a scroll, which is what makes a long page stutter.
+    let canScroll = document.documentElement.scrollHeight > window.innerHeight + 40;
+
     function updateScrollHint() {
-      const canScroll =
-        document.documentElement.scrollHeight > window.innerHeight + 40;
-      const nearTop = window.scrollY < SCROLL_HINT_HIDE_Y;
-      setScrollHintVisible(canScroll && nearTop);
+      setScrollHintVisible(canScroll && window.scrollY < SCROLL_HINT_HIDE_Y);
+    }
+
+    function onResize() {
+      canScroll = document.documentElement.scrollHeight > window.innerHeight + 40;
+      updateScrollHint();
     }
 
     updateScrollHint();
     window.addEventListener("scroll", updateScrollHint, { passive: true });
-    window.addEventListener("resize", updateScrollHint);
+    window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("scroll", updateScrollHint);
-      window.removeEventListener("resize", updateScrollHint);
+      window.removeEventListener("resize", onResize);
     };
   }, [pathname, contentVisible]);
 

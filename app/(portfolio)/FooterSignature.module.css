@@ -1,0 +1,14 @@
+.mark {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: #fff;
+  overflow: visible;
+}
+
+.mark path {
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}

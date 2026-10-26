@@ -1,0 +1,634 @@
+/* Figma 145:1391 (Weather), 146:1411 (Music).
+   Positions are on the 1920×1080 header board; every design px is calc(N * var(--u)).
+   The tint layers use blend modes against the photo below, so neither the cards nor
+   the board may form their own stacking context. The blur sits on a separate bottom layer. */
+
+.weather,
+.music {
+  position: absolute;
+  font-family: inherit;
+  color: #fff;
+}
+
+/* The widgets form one group, centred vertically on the board */
+.group {
+  position: absolute;
+  left: calc(1120 * var(--u));
+  top: 50%;
+  /* Nudged down so the visible widgets and labels, not the group box, sit on the centre line */
+  transform: translateY(calc(-50% + 6 * var(--u)));
+  width: calc(504 * var(--u));
+  height: calc(440 * var(--u));
+}
+
+.weather {
+  left: 0;
+  top: 0;
+  width: calc(158 * var(--u));
+  height: calc(205 * var(--u));
+}
+
+.music {
+  left: 0;
+  top: calc(257 * var(--u));
+  width: calc(396 * var(--u));
+  display: flex;
+  flex-direction: column;
+}
+
+/* Shared widget shell */
+.card {
+  position: relative;
+  overflow: clip;
+  border-radius: calc(27 * var(--u));
+  box-shadow:
+    0.5px 0 0.25px 0 #d0d0d0,
+    -0.5px 0 0.25px 0 #d0d0d0;
+}
+
+.card > * {
+  position: relative;
+}
+
+.glassLayer,
+.weatherClear,
+.weatherOverlay,
+.musicTint,
+.musicOverlay {
+  position: absolute !important;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.glassLayer {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* While the visualizer runs the header is black behind these panels, so the blur has
+   nothing to show and only costs a full re-blur per panel per frame. A flat fill reads
+   the same and is free. */
+:global(header[data-music-playing]) .glassLayer {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Widget Label (Figma File/Label) */
+.label {
+  margin: 0;
+  font-size: calc(12 * var(--u));
+  font-weight: 500;
+  line-height: calc(16 * var(--u));
+  text-align: center;
+  text-shadow: 0 2px 25px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- Weather ---------- */
+
+.weatherCard {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: calc(18 * var(--u)) calc(17 * var(--u));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.weatherClear {
+  background: rgba(153, 153, 153, 0.12);
+}
+
+.weatherOverlay {
+  background: #2a2a2a;
+  opacity: 0.25;
+}
+
+.cityTemp {
+  display: flex;
+  flex-direction: column;
+  gap: calc(9 * var(--u));
+}
+
+.cityRow {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+}
+
+.city {
+  margin: 0;
+  font-size: calc(15 * var(--u));
+  font-weight: 500;
+  line-height: 0.79;
+  letter-spacing: -0.15px;
+  white-space: nowrap;
+}
+
+.location {
+  display: block;
+  width: calc(9 * var(--u));
+  height: calc(9 * var(--u));
+  margin-top: calc(1 * var(--u));
+}
+
+.temp {
+  margin: 0;
+  font-family: inherit;
+  font-size: calc(40 * var(--u));
+  font-weight: 300;
+  line-height: 0.76;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: calc(5 * var(--u));
+  padding-top: calc(3 * var(--u));
+}
+
+.sun {
+  display: block;
+  width: calc(19 * var(--u));
+  height: calc(19 * var(--u));
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--u));
+  font-size: calc(13 * var(--u));
+  font-weight: 500;
+  line-height: 0.79;
+}
+
+.details p {
+  margin: 0;
+}
+
+.weatherLabel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(217 * var(--u));
+  opacity: 0.9;
+}
+
+/* ---------- Music ---------- */
+
+/* Starts at the album's height; expands to fit the scrub bar on first play */
+.musicCard {
+  height: calc(158 * var(--u));
+  box-sizing: border-box;
+  padding: calc(17 * var(--u));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: calc(12 * var(--u));
+  transition: height 0.45s ease;
+}
+
+.musicCardExpanded {
+  height: calc(200 * var(--u));
+}
+
+/* The scrub bar is only laid out once the card has opened, so the album keeps its room */
+.musicCard:not(.musicCardExpanded) .progress {
+  display: none;
+}
+
+.musicCardExpanded .progress {
+  animation: progress-in 0.35s ease 0.3s both;
+}
+
+@keyframes progress-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Album and track details, in one row above the scrub bar */
+.musicMain {
+  flex: 1 0 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: calc(15 * var(--u));
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: calc(4 * var(--u));
+}
+
+.scrub {
+  width: 100%;
+  height: calc(14 * var(--u));
+  margin: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.scrub:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.scrub::-webkit-slider-runnable-track {
+  height: calc(3 * var(--u));
+  border-radius: calc(2 * var(--u));
+  background: linear-gradient(to right, #fff var(--fill), rgba(255, 255, 255, 0.3) var(--fill));
+}
+
+.scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: calc(10 * var(--u));
+  height: calc(10 * var(--u));
+  margin-top: calc(-3.5 * var(--u));
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.scrub::-moz-range-track {
+  height: calc(3 * var(--u));
+  border-radius: calc(2 * var(--u));
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.scrub::-moz-range-progress {
+  height: calc(3 * var(--u));
+  border-radius: calc(2 * var(--u));
+  background: #fff;
+}
+
+.scrub::-moz-range-thumb {
+  width: calc(10 * var(--u));
+  height: calc(10 * var(--u));
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.times {
+  display: flex;
+  justify-content: space-between;
+  font-size: calc(11 * var(--u));
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.musicTint {
+  background: #f2f2f7;
+  opacity: 0.06;
+}
+
+.musicOverlay {
+  background: #1a1a1a;
+  opacity: 0.25;
+}
+
+.albumArt {
+  flex-shrink: 0;
+  display: block;
+  width: calc(123 * var(--u));
+  height: calc(123 * var(--u));
+  border-radius: calc(7 * var(--u));
+  object-fit: cover;
+}
+
+.musicDetails {
+  flex: 1 0 0;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: calc(18 * var(--u));
+  padding-bottom: calc(5 * var(--u));
+}
+
+.appleMusic {
+  position: absolute !important;
+  top: 0;
+  right: 0;
+  max-width: none;
+  width: calc(15 * var(--u));
+  height: calc(19 * var(--u));
+}
+
+.trackText {
+  display: flex;
+  flex-direction: column;
+  gap: calc(12.5 * var(--u));
+}
+
+.trackText p {
+  margin: 0;
+  /* Figma trims each line box to cap height and baseline. The padding gives the descenders room
+     inside the clip, and the matching negative margin keeps the layout the same. */
+  text-box: trim-both cap alphabetic;
+  padding-bottom: calc(4 * var(--u));
+  margin-bottom: calc(-4 * var(--u));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  font-size: calc(11 * var(--u));
+  font-weight: 600;
+  line-height: calc(16 * var(--u));
+  letter-spacing: 0.1px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.trackTitle {
+  font-size: calc(16 * var(--u));
+  font-weight: 600;
+  line-height: calc(16 * var(--u));
+}
+
+.trackArtist {
+  font-size: calc(16 * var(--u));
+  font-weight: 400;
+  line-height: calc(16 * var(--u));
+  letter-spacing: -0.1px;
+  opacity: 0.6;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: calc(24 * var(--u));
+}
+
+.muteIcon {
+  width: calc(24 * var(--u));
+  height: calc(24 * var(--u));
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.control {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+/* The icon is not capped by the page's img max-width, so its box stays square and it is not squashed */
+.control img {
+  display: block;
+  max-width: none;
+  width: calc(28 * var(--u));
+  height: calc(28 * var(--u));
+}
+
+.play img {
+  width: calc(32 * var(--u));
+  height: calc(32 * var(--u));
+}
+
+.pauseIcon {
+  display: block;
+  width: calc(32 * var(--u));
+  height: calc(32 * var(--u));
+  fill: #fff;
+}
+
+.musicLabel {
+  opacity: 0.95;
+}
+/* ---------- Emotions (mood tracker) ---------- */
+
+.mood {
+  position: absolute;
+  left: calc(182 * var(--u));
+  top: 0;
+  width: calc(158 * var(--u));
+  height: calc(205 * var(--u));
+  font-family: inherit;
+  color: #fff;
+}
+
+.moodCard {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.moodLabel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(217 * var(--u));
+  opacity: 0.9;
+}
+
+.moodQuestion {
+  position: absolute;
+  left: calc(17 * var(--u));
+  top: calc(18 * var(--u));
+  width: calc(124 * var(--u));
+  margin: 0;
+  font-size: calc(15 * var(--u));
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Emotion title with its arrows in one row */
+.moodHeader {
+  position: absolute;
+  left: calc(17 * var(--u));
+  right: calc(17 * var(--u));
+  top: calc(16 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.moodName {
+  margin: 0;
+  font-size: calc(15 * var(--u));
+  font-weight: 600;
+}
+
+/* Centred outlined pill; fills in and turns dark on hover */
+.moodStart {
+  position: absolute;
+  left: 50%;
+  bottom: calc(22 * var(--u));
+  transform: translateX(-50%);
+  width: calc(110 * var(--u));
+  height: calc(40 * var(--u));
+  padding: 0;
+  border: calc(1.5 * var(--u)) solid #fff;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: calc(15 * var(--u));
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.moodStart:hover,
+.moodStart:focus-visible {
+  background: #d9d9d9;
+  color: #111;
+}
+
+.moodArt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(52 * var(--u));
+  bottom: 0;
+  overflow: hidden;
+}
+
+.moodFrame {
+  position: absolute;
+  inset: 0;
+}
+
+.moodArrow {
+  width: calc(24 * var(--u));
+  height: calc(24 * var(--u));
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.moodArrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.moodArrow svg {
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* Speech bubble that pops up beside the Emotions card after a mood is held */
+.reply {
+  position: absolute;
+  left: calc(172 * var(--u));
+  top: calc(-4 * var(--u));
+  width: max-content;
+  max-width: calc(200 * var(--u));
+  box-sizing: border-box;
+  padding: calc(12 * var(--u)) calc(16 * var(--u));
+  border-radius: calc(26 * var(--u));
+  background: rgba(16, 24, 26, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 calc(8 * var(--u)) calc(24 * var(--u)) rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: calc(14 * var(--u));
+  font-weight: 500;
+  line-height: 1.3;
+  transform-origin: 0 100%;
+  z-index: 2;
+}
+
+/* Tail pointing back toward the character */
+.reply::before {
+  content: "";
+  position: absolute;
+  left: calc(14 * var(--u));
+  bottom: calc(-12 * var(--u));
+  width: calc(20 * var(--u));
+  height: calc(14 * var(--u));
+  background: rgba(16, 24, 26, 0.72);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+
+/* Below the desktop width the widgets sit between the logo and the title, at their own sizes (see SiteHeader) */
+@media (max-width: 1279px) {
+  /* Two columns: weather and mood side by side, and the music card underneath, the same width as both */
+  .group {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: auto;
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(2, calc(158 * var(--u)));
+    justify-content: start;
+    align-items: start;
+    column-gap: calc(16 * var(--u));
+    /* Room for the labels that sit under the weather and mood cards, before the music card */
+    row-gap: calc(46 * var(--u));
+    padding-bottom: calc(10 * var(--u));
+    /* Under the logo and above the title (see SiteHeader); the free height is shared out above and below */
+    order: 1;
+    margin-block: auto;
+  }
+
+  .weather,
+  .mood {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: calc(158 * var(--u));
+    height: calc(205 * var(--u));
+  }
+
+  .music {
+    position: relative;
+    left: auto;
+    top: auto;
+    grid-column: 1 / -1;
+    width: calc(332 * var(--u));
+  }
+
+  /* The four buttons keep their full size, so the gaps between them are narrower to fit the card */
+  .controls {
+    gap: calc(12 * var(--u));
+    justify-content: space-between;
+  }
+}
+
+/* Tablet: like the desktop board, the widgets hold the middle of the header and the title sits at
+   the bottom (see SiteHeader). The auto margins take the free height, so the tall screen is used. */
+
+/* Touch sizes (phones and tablets): the music buttons keep their look, but an invisible margin
+   around each one makes the area a finger can hit about 44px square */
+@media (max-width: 1279px) {
+  .control {
+    position: relative;
+  }
+
+  .control::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+  }
+}

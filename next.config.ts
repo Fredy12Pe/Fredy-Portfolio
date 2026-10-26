@@ -37,7 +37,9 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/projects/:path*',
+        // Only the files under /projects (images, videos), not the case study pages themselves.
+        // A long cache on the pages kept the old Grove page showing in the browser.
+        source: '/projects/:path((?:.*)\\.(?:png|PNG|jpg|JPG|jpeg|webp|mp4|MP4|svg|riv))',
         headers: [
           {
             key: 'Cache-Control',

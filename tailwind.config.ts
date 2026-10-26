@@ -10,8 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        poppins: ["Poppins", "sans-serif"],
-        bebas: ['"Bebas Neue"', "sans-serif"],
+        roboto: ["var(--font-roboto)", "sans-serif"],
+        orbitron: ["var(--font-orbitron)", "sans-serif"],
       },
     },
   },

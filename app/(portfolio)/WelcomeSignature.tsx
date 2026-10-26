@@ -27,14 +27,20 @@ const F_STROKES = subpaths(F_PATH);
 const redyParts = subpaths(REDY_PATH);
 const REDY_STROKES = [0, 1, 2, 3, 4, 5, 7].map((index) => redyParts[index]);
 
+// Shared with the footer signature so both draw the same mark.
+export const SIGNATURE_VIEWBOX = "0 0 68.98 39.8003";
+export const SIGNATURE_F_STROKES = F_STROKES;
+export const SIGNATURE_REDY_STROKES = REDY_STROKES;
+export const SIGNATURE_SWOOP = SWOOP_FROM_NAME;
+
 type WelcomeSignatureProps = {
-  logoRef: RefObject<HTMLAnchorElement | null>;
+  logoRef: RefObject<HTMLElement | null>;
   onDone: () => void;
 };
 
 function destination(
   mark: SVGSVGElement,
-  logoRef: RefObject<HTMLAnchorElement | null>,
+  logoRef: RefObject<HTMLElement | null>,
 ) {
   const logo = logoRef.current?.querySelector("img");
   if (!logo) return null;
@@ -90,7 +96,7 @@ export default function WelcomeSignature({
         const length = path.getTotalLength();
         gsap.set(path, {
           autoAlpha: 0,
-          stroke: "#111111",
+          stroke: "#ffffff",
           strokeDasharray: length,
           strokeDashoffset: length,
         });
@@ -139,11 +145,6 @@ export default function WelcomeSignature({
         scrim,
         { opacity: 0, duration: 0.4, ease: "power2.inOut" },
         "<",
-      );
-      tl.to(
-        strokes,
-        { stroke: "#ffffff", duration: 0.16, ease: "power1.in" },
-        "<0.4",
       );
     }, root);
 

@@ -1,0 +1,237 @@
+/* The tools shown at the bottom-left of the screen: sticky note colours and the pin */
+.toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #18181b;
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.swatch[aria-pressed="true"] {
+  border-color: #18181b;
+}
+
+.divider {
+  width: 1px;
+  height: 22px;
+  background: #e4e4e7;
+}
+
+.tool {
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #18181b;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tool:hover,
+.tool[aria-pressed="true"] {
+  background: #f0fbdb;
+}
+
+.swatch:focus-visible,
+.tool:focus-visible {
+  outline: 2px solid #11B30B;
+  outline-offset: 2px;
+}
+
+/* While a tool is active, a click anywhere on the board places the item */
+.placeLayer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  cursor: copy;
+}
+
+/* Items on the board: stickers, pins and sticky notes */
+.item,
+.sticky {
+  position: absolute;
+  z-index: 3;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.sticky {
+  box-sizing: border-box;
+  padding: 14px;
+  border-radius: 3px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+  color: #1a1a1a;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.sticky[data-selected] {
+  outline: 2px solid #11B30B;
+  outline-offset: 3px;
+}
+
+.stickyText {
+  height: 100%;
+  overflow: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
+  outline: none;
+}
+
+.stickyText[contenteditable="true"] {
+  cursor: text;
+  user-select: text;
+}
+
+.stickyText[data-empty]::before {
+  content: "Double-click to write";
+  color: #6b6b6b;
+}
+
+.pinImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.remove {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 999px;
+  background: #18181b;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* The sticker picker, above the toolbar */
+.popover {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  width: 300px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.stickerGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.stickerButton {
+  aspect-ratio: 1;
+  padding: 6px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* A finger can drag a sticker out of the picker without scrolling the page */
+.stickerButton {
+  touch-action: none;
+}
+
+/* The picture that follows the pointer while a sticker is dragged onto the board */
+.ghost {
+  position: fixed;
+  z-index: 100;
+  width: 72px;
+  height: 72px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.stickerButton:hover,
+.stickerButton[aria-pressed="true"] {
+  background: #f0fbdb;
+}
+
+.stickerButton img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.credit {
+  margin: 10px 2px 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #6b6b6b;
+}
+
+.credit a {
+  color: #11B30B;
+  text-decoration: underline;
+}
+
+/* Icon buttons on the toolbar: the arrow and hand, the pin and the stickers */
+.iconButton {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #18181b;
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  background: #f0f0f0;
+}
+
+.iconButton[aria-pressed="true"] {
+  background: #8b5cf6;
+  color: #ffffff;
+}
+
+.iconButton:focus-visible {
+  outline: 2px solid #11B30B;
+  outline-offset: 2px;
+}
+
+/* Phones: the tools are smaller so they fit beside the zoom controls, or above them on a narrow screen */
+@media (max-width: 767px) {
+  .toolbar {
+    gap: 4px;
+  }
+
+  .iconButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  .swatch {
+    width: 18px;
+    height: 18px;
+  }
+}

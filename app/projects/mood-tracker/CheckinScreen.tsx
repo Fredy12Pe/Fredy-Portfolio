@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import { fredoka } from "./fonts";
+import { orbitron } from "@/lib/fonts";
 import { MOODS, MOOD_COUNT, type Mood } from "./moods";
 import { asset } from "./primitives";
 import MoodArt from "./scenes";
@@ -266,7 +266,7 @@ export default function CheckinScreen({
 
   return (
     <div
-      className={fredoka.className}
+      className={orbitron.className}
       onPointerDown={onSwipePointerDown}
       onPointerUp={endSwipe}
       onPointerCancel={() => {

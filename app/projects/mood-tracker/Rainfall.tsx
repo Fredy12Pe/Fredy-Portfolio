@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { loopTimes } from "./motion";
+import { useCharacterOnly } from "./primitives";
 
 type Drop = {
   left: number;
@@ -128,7 +129,7 @@ function dropMotion(index: number) {
   };
 }
 
-export default function Rainfall({ reduced }: { reduced?: boolean }) {
+function RainfallArt({ reduced }: { reduced?: boolean }) {
   return (
     <div
       style={{
@@ -180,4 +181,11 @@ export default function Rainfall({ reduced }: { reduced?: boolean }) {
       })}
     </div>
   );
+}
+
+/** Rain is weather, so it only shows in the full scene. */
+export default function Rainfall({ reduced }: { reduced?: boolean }) {
+  const characterOnly = useCharacterOnly();
+  if (characterOnly) return null;
+  return <RainfallArt reduced={reduced} />;
 }

@@ -1,16 +1,11 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { Inter } from "next/font/google";
+import { CSSProperties, FormEvent, useState } from "react";
+import { roboto } from "@/lib/fonts";
 import { CursorTrail } from "@/components/ui/cursor-trail";
+import { useReveal } from "@/lib/reveal";
 import { CONTACT_EMAIL, CONTACT_LINKS } from "../redesign/contact-links";
 import styles from "./ContactSection.module.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  display: "swap",
-});
 
 const SOCIALS = [
   { label: "Instagram", href: CONTACT_LINKS.instagram, icon: InstagramIcon },
@@ -19,9 +14,15 @@ const SOCIALS = [
 
 type Status = { tone: "neutral" | "error"; text: string } | null;
 
+/** Delay order for elements that fade up together (see .fade-up in globals.css) */
+function stagger(index: number) {
+  return { "--fade-i": index } as CSSProperties;
+}
+
 export default function ContactSection() {
   const [status, setStatus] = useState<Status>(null);
   const [sending, setSending] = useState(false);
+  const revealRef = useReveal<HTMLElement>();
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -53,20 +54,23 @@ export default function ContactSection() {
 
   return (
     <section
+      ref={revealRef}
       id="contact"
-      className={`${styles.section} ${inter.className}`}
+      className={`${styles.section} ${roboto.className}`}
       aria-label="Get in contact"
     >
       <CursorTrail className="absolute inset-0" />
       <div className={styles.inner}>
         <div className={styles.copy}>
           <div>
-            <h2 className={styles.heading}>Let’s talk.</h2>
-            <p className={styles.subhead}>
+            <h2 className={`${styles.heading} fade-up`} style={stagger(0)}>
+              Let’s talk.
+            </h2>
+            <p className={`${styles.subhead} fade-up`} style={stagger(1)}>
               Have a project or need help? Fill out the form, and I’ll get back to you soon.
             </p>
           </div>
-          <ul className={styles.socials}>
+          <ul className={`${styles.socials} fade-up`} style={stagger(2)}>
             {SOCIALS.map(({ label, href, icon: Icon }) => (
               <li key={label}>
                 <a
@@ -93,7 +97,12 @@ export default function ContactSection() {
           </ul>
         </div>
 
-        <form className={styles.form} onSubmit={onSubmit} noValidate>
+        <form
+          className={`${styles.form} fade-up`}
+          style={stagger(1)}
+          onSubmit={onSubmit}
+          noValidate
+        >
           <label className={styles.field}>
             <span className={styles.label}>Name</span>
             <input

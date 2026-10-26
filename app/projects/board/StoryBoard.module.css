@@ -1,0 +1,39 @@
+/* The shared story board: sections placed at fixed board coordinates, each in its own light blue frame,
+   joined by arrows. Used by every case study board. Spacing: 32px inside and between the parts of a
+   section, 136px or more between frames. */
+.board {
+  position: relative;
+  color: #18181b;
+}
+
+/* The FigJam dot grid, under the frames */
+.board::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(201, 201, 196, 0.6) 1.2px, transparent 1.2px);
+  background-size: 28px 28px;
+}
+
+/* One section: placed by left, top and width from its layout box, its height from the content.
+   The frame's padding sits outside the layout box, so content-box sizing keeps the content at its width. */
+.section {
+  position: absolute;
+  box-sizing: content-box;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 32px;
+  border-radius: 40px;
+  background: #dbeeff;
+}
+
+/* The arrows; they sit under the frames and take no clicks */
+.connectors {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  overflow: visible;
+}

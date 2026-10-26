@@ -1,0 +1,160 @@
+/* A zero-height sticky anchor at the menu's place in the header. Its margins hold the place, so
+   the page below does not move. Sticky keeps it at the top of the screen once scrolled. */
+.anchor {
+  --u: min(100vw / 1920, 100dvh / 1080);
+  position: sticky;
+  top: calc(18 * var(--u));
+  z-index: 1000;
+  height: 0;
+  margin-top: calc(65 * var(--u));
+  margin-bottom: calc(-65 * var(--u));
+}
+
+/* Hidden while the header's intro plays (SiteHeader sets data-intro on the header) */
+:global(body:has(header[data-intro])) .anchor {
+  visibility: hidden;
+}
+
+/* Where the header's menu was: 60% across the 1920 board, less half the menu's width */
+.menu {
+  position: absolute;
+  top: 0;
+  left: calc(50% + 148 * var(--u));
+  border-radius: 999px;
+  font-size: calc(20 * var(--u));
+  line-height: normal;
+  transition:
+    left 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Once scrolled, the menu moves to the centre */
+.menu[data-stuck] {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu {
+    transition: none;
+  }
+}
+
+/* Beside the menu, to its right. Absolutely placed so the menu stays centred. The album and
+   the buttons share one height, so the pill is sized by them. It shows only while the menu
+   is following the page and music plays: in the header, the player there is the one. */
+.playhead {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 14 * var(--u));
+  transform: translate3d(0, -50%, 0);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 250ms ease, visibility 250ms;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  /* Sized by its contents, explicitly, so every browser makes the pill wide enough for them all */
+  width: max-content;
+  white-space: nowrap;
+  box-sizing: border-box;
+  padding: max(5px, calc(5 * var(--u))) max(7px, calc(7 * var(--u)));
+  border-radius: 999px;
+  /* The same glass as the header's menu */
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.art {
+  display: block;
+  flex: none;
+  width: max(32px, calc(36 * var(--u)));
+  height: max(32px, calc(36 * var(--u)));
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.buttons {
+  display: flex;
+  flex: none;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: calc(4 * var(--u));
+}
+
+.button {
+  display: grid;
+  flex: none;
+  box-sizing: border-box;
+  place-items: center;
+  width: max(32px, calc(36 * var(--u)));
+  height: max(32px, calc(36 * var(--u)));
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.button img,
+.pause,
+.mute {
+  display: block;
+  width: max(18px, calc(20 * var(--u)));
+  height: max(18px, calc(20 * var(--u)));
+}
+
+.menu[data-stuck] .playhead[data-playing] {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pause {
+  fill: #fff;
+}
+
+.mute {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Tablet: the pill nav is sized in real pixels and sits at the right, level with the logo on the left
+   and in line with the header's 40px side margin */
+@media (max-width: 1279px) and (min-width: 768px) {
+  .anchor {
+    --u: 1px;
+    /* The hidden mini player waits to the right of the menu; clipped so it never widens the page */
+    overflow-x: clip;
+  }
+
+  .menu,
+  .menu[data-stuck] {
+    left: auto;
+    right: 40px;
+    transform: none;
+    transition: right 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Scrolled with music playing: the mini player opens to the menu's right, so the menu slides left by
+     the player's width (about 212px) plus its 14px gap, keeping both on screen */
+  .menu[data-stuck]:has(.playhead[data-playing]) {
+    right: calc(40px + 226px);
+  }
+}

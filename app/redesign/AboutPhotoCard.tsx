@@ -65,17 +65,17 @@ const SLIDES: PhotoSlide[] = [
   },
   {
     kind: "image",
-    src: `/images/redesign/about/photos/fredy-2.png?v=${ASSET_V}`,
+    src: `/images/redesign/about/photos/fredy-2.jpg?v=${ASSET_V}`,
     alt: "Fredy in a wetsuit carrying a surfboard",
   },
   {
     kind: "image",
-    src: `/images/redesign/about/photos/fredy-3.png?v=${ASSET_V}`,
+    src: `/images/redesign/about/photos/fredy-3.jpg?v=${ASSET_V}`,
     alt: "Fredy sitting between large boulders under a clear sky",
   },
   {
     kind: "image",
-    src: `/images/redesign/about/photos/fredy-4.png?v=${ASSET_V}`,
+    src: `/images/redesign/about/photos/fredy-4.jpg?v=${ASSET_V}`,
     alt: "Fredy playing a red electric guitar",
   },
 ];
@@ -87,7 +87,8 @@ type AboutPhotoCardProps = {
 export default function AboutPhotoCard({ className }: AboutPhotoCardProps) {
   const { active, reduced, handlers } = useCardHover();
   const isMobile = useIsMobileLayout();
-  const [index, setIndex] = useState(0);
+  // Opens on the second photo rather than the first
+  const [index, setIndex] = useState(1);
   const slide = SLIDES[index] ?? SLIDES[0];
   const count = SLIDES.length;
   const slideKey = slide.kind === "image" ? slide.src : slide.color;
