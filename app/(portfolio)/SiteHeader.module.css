@@ -455,3 +455,19 @@
     --u: 1px;
   }
 }
+
+/* Phones and tablets: the film grain and the light leaks hold still. Their endless animation, and the
+   blurred shapes that drift, keep the GPU repainting full-screen layers while the page scrolls, which
+   made scrolling stutter. Still, they look the same at rest. There is no pointer to follow either. */
+@media (max-width: 1279px) {
+  .grain,
+  .leaks,
+  .leaks::before,
+  .leaks::after {
+    animation: none;
+  }
+
+  .cursorGlow {
+    display: none;
+  }
+}

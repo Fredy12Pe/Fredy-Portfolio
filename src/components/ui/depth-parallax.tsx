@@ -47,6 +47,10 @@ type DepthParallaxProps = {
   className?: string;
 };
 
+// Touch screens draw the photo at this share of the screen's pixels at most. The picture is soft and
+// sits under overlays, so the lost detail is not visible, but the saved fill rate keeps scrolling smooth.
+const TOUCH_PIXEL_RATIO = 0.75;
+
 const VERT_SRC = `
   attribute vec2 aPos;
   varying vec2 vUv;
@@ -231,8 +235,13 @@ export function DepthParallax({
     gl.uniform1i(u.flow, 3);
     gl.uniform1f(u.liquid, 0);
 
+    // A finger has no hover to leave a trail, so touch screens skip the liquid pass. They also draw the photo
+    // at a lower resolution and a little less often, which keeps scrolling smooth on a phone or tablet GPU.
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const useLiquid = liquid && !coarse;
+
     // Liquid trail: two 128×128 targets that ping-pong each frame
-    const flowProgram = liquid ? link(FLOW_FRAG) : null;
+    const flowProgram = useLiquid ? link(FLOW_FRAG) : null;
     const flowLoc = flowProgram
       ? {
           map: gl.getUniformLocation(flowProgram, "tMap"),
@@ -317,7 +326,7 @@ export function DepthParallax({
 
     const layout = () => {
       if (!ready) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, maxPixelRatio);
+      const dpr = Math.min(window.devicePixelRatio || 1, maxPixelRatio, coarse ? TOUCH_PIXEL_RATIO : Infinity);
       const rect = canvas.getBoundingClientRect();
       const w = Math.max(1, Math.floor(rect.width * dpr));
       const h = Math.max(1, Math.floor(rect.height * dpr));
@@ -386,7 +395,7 @@ export function DepthParallax({
       const scrolling = document.documentElement.hasAttribute("data-scrolling");
       // The first picture is always drawn. Without it the photo stayed blank until the
       // pointer moved, because the holds below could skip every frame at page load.
-      if (drawnOnce && (scrolling || (idleDrift && pacing - lastDrawAt < 33))) {
+      if (drawnOnce && (scrolling || (idleDrift && pacing - lastDrawAt < (coarse ? 50 : 33)))) {
         raf = requestAnimationFrame(frame);
         return;
       }
@@ -473,7 +482,7 @@ export function DepthParallax({
       start();
 
       inside = clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
-      if (!inside || !liquid) return;
+      if (!inside || !useLiquid) return;
 
       const time = performance.now();
       if (!last.seen) {
@@ -531,30 +540,11 @@ export function DepthParallax({
       tiltAt = performance.now();
       start();
     };
-    const tiltRequest = (
-      typeof DeviceOrientationEvent !== "undefined"
-        ? (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> })
-        : null
-    )?.requestPermission;
-    const wantsTilt = tilt && typeof DeviceOrientationEvent !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
-    const listenTilt = () => window.addEventListener("deviceorientation", onTilt);
-    // iOS only gives motion data after the person allows it, and only from inside a tap
-    const askTilt = () => {
-      window.removeEventListener("touchend", askTilt);
-      window.removeEventListener("click", askTilt);
-      tiltRequest?.call(DeviceOrientationEvent)
-        .then((answer) => {
-          if (answer === "granted" && !disposed) listenTilt();
-        })
-        .catch(() => {});
-    };
-    if (wantsTilt) {
-      if (typeof tiltRequest === "function") {
-        window.addEventListener("touchend", askTilt, { once: true });
-        window.addEventListener("click", askTilt, { once: true });
-      } else {
-        listenTilt();
-      }
+    // The page never asks for motion access: it listens, and the photo follows the tilt wherever the browser
+    // reports it without asking (Android). Where the browser withholds it until the person allows it (iOS),
+    // no reports arrive and the photo keeps its slow drift instead.
+    if (tilt && typeof DeviceOrientationEvent !== "undefined" && coarse) {
+      window.addEventListener("deviceorientation", onTilt);
     }
 
     const resizeObserver = new ResizeObserver(() => layout());
@@ -575,8 +565,6 @@ export function DepthParallax({
       moveTarget.removeEventListener("pointermove", onPointerMove);
       leaveTarget.removeEventListener(leaveType, onPointerLeave);
       window.removeEventListener("deviceorientation", onTilt);
-      window.removeEventListener("touchend", askTilt);
-      window.removeEventListener("click", askTilt);
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       textures.forEach((t) => gl.deleteTexture(t));

@@ -89,5 +89,10 @@ next-env.d.ts
 !/public/projects/aarhus/**/*.webp
 !/public/projects/aarhus/**/*.mp4
 
+# The header and footer backgrounds are small .webp files the pages load at runtime, and the
+# test pages' models are small too. Without them the deployed site shows the "needs WebGL" message.
+!/public/images/**/*.webp
+!/public/models/*.glb
+
 # Local screenshot comparisons for the mood-tracker screens
 .screens/
