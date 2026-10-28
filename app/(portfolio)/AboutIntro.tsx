@@ -274,10 +274,14 @@ export default function AboutIntro() {
         gsap.set(overlays, { autoAlpha: 0 });
       });
 
-      // The header holds still while the section appears over it, at every width. On touch screens the
-      // page's scrolling is run in step with this pin (see SmoothScroll), so it no longer trails the
-      // finger. It is created before the box's timeline below, so the pin is measured first.
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      // On a desktop the header holds still while the section appears over it. It is created before
+      // the box's timeline below, so the pin is measured first.
+      //
+      // Phones and tablets have neither: a pin or a clip scrubbed from the scroll position is moved by
+      // script, and on a touch screen the page scrolls ahead of the script, so the box trailed the
+      // finger and the hand-off out of the header glitched. There the header is sticky and the section
+      // is a sheet that slides up over it, both moved by the browser itself (see the CSS for both).
+      mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1280px)", () => {
         const header = root.parentElement?.querySelector("header") ?? null;
         if (!header) return;
         ScrollTrigger.create({
@@ -289,10 +293,10 @@ export default function AboutIntro() {
         });
       });
 
-      // The box pops into view (the top margin on .about puts it over the lower part
-      // of the header), then expands to full size. The header is released when the
+      // Desktop: the box pops into view (the top margin on .about puts it over the lower
+      // part of the header), then expands to full size. The header is released when the
       // section reaches the top and the pin begins.
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1280px)", () => {
         const stage = root.querySelector<HTMLElement>("[data-stage]");
         const range = () => `+=${Math.round(window.innerHeight * 0.6)}`;
         // Until the box has fully opened, the section and its pin wrapper let clicks through,
@@ -375,7 +379,9 @@ export default function AboutIntro() {
 
       });
 
-      const playSpin = (pin: boolean) => {
+      // `held` is the touch-screen version of the pinned sequence: the section holds by CSS sticky
+      // instead of a script pin (see .about and the spacer after it), and only the scrub runs here.
+      const playSpin = (pin: boolean, held = false) => {
         const rig = lift.parentElement;
         const rigTop = rig
           ? rig.getBoundingClientRect().top - root.getBoundingClientRect().top
@@ -398,20 +404,37 @@ export default function AboutIntro() {
           force3D: true,
         });
 
+        // Where the section's top reaches the top of the screen, measured from the page: the range around
+        // the header and this section is never sticky, and the section comes straight after the header.
+        // The section itself is sticky on touch screens, so its own position can't be measured.
+        const heldStart = () => {
+          const range = root.parentElement;
+          const header = root.previousElementSibling as HTMLElement | null;
+          const rangeTop = range ? range.getBoundingClientRect().top + window.scrollY : 0;
+          return rangeTop + (header?.offsetHeight ?? 0);
+        };
+
         const tl = gsap.timeline({
           defaults: { ease: "none" },
-          scrollTrigger: {
-            // Phone: the photo only needs a short runway. A long scrub left
-            // it still turning after the section had already moved on.
-            trigger: pin ? root : (rig ?? root),
-            start: pin ? "top top" : "top 92%",
-            end: pin ? "+=170%" : "top 58%",
-            pin,
-            scrub: pin ? 1.4 : 0.25,
-            anticipatePin: pin ? 1 : 0,
-            // The long scrub outlives the gesture, so it keeps the page marked as moving
-            onUpdate: markScrolling,
-          },
+          scrollTrigger: held
+            ? {
+                start: heldStart,
+                end: () => heldStart() + window.innerHeight * 1.7,
+                scrub: 1.4,
+                onUpdate: markScrolling,
+              }
+            : {
+                // Phone: the photo only needs a short runway. A long scrub left
+                // it still turning after the section had already moved on.
+                trigger: pin ? root : (rig ?? root),
+                start: pin ? "top top" : "top 92%",
+                end: pin ? "+=170%" : "top 58%",
+                pin,
+                scrub: pin ? 1.4 : 0.25,
+                anticipatePin: pin ? 1 : 0,
+                // The long scrub outlives the gesture, so it keeps the page marked as moving
+                onUpdate: markScrolling,
+              },
         });
 
         tl.to(
@@ -572,9 +595,14 @@ export default function AboutIntro() {
 
       // Every width, phones included: once the box has opened over the header, the section holds
       // while the photo turns in and the copy appears, as on desktop. A phone-only sequence that
-      // ran without the hold played out while the box was still opening.
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      // ran without the hold played out while the box was still opening. Desktop holds it with a
+      // pin; phones and tablets hold it with CSS sticky, which the browser keeps in step with the
+      // finger where a script pin snapped into place a frame late.
+      mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1280px)", () => {
         playSpin(true);
+      });
+      mm.add("(prefers-reduced-motion: no-preference) and (max-width: 1279px)", () => {
+        playSpin(true, true);
       });
 
       markPortfolioLayout("about");

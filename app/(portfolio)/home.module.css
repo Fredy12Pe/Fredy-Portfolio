@@ -31,3 +31,17 @@
     height: 62svh;
   }
 }
+
+/* Phones and tablets: the About section holds with CSS sticky while its photo turns in and its copy
+   appears (AboutIntro.module.css). This is the scroll it holds for, the same 170% of the screen that
+   the pin holds for on desktop, where it takes no room. */
+.aboutHold {
+  display: none;
+}
+
+@media (max-width: 1279px) and (prefers-reduced-motion: no-preference) {
+  .aboutHold {
+    display: block;
+    height: 170vh;
+  }
+}

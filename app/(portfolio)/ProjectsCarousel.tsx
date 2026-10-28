@@ -919,8 +919,7 @@ export default function ProjectsCarousel({
     >
       <div ref={fadeRef} className={styles.screenFade} aria-hidden />
 
-      {/* data-own-touch: swipes here turn the carousel, so the page's touch scrolling leaves them alone (see SmoothScroll) */}
-      <div ref={stageRef} className={styles.stage} data-own-touch>
+      <div ref={stageRef} className={styles.stage}>
         {projects.map((project, i) => (
           <div
             key={project.id}
@@ -1009,7 +1008,6 @@ export default function ProjectsCarousel({
       <div
         ref={dialRef}
         className={styles.dial}
-        data-own-touch
         role="slider"
         aria-label="Browse projects"
         aria-valuemin={0}

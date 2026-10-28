@@ -16,6 +16,52 @@
   overflow: visible;
 }
 
+/* Phones and tablets: everything in the hand-off out of the header is moved by the browser, not by
+   script. On a touch screen the page scrolls ahead of any script, so a pin or a clip driven from the
+   scroll position snapped into place a frame late, which is what made this hand-off glitch.
+
+   The header stays put (it is sticky, see SiteHeader.module.css). The section starts below it, rises
+   over it as a card and grows to fill the screen, then holds there (sticky) while the photo turns in
+   and the copy appears; the spacer after it (home.module.css) is the scroll it holds for. Desktop
+   does the same with a pinned header, a clipped box and a pinned section (AboutIntro.tsx). */
+@media (max-width: 1279px) and (prefers-reduced-motion: no-preference) {
+  .about {
+    position: sticky;
+    top: 0;
+    margin-top: 0;
+    border-radius: 28px;
+    box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.35);
+    /* The photo waits above its spot until the section holds, so the card keeps it inside its own
+       rounded edge, as the clip does on desktop. Clip, not hidden, so the page can still scroll it. */
+    overflow: clip;
+  }
+
+  /* The card grows from a smaller card to the full screen as it rises, tied to the scroll by the
+     browser itself. A scale is used, not a clip, so it only moves a layer and never repaints. Where
+     scroll-driven animations aren't supported, the section simply rises at full size. */
+  @supports (animation-timeline: view()) {
+    .about {
+      transform-origin: 50% 0;
+      animation: about-card-rise linear both;
+      animation-timeline: view();
+      /* Full size after rising 90% of the screen, just before it reaches the top and holds. A length, not
+         "entry 100%": the section is taller than the screen on a phone, so it would still be growing
+         when it stuck. */
+      animation-range: entry 0% entry 90svh;
+    }
+  }
+}
+
+@keyframes about-card-rise {
+  from {
+    transform: scale(0.62);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
 /* Same field as the projects section, revealed at the end of the pin. */
 .wash {
   position: absolute;

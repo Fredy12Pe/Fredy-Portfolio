@@ -14,8 +14,10 @@ import styles from "./SiteHeader.module.css";
 
 // The signature draw only covers the header, and only while that header
 // is the view. A reload further down the page keeps that exact position.
+// The header's container is measured, not the header: on phones and tablets the header is sticky,
+// so its own top stays at the top of the screen while the page scrolls past it.
 function userIsAtHeader(header: HTMLElement) {
-  const top = header.getBoundingClientRect().top;
+  const top = (header.parentElement ?? header).getBoundingClientRect().top;
   return top > -window.innerHeight * 0.45 && top < window.innerHeight * 0.25;
 }
 
@@ -84,6 +86,39 @@ export default function SiteHeader() {
     });
     observer.observe(header);
     return () => observer.disconnect();
+  }, []);
+
+  // Phones and tablets: the header is sticky while the About sheet slides over it (SiteHeader.module.css).
+  // A header taller than the screen holds with its bottom at the screen's bottom, so its title can still
+  // be scrolled to. Once the sheet's top reaches the top of the screen it covers everything, so the header
+  // is marked covered, which hides it and stops its shader.
+  useLayoutEffect(() => {
+    const header = headerRef.current;
+    const about = header?.parentElement?.querySelector('[data-node-id="99:1003"]');
+    if (!header || !about) return;
+    const sticky = window.matchMedia("(max-width: 1279px) and (prefers-reduced-motion: no-preference)");
+    const place = () => {
+      header.style.top = sticky.matches ? `${Math.min(0, window.innerHeight - header.offsetHeight)}px` : "";
+    };
+    place();
+    window.addEventListener("resize", place);
+    sticky.addEventListener("change", place);
+    const resize = new ResizeObserver(place);
+    resize.observe(header);
+    // A line along the top of the screen: the section crosses it once its top has reached the top
+    const stopWatching = observeVisibility(
+      about,
+      (covered) => header.toggleAttribute("data-covered", covered),
+      { rootMargin: "0px 0px -100% 0px" },
+    );
+    return () => {
+      window.removeEventListener("resize", place);
+      sticky.removeEventListener("change", place);
+      resize.disconnect();
+      stopWatching();
+      header.style.top = "";
+      header.removeAttribute("data-covered");
+    };
   }, []);
 
   // The header is pinned while the About section grows over it, and that pin does not
