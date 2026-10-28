@@ -456,6 +456,27 @@
   }
 }
 
+/* Phones and tablets: the header stays put while the About section slides up over it as a sheet
+   (see AboutIntro.module.css). Sticky is handled by the browser, so it keeps up with the finger where a
+   script-driven pin lagged behind it. Its top is set from SiteHeader.tsx so a header taller than the
+   screen still scrolls to its bottom before it holds. Once the sheet covers the screen the header is
+   hidden: nothing of it shows, and its shader and frosted panels stop costing anything underneath. */
+@media (max-width: 1279px) and (prefers-reduced-motion: no-preference) {
+  .header {
+    position: sticky;
+    top: 0;
+  }
+
+  .header[data-covered] {
+    visibility: hidden;
+  }
+
+  /* Taken out of layout too, so the photo's shader sees it leave and stops drawing */
+  .header[data-covered] .photo {
+    display: none;
+  }
+}
+
 /* Phones and tablets: the film grain and the light leaks hold still. Their endless animation, and the
    blurred shapes that drift, keep the GPU repainting full-screen layers while the page scrolls, which
    made scrolling stutter. Still, they look the same at rest. There is no pointer to follow either. */
