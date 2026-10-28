@@ -16,20 +16,6 @@
   overflow: visible;
 }
 
-/* Phones and tablets: the section starts below the header and slides up over it as a sheet while
-   the header stays put (it is sticky, see SiteHeader.module.css). The browser moves both, so the
-   hand-off keeps up with the finger. Desktop opens a clipped box over the header instead. */
-@media (max-width: 1279px) and (prefers-reduced-motion: no-preference) {
-  .about {
-    margin-top: 0;
-    border-radius: 28px 28px 0 0;
-    box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.35);
-    /* The photo waits above its spot until the section holds, so the sheet keeps it inside its own
-       rounded edge, as the clip does on desktop. Clip, not hidden, so the page can still scroll it. */
-    overflow: clip;
-  }
-}
-
 /* Same field as the projects section, revealed at the end of the pin. */
 .wash {
   position: absolute;

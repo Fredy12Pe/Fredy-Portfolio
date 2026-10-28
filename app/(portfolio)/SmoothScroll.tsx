@@ -11,11 +11,12 @@ gsap.registerPlugin(ScrollTrigger);
 // and scrubbed section on each of those resizes made the page hitch, so only real changes re-measure.
 ScrollTrigger.config({ ignoreMobileResize: true });
 
-// Scrolling is left to the browser. The earlier version (Lenis) turned every wheel tick
-// into JavaScript that ran on each frame, on top of the scrubbed animations, which is what
-// made a heavy page stutter. Native scrolling runs on the compositor, has the platform's
-// own momentum, and costs the page nothing per frame. ScrollTrigger reads the native scroll
-// position directly, so the scrubbed sections stay in step without any extra work here.
+// Wheel and trackpad scrolling is left to the browser. The earlier version (Lenis) turned every
+// wheel tick into JavaScript that ran on each frame, on top of the scrubbed animations, which is
+// what made a heavy page stutter. Native scrolling runs on the compositor, has the platform's own
+// momentum, and costs the page nothing per frame. ScrollTrigger reads the native scroll position
+// directly, so the scrubbed sections stay in step without any extra work here. Touch scrolling is
+// the exception, handled below.
 export default function SmoothScroll() {
   useEffect(() => {
     // Feeds the decorative-layer gate: the flag is held while the page moves and the
@@ -44,9 +45,21 @@ export default function SmoothScroll() {
     // Keep animation timing steady when a frame runs late, so scrubbed sections don't skip
     gsap.ticker.lagSmoothing(0);
 
+    // Touch screens (phones and tablets): a finger's scroll runs on its own thread, ahead of the
+    // script that moves the pinned and scrubbed sections, so they trailed the page by a frame or more
+    // and the header hand-off, the About pin and the sliding card row glitched. Normalizing hands the
+    // touch scroll to ScrollTrigger, which moves the page and those sections in the same frame. Wheel
+    // and trackpad scrolling are left native. Nested scrollers (the swipe rows) still scroll themselves,
+    // and anything marked data-own-touch (the projects carousel) keeps its own swipes.
+    const normalized = ScrollTrigger.isTouch === 1;
+    if (normalized) {
+      ScrollTrigger.normalizeScroll({ type: "touch", allowNestedScroll: true, ignore: "[data-own-touch]" });
+    }
+
     return () => {
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("click", onClick);
+      if (normalized) ScrollTrigger.normalizeScroll(false);
       clearScrolling();
     };
   }, []);

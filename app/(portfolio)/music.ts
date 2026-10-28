@@ -344,12 +344,6 @@ export function useMusicPlayer(audioRef: React.RefObject<HTMLAudioElement | null
         frame = 0;
         return;
       }
-      // On phones and tablets the header stays in place under the About sheet, hidden once the sheet
-      // covers it (SiteHeader). It still counts as on screen, so the drawing is skipped here instead.
-      if (header?.hasAttribute("data-covered")) {
-        frame = requestAnimationFrame(tick);
-        return;
-      }
       const graph = graphRef.current;
       if (graph) {
         graph.analyser.getByteFrequencyData(graph.data);

@@ -274,14 +274,10 @@ export default function AboutIntro() {
         gsap.set(overlays, { autoAlpha: 0 });
       });
 
-      // On a desktop the header holds still while the section appears over it. It is created before
-      // the box's timeline below, so the pin is measured first.
-      //
-      // Phones and tablets have neither: a pin or a clip scrubbed from the scroll position is moved by
-      // script, and on a touch screen the page scrolls ahead of the script, so the box trailed the
-      // finger and the hand-off out of the header glitched. There the header is sticky and the section
-      // is a sheet that slides up over it, both moved by the browser itself (see the CSS for both).
-      mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1280px)", () => {
+      // The header holds still while the section appears over it, at every width. On touch screens the
+      // page's scrolling is run in step with this pin (see SmoothScroll), so it no longer trails the
+      // finger. It is created before the box's timeline below, so the pin is measured first.
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
         const header = root.parentElement?.querySelector("header") ?? null;
         if (!header) return;
         ScrollTrigger.create({
@@ -293,10 +289,10 @@ export default function AboutIntro() {
         });
       });
 
-      // Desktop: the box pops into view (the top margin on .about puts it over the lower
-      // part of the header), then expands to full size. The header is released when the
+      // The box pops into view (the top margin on .about puts it over the lower part
+      // of the header), then expands to full size. The header is released when the
       // section reaches the top and the pin begins.
-      mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1280px)", () => {
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
         const stage = root.querySelector<HTMLElement>("[data-stage]");
         const range = () => `+=${Math.round(window.innerHeight * 0.6)}`;
         // Until the box has fully opened, the section and its pin wrapper let clicks through,
