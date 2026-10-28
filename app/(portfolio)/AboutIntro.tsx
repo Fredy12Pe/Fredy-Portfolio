@@ -274,10 +274,25 @@ export default function AboutIntro() {
         gsap.set(overlays, { autoAlpha: 0 });
       });
 
-      // The header holds still while the section appears over it: the box pops
-      // into view in place (the top margin on .about puts it over the lower part
-      // of the header), then expands to full size. The header is released when
-      // the section reaches the top and the pin begins.
+      // On a desktop the header holds still while the section appears over it. A script-driven pin
+      // trails the finger on a phone or tablet, which made the scroll out of the header stutter, so
+      // there the header just scrolls away as the box grows over it. It is created before the box's
+      // timeline below, so the pin is measured first.
+      mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1280px)", () => {
+        const header = root.parentElement?.querySelector("header") ?? null;
+        if (!header) return;
+        ScrollTrigger.create({
+          trigger: header,
+          start: "top top",
+          end: () => `+=${Math.round(window.innerHeight * 0.6)}`,
+          pin: true,
+          pinSpacing: false,
+        });
+      });
+
+      // The box pops into view (the top margin on .about puts it over the lower part
+      // of the header), then expands to full size. On desktop the header is released
+      // when the section reaches the top and the pin begins.
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const stage = root.querySelector<HTMLElement>("[data-stage]");
         const range = () => `+=${Math.round(window.innerHeight * 0.6)}`;
@@ -297,16 +312,6 @@ export default function AboutIntro() {
             wrapper.style.pointerEvents = open ? "" : "none";
           }
         };
-        const header = root.parentElement?.querySelector("header") ?? null;
-        if (header) {
-          ScrollTrigger.create({
-            trigger: header,
-            start: "top top",
-            end: range,
-            pin: true,
-            pinSpacing: false,
-          });
-        }
         const grow = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: {
@@ -601,8 +606,9 @@ export default function AboutIntro() {
           <Lightfall
             // One device pixel, not two: this is a soft field drawn at a third of full
             // strength over black, and the shader is costly per pixel, so rendering it
-            // at screen density was four times the work for no visible gain.
-            dpr={1}
+            // at screen density was four times the work for no visible gain. Touch screens
+            // draw it smaller still, since it is soft and a phone's GPU is the limit.
+            dpr={window.matchMedia("(pointer: coarse)").matches ? 0.6 : 1}
             // Stops entirely once the section is away, and holds still while the page
             // is moving. Without this it runs from the moment it appears until reload.
             paused={!aboutNear}

@@ -7,6 +7,10 @@ import { clearScrolling, markScrolling } from "./scroll-flag";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// On a phone the address bar sliding away resizes the window mid-scroll. Re-measuring every pinned
+// and scrubbed section on each of those resizes made the page hitch, so only real changes re-measure.
+ScrollTrigger.config({ ignoreMobileResize: true });
+
 // Scrolling is left to the browser. The earlier version (Lenis) turned every wheel tick
 // into JavaScript that ran on each frame, on top of the scrubbed animations, which is what
 // made a heavy page stutter. Native scrolling runs on the compositor, has the platform's
