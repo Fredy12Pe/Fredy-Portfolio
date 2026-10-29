@@ -17,7 +17,7 @@ export default function HomePage() {
       <div className={styles.stickerRange} data-sticker-bounds>
         <SiteHeader />
         <AboutIntro />
-        {/* Phones and tablets: the scroll the About section holds for while it is sticky (home.module.css) */}
+        {/* The scroll the About section holds for while it is sticky (home.module.css) */}
         <div className={styles.aboutHold} aria-hidden />
       </div>
       <ProjectsIntro />

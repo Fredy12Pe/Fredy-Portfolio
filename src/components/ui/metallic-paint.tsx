@@ -428,6 +428,31 @@ const processShape = (source: HTMLCanvasElement) => {
   return result;
 };
 
+// Building a text's shape takes a Poisson solve, tens of milliseconds on the main thread. Shapes are kept
+// per text, so a heading that mounts in the middle of a scroll reuses one built earlier, while the page
+// was idle (see preloadMetallicText), instead of dropping frames to build it then.
+const textShapes = new Map<string, Promise<ImageData | null>>();
+
+const loadTextShape = (text: string, fontFamily: string, fontWeight: number) => {
+  const key = `${fontWeight} ${fontFamily} ${text}`;
+  let shape = textShapes.get(key);
+  if (!shape) {
+    shape = drawTextSource(text, fontFamily, fontWeight)
+      .then((canvas) => (canvas ? processShape(canvas) : null))
+      .catch(() => null);
+    textShapes.set(key, shape);
+  }
+  return shape;
+};
+
+/** Builds a heading's shape ahead of time, when the browser is idle, so mounting it later costs nothing. */
+export function preloadMetallicText(text: string, fontFamily: string, fontWeight: number) {
+  if (typeof window === "undefined") return;
+  const build = () => void loadTextShape(text, fontFamily, fontWeight);
+  if ("requestIdleCallback" in window) window.requestIdleCallback(build, { timeout: 4000 });
+  else setTimeout(build, 1500);
+}
+
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
   const shader = gl.createShader(type);
   if (!shader) return null;
@@ -610,6 +635,9 @@ export default function MetallicPaint({
     const resize = () => {
       const s = settingsRef.current;
       const rect = container.getBoundingClientRect();
+      // Hidden (display: none) reports no size. Keeping the canvas as it was means showing it again
+      // needs no new buffer and no redraw from scratch.
+      if (rect.width === 0 || rect.height === 0) return;
       const base = s?.dpr ?? Math.min(window.devicePixelRatio || 1, 2);
       let ratio = Math.max(base, 2);
       const pixels = rect.width * rect.height * ratio * ratio;
@@ -797,21 +825,19 @@ export default function MetallicPaint({
 
   useEffect(() => {
     let active = true;
-    const source = text
-      ? drawTextSource(text, fontFamily, fontWeight)
+    const shape = text
+      ? loadTextShape(text, fontFamily, fontWeight)
       : imageSrc
-        ? drawImageSource(imageSrc)
+        ? drawImageSource(imageSrc).then((canvas) => (canvas ? processShape(canvas) : null))
         : null;
-    if (!source) {
+    if (!shape) {
       engineRef.current?.setImage(null);
       return undefined;
     }
     engineRef.current?.setPending(true);
-    source
-      .then((canvas) => {
-        if (!active || !canvas) return;
-        const data = processShape(canvas);
-        if (active) engineRef.current?.setImage(data);
+    shape
+      .then((data) => {
+        if (active && data) engineRef.current?.setImage(data);
       })
       .catch(() => {
         if (active) engineRef.current?.setImage(null);

@@ -71,14 +71,26 @@ export default function FooterSignature() {
       });
     };
 
+    // Read on the next frame, not in the scroll event itself: other scroll handlers have written to the
+    // page by then, so measuring the footer there forced a full layout in the middle of the scroll
+    let frame = 0;
+    const onScroll = () => {
+      if (!frame) {
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          update();
+        });
+      }
+    };
+
     // The scroll handler is only attached while the footer is near the screen. Everywhere
     // else on the page the mark is finished or untouched, so there is nothing to follow.
     let listening = false;
     const listen = (on: boolean) => {
       if (on === listening) return;
       listening = on;
-      if (on) window.addEventListener("scroll", update, { passive: true });
-      else window.removeEventListener("scroll", update);
+      if (on) window.addEventListener("scroll", onScroll, { passive: true });
+      else window.removeEventListener("scroll", onScroll);
     };
 
     const nearby = new IntersectionObserver(
@@ -96,6 +108,7 @@ export default function FooterSignature() {
     return () => {
       nearby.disconnect();
       listen(false);
+      cancelAnimationFrame(frame);
       window.removeEventListener("resize", update);
     };
   }, []);

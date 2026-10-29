@@ -328,6 +328,9 @@ export function DepthParallax({
       if (!ready) return;
       const dpr = Math.min(window.devicePixelRatio || 1, maxPixelRatio, coarse ? TOUCH_PIXEL_RATIO : Infinity);
       const rect = canvas.getBoundingClientRect();
+      // Hidden (display: none, as when the About section covers the header) reports no size. The canvas
+      // keeps its buffer, so showing it again costs no reallocation.
+      if (rect.width === 0 || rect.height === 0) return;
       const w = Math.max(1, Math.floor(rect.width * dpr));
       const h = Math.max(1, Math.floor(rect.height * dpr));
       if (canvas.width !== w || canvas.height !== h) {

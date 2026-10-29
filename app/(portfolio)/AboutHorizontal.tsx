@@ -100,27 +100,48 @@ export default function AboutHorizontal() {
       if (!frame) frame = requestAnimationFrame(update);
     };
 
+    // The screen's height with the toolbars hidden (100lvh). Unlike innerHeight it doesn't change while
+    // a phone's or tablet's toolbars slide during a scroll, so the section keeps its length mid-scroll.
+    const largeScreenHeight = () => {
+      const probe = document.createElement("div");
+      probe.style.cssText = "position:fixed;top:0;left:0;width:0;height:100lvh;visibility:hidden;pointer-events:none";
+      document.body.appendChild(probe);
+      const height = probe.offsetHeight;
+      probe.remove();
+      return height || window.innerHeight;
+    };
+
     const measure = () => {
       distance = Math.max(0, track.scrollWidth - window.innerWidth);
       const phone = window.matchMedia("(max-width: 860px)").matches;
       // A hold after the slide: the last card stays on screen for a moment before the
       // section scrolls away, so it isn't cut off as the page moves on. Phones, where the frame is
       // only as tall as the row, need none.
-      const hold = phone ? 0 : Math.round(window.innerHeight);
+      const hold = phone ? 0 : Math.round(largeScreenHeight());
       // On phones the row slides faster per scroll pixel, so the section is shorter
       scrollLength = distance * (phone ? 0.6 : 1);
       const sticky = wrap.firstElementChild as HTMLElement;
-      // On phones the frame is pinned in the middle of the screen (never under the menu button), instead
-      // of at the top with the rest of the screen empty below it
-      sticky.style.top = wide.matches && phone ? `${Math.max(72, (window.innerHeight - sticky.offsetHeight) / 2)}px` : "";
+      // On phones the frame is held in the middle of the screen (never under the menu button), instead
+      // of at the top with the rest of the screen empty below it. The CSS centres it from this height.
+      sticky.style.setProperty("--frame-h", `${sticky.offsetHeight}px`);
       // The section is the scroll for the slide, plus the sticky frame, plus the hold
       wrap.style.height = wide.matches ? `${scrollLength + sticky.offsetHeight + hold}px` : "";
       update();
     };
 
+    // A touch screen's window changes height as its toolbars slide during a scroll. Only a change of
+    // width re-measures there, so the section doesn't change length under the finger.
+    const coarse = window.matchMedia("(pointer: coarse)");
+    let lastWidth = window.innerWidth;
+    const onResize = () => {
+      if (coarse.matches && window.innerWidth === lastWidth) return;
+      lastWidth = window.innerWidth;
+      measure();
+    };
+
     measure();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", measure);
+    window.addEventListener("resize", onResize);
     // The cards' height follows their content on phones, which settles after the fonts and images load
     const observer = new ResizeObserver(measure);
     observer.observe(track);
@@ -129,10 +150,10 @@ export default function AboutHorizontal() {
       observer.disconnect();
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", measure);
+      window.removeEventListener("resize", onResize);
       wrap.style.height = "";
       track.style.transform = "";
-      (wrap.firstElementChild as HTMLElement | null)?.style.removeProperty("top");
+      (wrap.firstElementChild as HTMLElement | null)?.style.removeProperty("--frame-h");
     };
   }, []);
 

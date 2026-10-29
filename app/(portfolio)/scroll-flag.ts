@@ -16,7 +16,10 @@ let timer = 0;
 
 export function markScrolling(): void {
   if (typeof document === "undefined") return;
-  document.documentElement.setAttribute(ATTRIBUTE, "");
+  // Only set when it isn't already: this runs on every scroll event, and touching an attribute on
+  // <html> mid-scroll can make the browser recheck the whole page's styles
+  const root = document.documentElement;
+  if (!root.hasAttribute(ATTRIBUTE)) root.setAttribute(ATTRIBUTE, "");
   if (timer) window.clearTimeout(timer);
   timer = window.setTimeout(() => {
     timer = 0;

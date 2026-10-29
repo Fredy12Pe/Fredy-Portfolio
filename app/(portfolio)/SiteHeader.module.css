@@ -12,7 +12,7 @@
 .header {
   --frame-w: 1920;
   --frame-h: 1080;
-  --u: min(100vw / var(--frame-w), 100dvh / var(--frame-h));
+  --u: min(100vw / var(--frame-w), 100svh / var(--frame-h));
 
   position: relative;
   z-index: 50;
@@ -346,7 +346,7 @@
   .header {
     --u: 1px;
     height: auto;
-    min-height: 100dvh;
+    min-height: 100svh;
   }
 
   .frame {
@@ -412,7 +412,7 @@
   .frame {
     /* The 96px logo is about 55px tall; this puts its centre level with the 52px menu button's
        centre (0.75rem + 26px down, below the safe area) */
-    min-height: 100dvh;
+    min-height: 100svh;
     padding: calc(10px + env(safe-area-inset-top)) 20px 56px;
     gap: 22px;
   }
@@ -443,7 +443,7 @@
   }
 
   .frame {
-    min-height: 100dvh;
+    min-height: 100svh;
     /* The 74px logo's centre sits level with the nav pill's centre (65px down, 51px tall) */
     padding-top: 53px;
   }
@@ -456,15 +456,15 @@
   }
 }
 
-/* Phones and tablets: the header stays put while the About section slides up over it as a sheet
-   (see AboutIntro.module.css). Sticky is handled by the browser, so it keeps up with the finger where a
-   script-driven pin lagged behind it. Its top is set from SiteHeader.tsx so a header taller than the
-   screen still scrolls to its bottom before it holds. Once the sheet covers the screen the header is
+/* The header stays put while the About section rises over it (see AboutIntro.module.css). Sticky is
+   handled by the browser, so it keeps up with the scroll where a script pin snapped into place a frame
+   late. A header taller than the screen still scrolls to its bottom before it holds. Once the sheet covers the screen the header is
    hidden: nothing of it shows, and its shader and frosted panels stop costing anything underneath. */
-@media (max-width: 1279px) and (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) {
   .header {
     position: sticky;
-    top: 0;
+    /* 0, or the amount the header is taller than the screen (--header-h is set from SiteHeader.tsx) */
+    top: min(0px, calc(100svh - var(--header-h, 0px)));
   }
 
   .header[data-covered] {

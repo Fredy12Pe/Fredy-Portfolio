@@ -66,6 +66,10 @@
     height: auto;
     padding-block: 1.5rem;
     box-sizing: border-box;
+    /* Centred on the screen while it holds, never under the menu button. Against svh, which stays put
+       while a phone's toolbars slide, so the row doesn't jump mid-scroll. --frame-h is set from
+       AboutHorizontal.tsx. */
+    top: max(72px, calc((100svh - var(--frame-h, 0px)) / 2));
   }
 }
 

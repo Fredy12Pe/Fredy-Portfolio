@@ -88,7 +88,7 @@ export default function SiteHeader() {
     return () => observer.disconnect();
   }, []);
 
-  // Phones and tablets: the header is sticky while the About sheet slides over it (SiteHeader.module.css).
+  // The header is sticky while the About section rises over it (SiteHeader.module.css).
   // A header taller than the screen holds with its bottom at the screen's bottom, so its title can still
   // be scrolled to. Once the sheet's top reaches the top of the screen it covers everything, so the header
   // is marked covered, which hides it and stops its shader.
@@ -96,13 +96,11 @@ export default function SiteHeader() {
     const header = headerRef.current;
     const about = header?.parentElement?.querySelector('[data-node-id="99:1003"]');
     if (!header || !about) return;
-    const sticky = window.matchMedia("(max-width: 1279px) and (prefers-reduced-motion: no-preference)");
-    const place = () => {
-      header.style.top = sticky.matches ? `${Math.min(0, window.innerHeight - header.offsetHeight)}px` : "";
-    };
+    // Only the header's own height is reported; the CSS works out the offset against a screen height that
+    // doesn't change while a phone's toolbars slide away (svh). Measuring the window here moved the header
+    // in the middle of a fast scroll, as the toolbars hid and the window grew.
+    const place = () => header.style.setProperty("--header-h", `${header.offsetHeight}px`);
     place();
-    window.addEventListener("resize", place);
-    sticky.addEventListener("change", place);
     const resize = new ResizeObserver(place);
     resize.observe(header);
     // A line along the top of the screen: the section crosses it once its top has reached the top
@@ -112,11 +110,9 @@ export default function SiteHeader() {
       { rootMargin: "0px 0px -100% 0px" },
     );
     return () => {
-      window.removeEventListener("resize", place);
-      sticky.removeEventListener("change", place);
       resize.disconnect();
       stopWatching();
-      header.style.top = "";
+      header.style.removeProperty("--header-h");
       header.removeAttribute("data-covered");
     };
   }, []);

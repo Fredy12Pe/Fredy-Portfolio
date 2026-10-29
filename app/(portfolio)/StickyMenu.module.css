@@ -1,7 +1,7 @@
 /* A zero-height sticky anchor at the menu's place in the header. Its margins hold the place, so
    the page below does not move. Sticky keeps it at the top of the screen once scrolled. */
 .anchor {
-  --u: min(100vw / 1920, 100dvh / 1080);
+  --u: min(100vw / 1920, 100svh / 1080);
   position: sticky;
   top: calc(18 * var(--u));
   z-index: 1000;

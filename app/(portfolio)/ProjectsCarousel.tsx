@@ -10,7 +10,6 @@ import {
   useLayoutEffect,
   useMemo,
   useRef,
-  useState,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
@@ -158,7 +157,9 @@ export default function ProjectsCarousel({
   const dragging = useRef(false);
   const suppressClick = useRef(false);
   const swallowNavClick = useRef(false);
-  const [active, setActive] = useState(0);
+  // The front card's index. Kept out of React state: changing it re-rendered every card, about
+  // 80ms, in the middle of a scroll. Its two uses are written straight to the page (see place).
+  const activeRef = useRef(0);
 
   const count = projects.length;
 
@@ -272,7 +273,19 @@ export default function ProjectsCarousel({
         }
       });
 
-      setActive((prev) => (prev === nearest ? prev : nearest));
+      if (activeRef.current !== nearest) {
+        activeRef.current = nearest;
+        // Only the front card's link is a tab stop, and the dial reports which project is in front
+        cardRefs.current.forEach((card, index) => {
+          const link = card?.querySelector<HTMLAnchorElement>("a");
+          if (link) link.tabIndex = index === nearest ? 0 : -1;
+        });
+        const dial = dialRef.current;
+        if (dial) {
+          dial.setAttribute("aria-valuenow", String(nearest));
+          dial.setAttribute("aria-valuetext", projects[nearest]?.title ?? "");
+        }
+      }
     },
     [count, projects],
   );
@@ -938,7 +951,7 @@ export default function ProjectsCarousel({
               <Link
                 href={project.href}
                 className={styles.cardLink}
-                tabIndex={active === i ? 0 : -1}
+                tabIndex={i === 0 ? 0 : -1}
                 aria-label={`${project.title} — ${project.tagline}`}
                 onPointerMove={(e) => tiltCard(e, i)}
                 onPointerLeave={() => leaveCard(i)}
@@ -1012,8 +1025,8 @@ export default function ProjectsCarousel({
         aria-label="Browse projects"
         aria-valuemin={0}
         aria-valuemax={count - 1}
-        aria-valuenow={active}
-        aria-valuetext={projects[active]?.title}
+        aria-valuenow={0}
+        aria-valuetext={projects[0]?.title}
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "ArrowLeft" || e.key === "ArrowUp") {

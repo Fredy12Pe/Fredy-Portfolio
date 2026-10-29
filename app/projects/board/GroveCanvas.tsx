@@ -10,8 +10,12 @@ const MIN_SCALE = 0.15;
 // Capped at 100%: the board is exported at its natural size, so zooming past it only stretches the pixels
 const MAX_SCALE = 1;
 const PAD = 60;
-// The zoom the board opens at, and returns to from the Grove button
+// The most the board opens at, and returns to from the Grove button. Smaller screens open lower, so the
+// first frame fits (see goTo).
 const OPEN_SCALE = 0.8;
+// Room kept clear of the opening frame: the menu along the top of the screen, and a margin around the frame
+const TOP_CHROME = 72;
+const FRAME_MARGIN = 20;
 // Things the canvas must not pan from: controls, and the board's own items (data-no-pan)
 const NO_PAN = "button, input, a, select, textarea, [data-no-pan]";
 // In hand mode or with space held, only real controls keep their own clicks
@@ -58,6 +62,7 @@ export default function GroveCanvas({
   const viewRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
   // Position and scale live in refs. Changes are applied once per animation frame, and nothing
   // re-renders while the board moves or zooms.
   const view = useRef({ x: PAD, y: PAD, s: OPEN_SCALE });
@@ -125,11 +130,20 @@ export default function GroveCanvas({
     schedule();
   };
 
-  // Opens with the start rectangle's centre in the middle of the screen
+  // Opens on the start rectangle: the whole of it on screen with a margin around it, between the menu
+  // and the bottom bar, at openScale or less. A fixed zoom left the frame cropped on phones, landscape
+  // tablets and shorter laptop screens.
   const goTo = (r: Rect) => {
     const { w, h } = size();
-    const s = openScale;
-    view.current = { x: w / 2 - (r.x + r.w / 2) * s, y: h / 2 - (r.y + r.h / 2) * s, s };
+    const viewBox = viewRef.current?.getBoundingClientRect();
+    const barBox = bottomRef.current?.getBoundingClientRect();
+    const bottomChrome = viewBox && barBox ? Math.max(0, viewBox.bottom - barBox.top) : 0;
+    const freeW = w - FRAME_MARGIN * 2;
+    const freeH = h - TOP_CHROME - bottomChrome - FRAME_MARGIN * 2;
+    const s = Math.max(MIN_SCALE, Math.min(openScale, freeW / r.w, freeH / r.h));
+    // The middle of the space between the menu and the bottom bar
+    const centreY = TOP_CHROME + FRAME_MARGIN + freeH / 2;
+    view.current = { x: w / 2 - (r.x + r.w / 2) * s, y: centreY - (r.y + r.h / 2) * s, s };
     schedule();
   };
 
@@ -297,7 +311,7 @@ export default function GroveCanvas({
         {children}
       </div>
 
-      <div className={styles.bottomRow}>
+      <div ref={bottomRef} className={styles.bottomRow}>
       <div className={styles.bar}>
       {typeof toolbar === "function" ? toolbar(spaceHeld) : toolbar}
 

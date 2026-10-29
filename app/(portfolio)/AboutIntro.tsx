@@ -4,21 +4,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { roboto } from "@/lib/fonts";
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
   type MouseEvent as ReactMouseEvent,
+  type ReactNode,
 } from "react";
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { InteractiveTiltCard } from "@/components/ui/tilt-card";
 import Lightfall from "@/components/ui/lightfall";
-import MetallicPaint from "@/components/ui/metallic-paint";
+import MetallicPaint, { preloadMetallicText } from "@/components/ui/metallic-paint";
 import { markPortfolioLayout } from "./reload-scroll";
 import { isScrolling, markScrolling } from "./scroll-flag";
-import { observeVisibility } from "@/lib/visibility";
 import styles from "./AboutIntro.module.css";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
@@ -237,21 +238,55 @@ function CardFace({ labelled = false }: { labelled?: boolean }) {
   );
 }
 
+// A flag the scroll timeline flips without re-rendering the section: only the part that depends on it
+// re-renders. The section is large (the copy alone is fifty-odd word spans), and re-rendering all of it
+// in the middle of a scroll dropped a frame each time a flag changed.
+type Switch = { on: boolean; listeners: Set<(on: boolean) => void>; set: (on: boolean) => void };
+
+function createSwitch(): Switch {
+  const sw: Switch = {
+    on: false,
+    listeners: new Set(),
+    set(on) {
+      if (on === sw.on) return;
+      sw.on = on;
+      sw.listeners.forEach((listen) => listen(on));
+    },
+  };
+  return sw;
+}
+
+function SwitchView({ sw, children }: { sw: Switch; children: (on: boolean) => ReactNode }) {
+  const [on, setOn] = useState(sw.on);
+  useEffect(() => {
+    sw.listeners.add(setOn);
+    setOn(sw.on);
+    return () => {
+      sw.listeners.delete(setOn);
+    };
+  }, [sw]);
+  return <>{children(on)}</>;
+}
+
+const HEY_FONT = { text: "Hey!", fontFamily: "Roboto, sans-serif", fontWeight: 900 };
+
 export default function AboutIntro() {
   const rootRef = useRef<HTMLElement>(null);
   const liftRef = useRef<HTMLDivElement>(null);
   const spinRef = useRef<HTMLDivElement>(null);
-  const [tiltReady, setTiltReady] = useState(false);
-  const [lightOn, setLightOn] = useState(false);
-  // lightOn only ever turns on: it is set from the pin's timeline, which stops
-  // reporting once the scroll has passed. So the two shaders are told whether the
-  // section is near from here instead, which keeps answering for as long as the page is open.
-  const [aboutNear, setAboutNear] = useState(false);
+  // Tilt turns on once the card has landed, flipped from the scroll timeline (see SwitchView). The light
+  // field and metal heading are mounted the first time the section turns black and then stay: mounting
+  // them again each time the page scrolled back down past that point rebuilt their WebGL contexts, which
+  // dropped frames and piled up. They are shown and hidden by data-lit on the section instead.
+  const [tilt] = useState(createSwitch);
+  const [light] = useState(createSwitch);
+  // Both hold still while they are hidden (the section isn't black) and while the page moves
+  const pauseLight = useCallback(() => !rootRef.current?.hasAttribute("data-lit") || isScrolling(), []);
 
+  // The metal heading's shape takes tens of milliseconds to build. It is built now, while the page is
+  // idle, so mounting the heading mid-scroll doesn't drop frames.
   useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    return observeVisibility(root, setAboutNear, { rootMargin: "200px 0px" });
+    preloadMetallicText(HEY_FONT.text, HEY_FONT.fontFamily, HEY_FONT.fontWeight);
   }, []);
 
   useLayoutEffect(() => {
@@ -274,28 +309,14 @@ export default function AboutIntro() {
         gsap.set(overlays, { autoAlpha: 0 });
       });
 
-      // On a desktop the header holds still while the section appears over it. It is created before
-      // the box's timeline below, so the pin is measured first.
-      //
-      // Phones and tablets have neither: a pin or a clip scrubbed from the scroll position is moved by
-      // script, and on a touch screen the page scrolls ahead of the script, so the box trailed the
-      // finger and the hand-off out of the header glitched. There the header is sticky and the section
-      // is a sheet that slides up over it, both moved by the browser itself (see the CSS for both).
-      mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1280px)", () => {
-        const header = root.parentElement?.querySelector("header") ?? null;
-        if (!header) return;
-        ScrollTrigger.create({
-          trigger: header,
-          start: "top top",
-          end: () => `+=${Math.round(window.innerHeight * 0.6)}`,
-          pin: true,
-          pinSpacing: false,
-        });
-      });
+      // The header holds still while the section appears over it, and the section then holds while
+      // the photo turns in. Both are CSS sticky (SiteHeader.module.css, .about and the spacer after it),
+      // not script pins: a pin is moved a frame after the scroll, so a fast scroll ran past it and it
+      // snapped back into place. Only appearance (the clip, the photo, the copy) is scrubbed here.
 
       // Desktop: the box pops into view (the top margin on .about puts it over the lower
-      // part of the header), then expands to full size. The header is released when the
-      // section reaches the top and the pin begins.
+      // part of the header), then expands to full size. Phones and tablets grow the box
+      // with a CSS scroll-driven animation instead (AboutIntro.module.css).
       mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1280px)", () => {
         const stage = root.querySelector<HTMLElement>("[data-stage]");
         const range = () => `+=${Math.round(window.innerHeight * 0.6)}`;
@@ -379,8 +400,8 @@ export default function AboutIntro() {
 
       });
 
-      // `held` is the touch-screen version of the pinned sequence: the section holds by CSS sticky
-      // instead of a script pin (see .about and the spacer after it), and only the scrub runs here.
+      // `held` is the pinned sequence without the pin: the section holds by CSS sticky (see .about and
+      // the spacer after it), and only the scrub runs here.
       const playSpin = (pin: boolean, held = false) => {
         const rig = lift.parentElement;
         const rigTop = rig
@@ -405,13 +426,15 @@ export default function AboutIntro() {
         });
 
         // Where the section's top reaches the top of the screen, measured from the page: the range around
-        // the header and this section is never sticky, and the section comes straight after the header.
-        // The section itself is sticky on touch screens, so its own position can't be measured.
+        // the header and this section is never sticky, and the section comes straight after the header,
+        // pulled up over it by its top margin on desktop. The section itself is sticky, so its own
+        // position can't be measured.
         const heldStart = () => {
           const range = root.parentElement;
           const header = root.previousElementSibling as HTMLElement | null;
           const rangeTop = range ? range.getBoundingClientRect().top + window.scrollY : 0;
-          return rangeTop + (header?.offsetHeight ?? 0);
+          const pulledUp = parseFloat(getComputedStyle(root).marginTop) || 0;
+          return rangeTop + (header?.offsetHeight ?? 0) + pulledUp;
         };
 
         const tl = gsap.timeline({
@@ -580,13 +603,14 @@ export default function AboutIntro() {
           const next = tl.time() >= 1;
           if (next !== settled) {
             settled = next;
-            setTiltReady(next);
+            tilt.set(next);
           }
-          // The light field mounts once the background has finished turning black (1.12).
+          // The light field and metal heading appear once the background has finished turning black (1.12)
           const nowLit = tl.time() >= 1.12;
           if (nowLit !== lit) {
             lit = nowLit;
-            setLightOn(nowLit);
+            root.toggleAttribute("data-lit", nowLit);
+            if (nowLit) light.set(true);
           }
         });
 
@@ -594,14 +618,10 @@ export default function AboutIntro() {
       };
 
       // Every width, phones included: once the box has opened over the header, the section holds
-      // while the photo turns in and the copy appears, as on desktop. A phone-only sequence that
-      // ran without the hold played out while the box was still opening. Desktop holds it with a
-      // pin; phones and tablets hold it with CSS sticky, which the browser keeps in step with the
-      // finger where a script pin snapped into place a frame late.
-      mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1280px)", () => {
-        playSpin(true);
-      });
-      mm.add("(prefers-reduced-motion: no-preference) and (max-width: 1279px)", () => {
+      // while the photo turns in and the copy appears. A phone-only sequence that ran without the
+      // hold played out while the box was still opening. The hold is CSS sticky, which the browser
+      // keeps in step with the scroll; a script pin snapped into place a frame late on a fast scroll.
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
         playSpin(true, true);
       });
 
@@ -614,9 +634,10 @@ export default function AboutIntro() {
     return () => {
       window.clearTimeout(timer);
       mm?.revert();
-      setTiltReady(false);
+      tilt.set(false);
+      root.removeAttribute("data-lit");
     };
-  }, []);
+  }, [light, tilt]);
 
   return (
     <section
@@ -627,88 +648,100 @@ export default function AboutIntro() {
     >
       <div className={styles.wash} data-wash aria-hidden />
       <div className={styles.grain} data-grain aria-hidden />
-      {/* Light field: mounted only once the section has turned black, so it isn't running while the page is light */}
-      {lightOn ? (
-        <div className={styles.lightfall} aria-hidden>
-          <Lightfall
-            // One device pixel, not two: this is a soft field drawn at a third of full
-            // strength over black, and the shader is costly per pixel, so rendering it
-            // at screen density was four times the work for no visible gain. Touch screens
-            // draw it smaller still, since it is soft and a phone's GPU is the limit.
-            dpr={window.matchMedia("(pointer: coarse)").matches ? 0.6 : 1}
-            // Stops entirely once the section is away, and holds still while the page
-            // is moving. Without this it runs from the moment it appears until reload.
-            paused={!aboutNear}
-            shouldPause={isScrolling}
-            colors={["#ffffff"]}
-            backgroundColor="#94a3b8"
-            speed={0.3}
-            streakCount={2}
-            streakWidth={0.8}
-            twinkle={0.3}
-            backgroundGlow={0.1}
-            headGlow={0.6}
-            bloom={0.35}
-            mouseInteraction
-            mouseStrength={0.15}
-            lens={0.2}
-            holdToWarp
-            intro
-          />
-        </div>
-      ) : null}
-      <div className={styles.stage} data-stage>
-        <div className={styles.hey} data-copy data-hey>
-          {/* Metal paint once the section has turned black; plain text until then */}
-          {lightOn ? (
-            <div className={styles.heyMetal}>
-              <MetallicPaint
-                // Same treatment as the light field: the sheen only moves while the
-                // heading is in front of someone and the page is still
-                paused={!aboutNear}
-                shouldPause={isScrolling}
-                text="Hey!"
-                fontFamily="Roboto, sans-serif"
-                fontWeight={900}
-                scale={1}
-                density={2}
-                edgeBend={0.9}
+      {/* Light field: mounted the first time the section turns black, so it isn't running before; shown while
+          the section is black (data-lit, see .lightfall) */}
+      <SwitchView sw={light}>
+        {(lightOn) =>
+          lightOn ? (
+            <div className={styles.lightfall} aria-hidden>
+              <Lightfall
+                // One device pixel, not two: this is a soft field drawn at a third of full
+                // strength over black, and the shader is costly per pixel, so rendering it
+                // at screen density was four times the work for no visible gain. Touch screens
+                // draw it smaller still, since it is soft and a phone's GPU is the limit.
+                dpr={window.matchMedia("(pointer: coarse)").matches ? 0.6 : 1}
+                // Holds still while the page is moving or the section isn't black, and stops
+                // drawing once the section is off screen (it watches its own visibility)
+                shouldPause={pauseLight}
+                colors={["#ffffff"]}
+                backgroundColor="#94a3b8"
+                speed={0.3}
+                streakCount={2}
+                streakWidth={0.8}
+                twinkle={0.3}
+                backgroundGlow={0.1}
+                headGlow={0.6}
+                bloom={0.35}
+                mouseInteraction
+                mouseStrength={0.15}
+                lens={0.2}
+                holdToWarp
+                intro
               />
             </div>
-          ) : (
-            "Hey!"
-          )}
+          ) : null
+        }
+      </SwitchView>
+      <div className={styles.stage} data-stage>
+        <div className={styles.hey} data-copy data-hey>
+          {/* Metal paint while the section is black, plain text otherwise. The metal is mounted the first
+              time and then kept, swapped by data-lit (see .heyMetal): mounting it each time made a new
+              WebGL context, and the page grew slower with every scroll back down past this point. */}
+          <span className={styles.heyPlain}>Hey!</span>
+          <SwitchView sw={light}>
+            {(lightOn) =>
+              lightOn ? (
+                <div className={styles.heyMetal}>
+                  <MetallicPaint
+                    // Same treatment as the light field: the sheen holds still while the page is
+                    // moving or the heading is hidden, and stops once it is off screen
+                    shouldPause={pauseLight}
+                    text={HEY_FONT.text}
+                    fontFamily={HEY_FONT.fontFamily}
+                    fontWeight={HEY_FONT.fontWeight}
+                    scale={1}
+                    density={2}
+                    edgeBend={0.9}
+                  />
+                </div>
+              ) : null
+            }
+          </SwitchView>
         </div>
 
         <div className={styles.cardRig} data-card>
           <div ref={liftRef} className={styles.card}>
             <div ref={spinRef} className={styles.spin}>
-              <InteractiveTiltCard
-                tiltFactor={12}
-                perspective={900}
-                borderRadius={40}
-                backgroundColor="transparent"
-                shadowColor="rgba(0, 0, 0, 0)"
-                shadowIntensity={0.28}
-                hoverScale={1.03}
-                glareIntensity={0.42}
-                glareSize={72}
-                clipContent={false}
-                enabled={tiltReady}
-              >
-                <CardFace labelled />
-                <div className={`${styles.face} ${styles.back}`} aria-hidden>
-                  <Image className={styles.photoImg} alt="" {...portraitImage} />
-                  <div className={styles.overlay} data-bw>
-                    <Image
-                      className={styles.photoImg}
-                      alt=""
-                      aria-hidden
-                      {...portraitImage}
-                    />
-                  </div>
-                </div>
-              </InteractiveTiltCard>
+              <SwitchView sw={tilt}>
+                {(tiltReady) => (
+                  <InteractiveTiltCard
+                    tiltFactor={12}
+                    perspective={900}
+                    borderRadius={40}
+                    backgroundColor="transparent"
+                    shadowColor="rgba(0, 0, 0, 0)"
+                    shadowIntensity={0.28}
+                    hoverScale={1.03}
+                    glareIntensity={0.42}
+                    glareSize={72}
+                    clipContent={false}
+                    enabled={tiltReady}
+                  >
+                    <CardFace labelled />
+                    <div className={`${styles.face} ${styles.back}`} aria-hidden>
+                      <Image className={styles.photoImg} alt="" {...portraitImage} />
+                      <div className={styles.overlay} data-bw>
+                        <Image
+                          className={styles.photoImg}
+                          alt=""
+                          aria-hidden
+                          {...portraitImage}
+                        />
+                      </div>
+                    </div>
+                  </InteractiveTiltCard>
+                )}
+              </SwitchView>
             </div>
           </div>
         </div>
