@@ -467,13 +467,11 @@
     top: min(0px, calc(100svh - var(--header-h, 0px)));
   }
 
+  /* Hidden, not removed from layout: taking the photo out with display: none meant coming back up past the
+     card relaid out the WebGL photo and restarted its shader in one frame, which was the stutter when
+     scrolling up. visibility keeps the layout and costs nothing to toggle. */
   .header[data-covered] {
     visibility: hidden;
-  }
-
-  /* Taken out of layout too, so the photo's shader sees it leave and stops drawing */
-  .header[data-covered] .photo {
-    display: none;
   }
 }
 
