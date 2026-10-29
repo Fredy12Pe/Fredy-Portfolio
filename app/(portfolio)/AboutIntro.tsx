@@ -443,7 +443,9 @@ export default function AboutIntro() {
             ? {
                 start: heldStart,
                 end: () => heldStart() + window.innerHeight * 1.7,
-                scrub: 1.4,
+                // Follows the scroll closely. A long scrub smoothed it over 1.4s, so on a fast scroll the
+                // photo and copy trailed the finger and then caught up.
+                scrub: 0.3,
                 onUpdate: markScrolling,
               }
             : {

@@ -568,7 +568,7 @@ export default function ProjectsCarousel({
       // Desktop cards sit high in a full-viewport section, so the fade
       // waits until that top has climbed into view.
       mm.add("(min-width: 861px)", () => {
-        reveal("top 46%", "top 12%", 0.55);
+        reveal("top 46%", "top 12%", 0.2);
       });
 
       // On a phone the cards live toward the bottom of a shorter section.
