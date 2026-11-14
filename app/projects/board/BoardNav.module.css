@@ -15,7 +15,8 @@
 /* The mini player on the case studies. It has no menu to sit beside, so it stands at the top right
    and stays there, so the music can always be started from it. Phones use the round play button
    instead (see BoardNav). */
-.playhead {
+/* Doubled class: the mini player's own rule (top: 50%) must not win on pages that load its styles later */
+.playhead.playhead {
   --u: min(100vw / 1920, 100dvh / 1080);
   position: fixed !important;
   top: 12px;

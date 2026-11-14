@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 1000" font-family="Inter, system-ui, sans-serif">
+<rect width="780" height="1000" rx="24" fill="#ffffff"/>
+<text x="30" y="56" font-size="15" font-weight="600" letter-spacing="2" fill="rgba(59,74,53,0.6)">BEFORE: MANUAL ORDER FLOW</text>
+<text x="420" y="56" font-size="15" font-weight="600" letter-spacing="2" fill="rgba(59,74,53,0.6)">AFTER: REDESIGNED STORE</text>
+<rect x="30" y="90" width="330" height="100" rx="20" fill="#e3e9dd" />
+<text x="195.0" y="128" text-anchor="middle" font-size="22" font-weight="600" fill="#3b4a35">Customer</text>
+<text x="195.0" y="154" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">Calls or emails</text>
+<text x="195.0" y="177" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">to order samples</text>
+<line x1="195.0" y1="195" x2="195.0" y2="223" stroke="#3b4a35" stroke-width="2"/>
+<path d="M189.0 215 L195.0 225 L201.0 215" fill="none" stroke="#3b4a35" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="30" y="230" width="330" height="100" rx="20" fill="#e3e9dd" />
+<text x="195.0" y="268" text-anchor="middle" font-size="22" font-weight="600" fill="#3b4a35">Sales rep</text>
+<text x="195.0" y="294" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">Coordinates with</text>
+<text x="195.0" y="317" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">the samples handler</text>
+<line x1="195.0" y1="335" x2="195.0" y2="363" stroke="#3b4a35" stroke-width="2"/>
+<path d="M189.0 355 L195.0 365 L201.0 355" fill="none" stroke="#3b4a35" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="30" y="370" width="330" height="100" rx="20" fill="#e3e9dd" />
+<text x="195.0" y="408" text-anchor="middle" font-size="22" font-weight="600" fill="#3b4a35">Samples handler</text>
+<text x="195.0" y="434" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">Checks whether</text>
+<text x="195.0" y="457" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">samples are available</text>
+<line x1="195.0" y1="475" x2="195.0" y2="503" stroke="#3b4a35" stroke-width="2"/>
+<path d="M189.0 495 L195.0 505 L201.0 495" fill="none" stroke="#3b4a35" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="30" y="510" width="330" height="100" rx="20" fill="#e3e9dd" />
+<text x="195.0" y="548" text-anchor="middle" font-size="22" font-weight="600" fill="#3b4a35">Sales rep</text>
+<text x="195.0" y="574" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">If available, sends</text>
+<text x="195.0" y="597" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">a ticket to materials</text>
+<line x1="195.0" y1="615" x2="195.0" y2="643" stroke="#3b4a35" stroke-width="2"/>
+<path d="M189.0 635 L195.0 645 L201.0 635" fill="none" stroke="#3b4a35" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="30" y="650" width="330" height="100" rx="20" fill="#e3e9dd" />
+<text x="195.0" y="688" text-anchor="middle" font-size="22" font-weight="600" fill="#3b4a35">Materials handler</text>
+<text x="195.0" y="714" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">Completes the order,</text>
+<text x="195.0" y="737" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">contacts the sales rep</text>
+<line x1="195.0" y1="755" x2="195.0" y2="783" stroke="#3b4a35" stroke-width="2"/>
+<path d="M189.0 775 L195.0 785 L201.0 775" fill="none" stroke="#3b4a35" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="30" y="790" width="330" height="100" rx="20" fill="#e3e9dd" />
+<text x="195.0" y="828" text-anchor="middle" font-size="22" font-weight="600" fill="#3b4a35">Sales rep</text>
+<text x="195.0" y="854" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">Sends it out by FedEx</text>
+<text x="195.0" y="877" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">or the post office</text>
+<rect x="420" y="90" width="330" height="100" rx="20" fill="#d4dfc9" />
+<text x="585.0" y="128" text-anchor="middle" font-size="22" font-weight="600" fill="#3b4a35">Customer</text>
+<text x="585.0" y="154" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">Browses the store</text>
+<text x="585.0" y="177" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">and places the order</text>
+<line x1="585.0" y1="195" x2="585.0" y2="223" stroke="#3b4a35" stroke-width="2"/>
+<path d="M579.0 215 L585.0 225 L591.0 215" fill="none" stroke="#3b4a35" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="420" y="230" width="330" height="100" rx="20" fill="#3b4a35" />
+<text x="585.0" y="268" text-anchor="middle" font-size="22" font-weight="600" fill="#fff">Samples Store</text>
+<text x="585.0" y="294" text-anchor="middle" font-size="17" fill="#fff">Shows what is available,</text>
+<text x="585.0" y="317" text-anchor="middle" font-size="17" fill="#fff">takes the order</text>
+<line x1="585.0" y1="335" x2="585.0" y2="363" stroke="#3b4a35" stroke-width="2"/>
+<path d="M579.0 355 L585.0 365 L591.0 355" fill="none" stroke="#3b4a35" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="420" y="370" width="330" height="100" rx="20" fill="#d4dfc9" />
+<text x="585.0" y="408" text-anchor="middle" font-size="22" font-weight="600" fill="#3b4a35">Materials handler</text>
+<text x="585.0" y="434" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">Gets the order ticket</text>
+<text x="585.0" y="457" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">automatically</text>
+<line x1="585.0" y1="475" x2="585.0" y2="503" stroke="#3b4a35" stroke-width="2"/>
+<path d="M579.0 495 L585.0 505 L591.0 495" fill="none" stroke="#3b4a35" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="420" y="510" width="330" height="100" rx="20" fill="#d4dfc9" />
+<text x="585.0" y="548" text-anchor="middle" font-size="22" font-weight="600" fill="#3b4a35">Shipping</text>
+<text x="585.0" y="574" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">Sent out by FedEx</text>
+<text x="585.0" y="597" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">or the post office</text>
+<rect x="420" y="650" width="330" height="100" rx="20" fill="#ffffff" stroke="#3b4a35" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="585.0" y="688" text-anchor="middle" font-size="22" font-weight="600" fill="#3b4a35">Sales rep</text>
+<text x="585.0" y="714" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">Only for questions</text>
+<text x="585.0" y="737" text-anchor="middle" font-size="17" fill="rgba(0,0,0,0.85)">and special cases</text>
+<text x="30" y="940" font-size="17" fill="rgba(0,0,0,0.85)">Before, every order went through the sales rep three times.</text>
+<text x="30" y="966" font-size="17" fill="rgba(0,0,0,0.85)">Now a standard order does not need them.</text>
+</svg>
