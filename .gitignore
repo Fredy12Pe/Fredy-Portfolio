@@ -43,6 +43,10 @@ next-env.d.ts
 *.flv
 *.webm
 *.m4v
+
+# Small videos the site plays: the mood animations (header ticket) and the location card's road
+!public/videos/moods/*.mp4
+!public/images/location-nav/road.mp4
 *.3gp
 *.ogv
 
