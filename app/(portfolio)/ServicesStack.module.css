@@ -1,6 +1,8 @@
 /* What I do: a pinned deck of service cards (see ServicesStack.tsx) */
 .section {
   position: relative;
+  /* Cards swipe out sideways; keep them from widening the page */
+  overflow-x: clip;
   width: min(100%, 1560px);
   margin: var(--section-gap) auto 0;
   padding-inline: var(--margin);
@@ -65,40 +67,34 @@
   }
 }
 
-/* A card's own turn: it tips back and lifts off the top, fading before it reaches the heading */
+/* A card's own turn: it swipes away to the side with a slight 3D turn, never crossing the heading */
 @keyframes skillsLeave {
   0% {
     opacity: 1;
-    transform: perspective(1400px) translateY(0%) rotateX(0deg) scale(1);
-    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.5);
+    transform: perspective(1400px) translateX(0%) rotateY(0deg) rotate(0deg) scale(1);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
   }
-  30% {
+  55% {
     opacity: 1;
-  }
-  70% {
-    opacity: 0;
   }
   100% {
     opacity: 0;
-    transform: perspective(1400px) translateY(-150%) rotateX(32deg) scale(0.94);
+    transform: perspective(1400px) translateX(-115%) rotateY(18deg) rotate(-6deg) scale(0.94);
   }
 }
 
 @keyframes skillsLeavePhone {
   0% {
     opacity: 1;
-    transform: perspective(1400px) translateY(0%) rotateX(0deg) scale(1);
+    transform: perspective(1400px) translateX(0%) rotateY(0deg) rotate(0deg) scale(1);
     animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
   }
-  45% {
+  60% {
     opacity: 1;
-  }
-  85% {
-    opacity: 0;
   }
   100% {
     opacity: 0;
-    transform: perspective(1400px) translateY(-150%) rotateX(32deg) scale(0.94);
+    transform: perspective(1400px) translateX(-115%) rotateY(18deg) rotate(-6deg) scale(0.94);
   }
 }
 
@@ -411,12 +407,19 @@
     border-radius: 20px;
   }
 
-  /* The art is sized by width on the desktop cards; here it fits the picture area, whatever its height */
+  /* The art fits inside the picture area, whatever its height, and is never cut off */
+  .visual {
+    position: relative;
+  }
+
   .art {
-    width: auto !important;
+    position: absolute;
+    top: 9%;
+    left: 6%;
+    width: 88% !important;
     height: 82% !important;
-    max-width: 88% !important;
-    max-height: 82% !important;
+    max-width: none !important;
+    max-height: none !important;
     object-fit: contain;
   }
 
