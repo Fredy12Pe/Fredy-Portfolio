@@ -60,6 +60,35 @@ export default function ServicesStack() {
      the top reaches the top of the screen. */
   const pinScreens = (SERVICES.length - 1) * (phone ? PER_CARD.phone : PER_CARD.desk);
   const dark: [number, number] = [-0.85 / pinScreens, -0.25 / pinScreens];
+  /* Safari tints its top and bottom bars from the page's own background, not the black layer above
+     it. So once the section is halfway up the screen (or passed), the page itself turns black too, and
+     white again above it. Set once at that point by an observer, never on each frame. */
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const meta =
+      document.querySelector<HTMLMetaElement>('meta[name="theme-color"]') ??
+      document.head.appendChild(Object.assign(document.createElement("meta"), { name: "theme-color" }));
+    const before = meta.content;
+    const setDark = (dark: boolean) => {
+      const colour = dark ? "#000000" : "";
+      document.documentElement.style.backgroundColor = colour;
+      document.body.style.backgroundColor = colour;
+      meta.content = dark ? "#000000" : before || "#ffffff";
+    };
+    // Every section is watched, so a jump (a menu link, Back) that skips past this one is still caught
+    const observer = new IntersectionObserver(
+      () => setDark(section.getBoundingClientRect().top < window.innerHeight / 2),
+      { rootMargin: "0px 0px -50% 0px" },
+    );
+    const main = section.closest("main");
+    (main ? [...main.children] : [section]).forEach((el) => observer.observe(el));
+    return () => {
+      observer.disconnect();
+      setDark(false);
+    };
+  }, []);
+
   // Phones: the LinkedIn row sits where the pile was, so it shows once the last card is up
   const lastUp: [number, number] = [STEP * (SERVICES.length - 1.25), STEP * (SERVICES.length - 1.05)];
 
