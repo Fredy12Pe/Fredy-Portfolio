@@ -3,11 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  animate,
   motion,
   useMotionValue,
-  useMotionValueEvent,
   useScroll,
+  useSpring,
   useTransform,
   type MotionValue,
 } from "motion/react";
@@ -45,12 +44,19 @@ function useArrivalMode(): Mode {
   const [mode, setMode] = useState<Mode>("still");
 
   useEffect(() => {
-    // The folder fly-out plays at every width, phones included; only reduced motion keeps it still
+    /* Desktop: the folder fly-out, tied to the scroll. Phones and tablets: the folder sits above the
+       case studies, which rise in as they come into view. Script-driven motion that counters the
+       scroll lags a frame behind the finger in mobile Safari, which showed as glitches. */
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setMode(reduced.matches ? "still" : "fly");
+    const touch = window.matchMedia("(pointer: coarse), (max-width: 900px)");
+    const update = () => setMode(reduced.matches ? "still" : touch.matches ? "rise" : "fly");
     update();
     reduced.addEventListener("change", update);
-    return () => reduced.removeEventListener("change", update);
+    touch.addEventListener("change", update);
+    return () => {
+      reduced.removeEventListener("change", update);
+      touch.removeEventListener("change", update);
+    };
   }, []);
 
   return mode;
@@ -108,39 +114,10 @@ const TRIGGER = 0.45; // scrolling past this sends the case studies out
 const RETURN = 0.2;
 /** The case studies' flight: out of the pocket and up (first part), then down into place */
 const RISE_SHARE = 0.36;
-/* Touch screens: the flight follows the scroll position directly, over this stretch of scrolling
-   (in screen heights, from the stage's top). There is no timer to stall and the page is never held,
-   so the cards cannot get stuck part way, and scrolling back plays it in reverse. */
+/* The flight follows the scroll position over this stretch of scrolling, in screen heights from the
+   stage's top */
 const SCRUB_FROM = 0.3;
 const SCRUB_SPAN = 0.7;
-
-/** Holds the page at the position y() gives: wheel, touch and scroll keys are ignored, and any
-    momentum still running is pulled back. Returns the function that lets go. */
-function holdScroll(y: () => number) {
-  const pin = () => {
-    if (Math.abs(window.scrollY - y()) > 1) window.scrollTo({ top: y(), behavior: "instant" });
-  };
-  const block = (event: Event) => event.preventDefault();
-  const blockKeys = (event: KeyboardEvent) => {
-    if ([" ", "PageUp", "PageDown", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) {
-      event.preventDefault();
-    }
-  };
-  pin();
-  window.addEventListener("wheel", block, { passive: false });
-  window.addEventListener("touchmove", block, { passive: false });
-  window.addEventListener("keydown", blockKeys);
-  window.addEventListener("scroll", pin);
-  return () => {
-    window.removeEventListener("wheel", block);
-    window.removeEventListener("touchmove", block);
-    window.removeEventListener("keydown", blockKeys);
-    window.removeEventListener("scroll", pin);
-  };
-}
-
-/** Gap left above the section title when the fly-out brings it into view, clear of the menu */
-const TITLE_OFFSET = 120;
 
 /** Size of the folder on screen; matches .folder in WorkFolder.module.css */
 function folderSize(vw: number) {
@@ -170,156 +147,14 @@ export function FeaturedWork() {
     };
   }, fly);
 
-  /* flight: 0 home in the folder, 1 out in place. Played on its own clock once a threshold is
-     crossed, rather than tied to the scrollbar, so both case studies always finish together. */
-  const flight = useMotionValue(0);
-  const target = useRef<0 | 1>(0);
-  const playing = useRef<ReturnType<typeof animate> | null>(null);
-  const release = useRef<(() => void) | null>(null);
-
-  const sendTo = (to: 0 | 1) => {
-    if (target.current === to) return;
-    target.current = to;
-    playing.current?.stop();
-    playing.current = animate(flight, to, {
-      duration: to === 1 ? 1.4 : 1.1,
-      ease: "linear", // the shaping happens per phase in FlyingPiece
-    });
-  };
-
-  const lastY = useRef<number | null>(null);
-  // How fast the page was scrolling (px per second), so the glide can carry on at that speed
-  const speed = useRef({ v: 0, t: 0 });
-
-  // Touch screens (phones, tablets): see SCRUB_FROM. Set once on mount and whenever it changes.
-  const scrub = useRef(false);
-  const syncRef = useRef<(y: number, instant?: boolean) => void>(() => {});
-
-  const sync = (y: number, instant = false) => {
-    const previous = lastY.current;
-    lastY.current = y;
-    const now = performance.now();
-    if (previous !== null && now > speed.current.t) {
-      const inst = ((y - previous) / (now - speed.current.t)) * 1000;
-      speed.current.v = now - speed.current.t < 120 ? 0.5 * inst + 0.5 * speed.current.v : inst;
-    }
-    speed.current.t = now;
-    if (!fly) return;
-    if (scrub.current) {
-      const { top, vh } = stage.current;
-      flight.set(clamp01(((y - top) / vh - SCRUB_FROM) / SCRUB_SPAN));
-      return;
-    }
-    if (release.current) return;
+  /* flight: 0 home in the folder, 1 out in place. It follows the scroll position directly: no timer,
+     no holding or steering the page. Scrolling back plays it in reverse, and nothing can stall part way. */
+  const scrubbed = useTransform([scrollY, tick], ([y]) => {
     const { top, vh } = stage.current;
-    const into = (y - top) / vh;
-    /* Passing through rather than scrolling here: a menu link gliding to another section (marked by
-       SmoothScroll), a jump of most of a screen, or a reload. Then the cards simply go out or home,
-       and the page is never held or steered. A quick flick of the wheel or trackpad still counts as
-       scrolling here, so it gets the pause in both directions. */
-    /* On touch screens the page is never held or steered: holding it fought the finger and its
-       momentum, which made the fly-out stutter on phones. The cards still fly out and back. */
-    const touch = window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 700;
-    const passing =
-      touch ||
-      previous === null ||
-      document.documentElement.hasAttribute("data-navigating") ||
-      Math.abs(y - previous) > vh * 0.6;
-    if (into >= TRIGGER) {
-      /* Well past the trigger (a jump, or loading partway down): out at once. But never cut short a
-         flight already under way: on phones, scrolling on during the flight passed this point and
-         snapped the cards straight into place. */
-      if (instant || (into > TRIGGER + 0.6 && target.current !== 1)) {
-        if (target.current === 1 && flight.get() === 1) return;
-        playing.current?.stop();
-        target.current = 1;
-        flight.set(1);
-        return;
-      }
-      if (target.current === 1) return;
-      if (passing) {
-        sendTo(1);
-        return;
-      }
-      /* Going out: the page glides on its own until the title sits just under the menu, while
-         the cards fly. Any scrolling the visitor does meanwhile is held, so the cards always
-         finish with the title in view; scrolling carries on from there. */
-      const slot = stageRef.current?.querySelector(`.${styles.headingSlot}`);
-      const end = slot ? slot.getBoundingClientRect().top + y - TITLE_OFFSET : y;
-      let at = y;
-      const onUpdate = (v: number) => {
-        at = v;
-        window.scrollTo({ top: v, behavior: "instant" });
-      };
-      /* The glide takes over at the speed the page was already moving, and eases out from there. Starting
-         from a standstill stopped a quick scroll dead for a moment before the animation began, which
-         showed as a hitch. The speed is capped so a fast flick cannot overshoot the title's place. */
-      const distance = end - y;
-      const carry = Math.max(0, Math.min(speed.current.v, 4 * Math.max(distance, 0)));
-      const glide =
-        distance > 0 && carry > 40
-          ? animate(y, end, { type: "spring", duration: 1.4, bounce: 0, velocity: carry, onUpdate })
-          : animate(y, end, { duration: 1.4, ease: [0.65, 0, 0.35, 1], onUpdate });
-      release.current = holdScroll(() => at);
-      sendTo(1);
-      playing.current?.then(() => {
-        glide.stop();
-        release.current?.();
-        release.current = null;
-      });
-    } else if (into < RETURN && target.current === 1) {
-      if (passing || into < -0.6) {
-        sendTo(0);
-        return;
-      }
-      /* Going home: the page holds still with the folder in the middle while the cards go back
-         in and the folder closes, then scrolling carries on. */
-      release.current = holdScroll(() => top + RETURN * vh);
-      sendTo(0);
-      playing.current?.then(() => {
-        release.current?.();
-        release.current = null;
-      });
-    }
-  };
-
-  useMotionValueEvent(scrollY, "change", (y) => sync(y));
-  // Arriving mid-page (reload, or a link into the section): start with the case studies already out
-  /* The first measure (loading the page partway down, or a reload) places the case studies at once.
-     Later measures, when something on the page loads and its height changes, only update positions:
-     placing at once then snapped cards that were mid-flight straight into place, which on phones
-     (images load as you scroll) often skipped the animation entirely. */
-  const placedOnce = useRef(false);
-  syncRef.current = sync;
-  useMotionValueEvent(tick, "change", () => {
-    const first = !placedOnce.current;
-    placedOnce.current = true;
-    sync(window.scrollY, first);
+    return clamp01((((y as number) - top) / vh - SCRUB_FROM) / SCRUB_SPAN);
   });
-  useEffect(() => {
-    const query = window.matchMedia("(pointer: coarse), (max-width: 700px)");
-    const update = () => {
-      scrub.current = query.matches;
-      if (query.matches) {
-        // Hand over from the timer to the scroll position: stop any flight and any page hold
-        playing.current?.stop();
-        release.current?.();
-        release.current = null;
-        target.current = 0;
-      }
-      syncRef.current(window.scrollY, true);
-    };
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-  useEffect(
-    () => () => {
-      playing.current?.stop();
-      release.current?.();
-    },
-    [],
-  );
+  // A light spring smooths the steps of a mouse wheel, so the cards glide rather than jump per notch
+  const flight = useSpring(scrubbed, { stiffness: 260, damping: 38, restDelta: 0.0005 });
 
   /* The folder opens as it settles in the middle, stays open while the case studies are out,
      and closes again once they are back inside. */
@@ -349,7 +184,7 @@ export function FeaturedWork() {
 
   return (
     <section id="work" className={`${styles.section} ${inter.className}`} aria-labelledby="work-heading">
-      <div ref={stageRef} className={styles.workStage}>
+      <div ref={stageRef} className={styles.workStage} data-mode={mode}>
         {/* Desktop: the folder's back and front in separate layers, so the case studies come out
             from between them */}
         <div className={`${styles.folderLayer} ${styles.flyOnly}`}>
@@ -438,7 +273,7 @@ function FlyHeading({
   }, fly);
 
   const pose = (sy: number, f: number) => {
-    const { cx, cy, fontSize, vw, vh } = geo.current;
+    const { cx, cy, fontSize, vw } = geo.current;
     const t = easeInOut(clamp01(f));
     const folder = folderSize(vw);
     const half = stage.current.hold / 2;

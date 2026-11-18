@@ -204,18 +204,19 @@ function ServiceCard({
   const style = {
     "--card": colours.bg,
     "--tint": colours.tint,
-    zIndex: SERVICES.length - index,
+    // Phones: each card slides up over the one before it, so later cards sit on top
+    zIndex: flat ? index + 1 : SERVICES.length - index,
+    "--i": index,
   } as CSSProperties;
 
   return (
     <motion.li
       className={styles.card}
       style={
-        !stack
-          ? style
-          : flat
-            ? { ...style, y, scale, opacity }
-            : { ...style, y, rotateX, scale, opacity, transformPerspective: 1400 }
+        /* Phones: no scroll-driven transforms at all. The cards are pinned by CSS (position: sticky) and
+           stack as the page scrolls, which the browser does on its own scrolling thread, so it can't
+           lag behind the finger or stall the way script-driven motion did in mobile Safari. */
+        !stack || flat ? style : { ...style, y, rotateX, scale, opacity, transformPerspective: 1400 }
       }
     >
       {children}

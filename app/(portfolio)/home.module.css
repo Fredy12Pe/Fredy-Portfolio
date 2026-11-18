@@ -216,6 +216,14 @@
   display: none;
 }
 
+/* Phones and tablets (data-mode="rise", set in WorkSections.tsx): no folder or pinned stage; the
+   title, then the case studies, which rise in as they scroll into view */
+.workStage[data-mode="rise"] .flyOnly {
+  display: none;
+}
+
+
+
 /* Reduced motion: the whole folder sits above the cards instead of holding the screen */
 @media (prefers-reduced-motion: reduce) {
   .flyOnly {
@@ -1006,7 +1014,7 @@
   /* The folder is centred in its stage, so the title sits about (36% of the screen - 185px) below
      the stage's top; this margin takes that back out, so the space above the title is the same
      section gap as everywhere else */
-  .section:has(.workStage) {
+  .section:has(.workStage[data-mode="fly"]) {
     margin-top: calc(var(--section-gap, 80px) - 36svh + 185px);
   }
 

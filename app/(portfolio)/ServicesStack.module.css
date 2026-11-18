@@ -202,22 +202,24 @@
   }
 }
 
-/* Phones: the same pinned deck that peels away, sized for a tall, narrow screen. The heading sits
-   just under the top bar, the deck takes the rest of the screen, and each card puts its text above
-   a picture that fills what is left of the card. */
+/* Phones: a stack of cards, all CSS. The heading scrolls in as normal, then each card pins just under
+   the top bar and the next one slides up over it, a little lower so the edges of the earlier cards
+   show above. No script moves anything, so it follows the finger exactly in mobile Safari. */
 @media (max-width: 700px) {
-  /* More scroll per card than on desktop (90% of a screen each), so a finger flick moves one card a
-     visible distance rather than throwing it off in an instant */
   .section {
-    height: calc(100vh + (var(--count) - 1) * 90vh);
-    height: calc(100svh + (var(--count) - 1) * 90svh);
+    height: auto;
+    margin-top: var(--section-gap);
   }
 
   .sticky {
-    justify-content: flex-start;
-    gap: 18px;
-    padding: 84px 0 20px;
-    box-sizing: border-box;
+    position: static;
+    display: block;
+    height: auto;
+    padding: 0;
+  }
+
+  .head {
+    margin-bottom: 28px;
   }
 
   .heading {
@@ -229,23 +231,29 @@
   }
 
   .deck {
-    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
     height: auto;
-    min-height: 0;
-    /* Room for the cards waiting lower in the pile, below the top card, so it stays on screen */
-    margin-bottom: 72px;
   }
 
   .card {
+    position: sticky;
+    inset: auto;
+    top: calc(84px + var(--i) * 12px);
+    height: min(68svh, 560px);
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     gap: 8px;
     padding: 8px;
     border-radius: 26px;
+    transform: none;
+    will-change: auto;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
   }
 
   .text {
-    padding: 26px 18px 18px;
+    padding: 22px 18px 14px;
   }
 
   .number {
@@ -269,7 +277,6 @@
     border-radius: 20px;
   }
 
-  /* The art is sized by width on the desktop cards; here it fits the picture area, whatever its height */
   .art {
     width: auto !important;
     height: 82% !important;
@@ -278,69 +285,8 @@
     object-fit: contain;
   }
 
-  /* The heading sits 84px down the pinned view, clear of the nav bar; the section's top margin
-     gives that back, so the space above the heading is the same section gap as everywhere else */
-  .section {
-    margin-top: max(0px, calc(var(--section-gap) - 84px));
-  }
-
-  /* The LinkedIn row leaves the pinned view, so the deck has the screen's full height: it shows
-     just after the deck, in the space before Open to work */
-  .sticky {
-    position: sticky;
-  }
-
   .verified {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    /* Pulled up into the room the deck keeps for its pile (72px + 20px), which is empty once the
-       last card is all that is left, so the row sits about 40px below that card */
-    margin-top: -52px;
-    /* It sits where the pile is, so it stays hidden until the last card is up and the pile gone */
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+    margin-top: 40px;
     font-size: 0.8rem;
-  }
-
-  .verified[data-deck-done] {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity 0.4s ease, visibility 0s;
-  }
-
-  /* With reduced motion the cards are a list, so the picture area needs its own height */
-  @media (prefers-reduced-motion: reduce) {
-    .sticky {
-      padding: 0;
-    }
-
-    .visual {
-      height: 220px;
-    }
-
-    .art {
-      height: 188px !important;
-      max-height: 188px !important;
-    }
-
-    .verified {
-      position: static;
-      visibility: visible;
-      opacity: 1;
-    }
-  }
-}
-
-/* Short phones: the line under the heading steps aside while the deck is pinned, for the cards' room */
-@media (max-width: 700px) and (max-height: 740px) and (prefers-reduced-motion: no-preference) {
-  .subheading {
-    display: none;
-  }
-
-  .description {
-    font-size: 0.85rem;
   }
 }
