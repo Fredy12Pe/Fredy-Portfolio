@@ -25,6 +25,19 @@ const PALETTE = [
   { bg: "#1d4f30", tint: "#d6f0dc", art: "/images/skills/front-end.svg", w: 285.119, h: 361.476 },
 ];
 
+/** Phone widths, where the deck is drawn without its 3D tip */
+function usePhone() {
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 700px)");
+    const update = () => setPhone(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  return phone;
+}
+
 /** The deck moves at every width, phones included, unless motion is reduced; matches ServicesStack.module.css */
 function useStackMode() {
   const [stack, setStack] = useState(false);
@@ -50,6 +63,7 @@ export default function ServicesStack() {
   const headRef = useReveal<HTMLDivElement>();
   const verifiedRef = useReveal<HTMLDivElement>(0.4);
   const stack = useStackMode();
+  const flat = usePhone();
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
   // 0 → 4: how many cards have peeled away so far
   const peeled = useTransform(scrollYProgress, (p) => clamp01(p / PEEL_SHARE) * (SERVICES.length - 1));
@@ -98,7 +112,7 @@ export default function ServicesStack() {
         </div>
         <ol className={styles.deck}>
           {SERVICES.map((service, index) => (
-            <ServiceCard key={service.name} index={index} peeled={peeled} stack={stack}>
+            <ServiceCard key={service.name} index={index} peeled={peeled} stack={stack} flat={flat}>
               <div className={styles.text}>
                 <span className={styles.number}>{String(index + 1).padStart(2, "0")}</span>
                 <h3 className={styles.title}>{service.name}</h3>
@@ -152,11 +166,14 @@ function ServiceCard({
   index,
   peeled,
   stack,
+  flat,
   children,
 }: {
   index: number;
   peeled: MotionValue<number>;
   stack: boolean;
+  /** Phones: the cards peel away without the 3D tip, which flickered in mobile Safari while scrolling */
+  flat: boolean;
   children: ReactNode;
 }) {
   const last = index === SERVICES.length - 1;
@@ -188,7 +205,13 @@ function ServiceCard({
   return (
     <motion.li
       className={styles.card}
-      style={stack ? { ...style, y, rotateX, scale, opacity, transformPerspective: 1400 } : style}
+      style={
+        !stack
+          ? style
+          : flat
+            ? { ...style, y, scale, opacity }
+            : { ...style, y, rotateX, scale, opacity, transformPerspective: 1400 }
+      }
     >
       {children}
     </motion.li>

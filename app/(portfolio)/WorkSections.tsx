@@ -65,16 +65,29 @@ function useMeasured(measure: () => void, active: boolean): MotionValue<number> 
 
   useEffect(() => {
     if (!active) return;
+    // A phone's address bar sliding in and out changes the window's height by a little as the page
+    // scrolls; re-measuring on that made the cards jump, so only width changes and big height changes
+    // (a rotation, a real resize) count. Changes to the page's own height still re-measure.
+    let lastW = window.innerWidth;
+    let lastH = window.innerHeight;
     const run = () => {
       measureRef.current();
       tick.set(tick.get() + 1);
     };
+    const onResize = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (w === lastW && Math.abs(h - lastH) < 160) return;
+      lastW = w;
+      lastH = h;
+      run();
+    };
     run();
-    window.addEventListener("resize", run);
+    window.addEventListener("resize", onResize);
     const observer = new ResizeObserver(run);
     observer.observe(document.body);
     return () => {
-      window.removeEventListener("resize", run);
+      window.removeEventListener("resize", onResize);
       observer.disconnect();
     };
   }, [active, tick]);
@@ -181,7 +194,11 @@ export function FeaturedWork() {
        SmoothScroll), a jump of most of a screen, or a reload. Then the cards simply go out or home,
        and the page is never held or steered. A quick flick of the wheel or trackpad still counts as
        scrolling here, so it gets the pause in both directions. */
+    /* On touch screens the page is never held or steered: holding it fought the finger and its
+       momentum, which made the fly-out stutter on phones. The cards still fly out and back. */
+    const touch = window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 700;
     const passing =
+      touch ||
       previous === null ||
       document.documentElement.hasAttribute("data-navigating") ||
       Math.abs(y - previous) > vh * 0.6;

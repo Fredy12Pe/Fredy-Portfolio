@@ -79,6 +79,9 @@ export default function LocationNavCard({ className }: { className?: string }) {
   // Design px → screen px for the road scene (the design card is 560 wide)
   const [k, setK] = useState(0.8);
   const [reduced, setReduced] = useState(false);
+  // On screen right now, and the clock to fall back on when the video won't play (see below)
+  const visible = useRef(false);
+  const fallbackClock = useRef(0);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -97,6 +100,7 @@ export default function LocationNavCard({ className }: { className?: string }) {
     setReduced(motionOff);
     if (motionOff) return;
     const observer = new IntersectionObserver(([entry]) => {
+      visible.current = entry.isIntersecting;
       if (entry.isIntersecting) void video.play().catch(() => {});
       else video.pause();
     });
@@ -104,11 +108,22 @@ export default function LocationNavCard({ className }: { className?: string }) {
     return () => observer.disconnect();
   }, []);
 
-  useAnimationFrame(() => {
+  /* The drive follows the video's clock. If the video won't play while the card is on screen (a
+     phone in low power mode, or a browser that blocks it), the puck, arrows, glows and directions keep
+     moving on a clock of their own, over the road's still frame, so the card is never frozen. */
+  useAnimationFrame((_, delta) => {
     const video = videoRef.current;
     if (!video || reduced) return;
-    const duration = video.duration || LOOP;
-    t.set((video.currentTime % duration) / duration);
+    const playing = !video.paused && video.readyState >= 2;
+    if (playing) {
+      const duration = video.duration || LOOP;
+      t.set((video.currentTime % duration) / duration);
+      fallbackClock.current = video.currentTime % duration;
+      return;
+    }
+    if (!visible.current) return;
+    fallbackClock.current = (fallbackClock.current + Math.min(delta, 50) / 1000) % LOOP;
+    t.set(fallbackClock.current / LOOP);
   });
 
   const right = useKeyframes(t, RIGHT.times, RIGHT.values, RIGHT.ease);
@@ -150,7 +165,7 @@ export default function LocationNavCard({ className }: { className?: string }) {
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
         />
         <motion.div className={styles.puck} style={{ rotate: puckRotate }}>
           <img src={`${ASSET}/puck.svg`} alt="" />

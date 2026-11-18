@@ -168,6 +168,9 @@
 }
 
 .elsewhere a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   color: inherit;
   font-size: 1rem;
   text-decoration: underline;
@@ -180,4 +183,11 @@
 .elsewhere a:hover {
   opacity: 1;
   text-decoration-color: currentColor;
+}
+
+/* The icon before each link's name */
+.elsewhere svg {
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
 }

@@ -7,6 +7,7 @@ import { useReveal } from "@/lib/reveal";
 import FooterSignature from "./FooterSignature";
 import { CONTACT_EMAIL, CONTACT_LINKS } from "../redesign/contact-links";
 import { glideOnHome } from "./nav-glide";
+import { GitHubIcon, InstagramIcon, LinkedInIcon } from "./social-icons";
 import styles from "./SiteFooter.module.css";
 
 /* The home page's sections, in page order */
@@ -20,9 +21,9 @@ const LINKS = [
 ] as const;
 
 const ELSEWHERE = [
-  { href: CONTACT_LINKS.linkedin, label: "LinkedIn" },
-  { href: CONTACT_LINKS.github, label: "GitHub" },
-  { href: CONTACT_LINKS.instagram, label: "Instagram" },
+  { href: CONTACT_LINKS.linkedin, label: "LinkedIn", icon: LinkedInIcon },
+  { href: CONTACT_LINKS.github, label: "GitHub", icon: GitHubIcon },
+  { href: CONTACT_LINKS.instagram, label: "Instagram", icon: InstagramIcon },
 ] as const;
 
 /* The footer's contents fade up once the footer itself has finished fading in
@@ -72,15 +73,20 @@ export default function SiteFooter() {
                 {CONTACT_EMAIL}
               </a>
               <ul className={styles.elsewhere}>
-                {ELSEWHERE.map((item) => (
-                  <li key={item.label}>
-                    <a href={item.href} target="_blank" rel="noopener noreferrer">
-                      {item.label} <span aria-hidden>↗</span>
+                {ELSEWHERE.map(({ href, label, icon: Icon }) => (
+                  <li key={label}>
+                    <a href={href} target="_blank" rel="noopener noreferrer">
+                      <Icon />
+                      {label} <span aria-hidden>↗</span>
                     </a>
                   </li>
                 ))}
                 <li>
                   <a href={CONTACT_LINKS.resume} download>
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+                      <path d="M7 3.5h7l4 4V20.5H7z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+                      <path d="M10 11h5M10 14.5h5M10 18h3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                    </svg>
                     Resume <span aria-hidden>↓</span>
                   </a>
                 </li>
