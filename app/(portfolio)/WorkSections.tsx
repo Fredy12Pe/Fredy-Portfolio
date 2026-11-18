@@ -108,6 +108,11 @@ const TRIGGER = 0.45; // scrolling past this sends the case studies out
 const RETURN = 0.2;
 /** The case studies' flight: out of the pocket and up (first part), then down into place */
 const RISE_SHARE = 0.36;
+/* Touch screens: the flight follows the scroll position directly, over this stretch of scrolling
+   (in screen heights, from the stage's top). There is no timer to stall and the page is never held,
+   so the cards cannot get stuck part way, and scrolling back plays it in reverse. */
+const SCRUB_FROM = 0.3;
+const SCRUB_SPAN = 0.7;
 
 /** Holds the page at the position y() gives: wheel, touch and scroll keys are ignored, and any
     momentum still running is pulled back. Returns the function that lets go. */
@@ -183,11 +188,29 @@ export function FeaturedWork() {
   };
 
   const lastY = useRef<number | null>(null);
+  // How fast the page was scrolling (px per second), so the glide can carry on at that speed
+  const speed = useRef({ v: 0, t: 0 });
+
+  // Touch screens (phones, tablets): see SCRUB_FROM. Set once on mount and whenever it changes.
+  const scrub = useRef(false);
+  const syncRef = useRef<(y: number, instant?: boolean) => void>(() => {});
 
   const sync = (y: number, instant = false) => {
     const previous = lastY.current;
     lastY.current = y;
-    if (!fly || release.current) return;
+    const now = performance.now();
+    if (previous !== null && now > speed.current.t) {
+      const inst = ((y - previous) / (now - speed.current.t)) * 1000;
+      speed.current.v = now - speed.current.t < 120 ? 0.5 * inst + 0.5 * speed.current.v : inst;
+    }
+    speed.current.t = now;
+    if (!fly) return;
+    if (scrub.current) {
+      const { top, vh } = stage.current;
+      flight.set(clamp01(((y - top) / vh - SCRUB_FROM) / SCRUB_SPAN));
+      return;
+    }
+    if (release.current) return;
     const { top, vh } = stage.current;
     const into = (y - top) / vh;
     /* Passing through rather than scrolling here: a menu link gliding to another section (marked by
@@ -224,14 +247,19 @@ export function FeaturedWork() {
       const slot = stageRef.current?.querySelector(`.${styles.headingSlot}`);
       const end = slot ? slot.getBoundingClientRect().top + y - TITLE_OFFSET : y;
       let at = y;
-      const glide = animate(y, end, {
-        duration: 1.4,
-        ease: [0.65, 0, 0.35, 1],
-        onUpdate: (v) => {
-          at = v;
-          window.scrollTo({ top: v, behavior: "instant" });
-        },
-      });
+      const onUpdate = (v: number) => {
+        at = v;
+        window.scrollTo({ top: v, behavior: "instant" });
+      };
+      /* The glide takes over at the speed the page was already moving, and eases out from there. Starting
+         from a standstill stopped a quick scroll dead for a moment before the animation began, which
+         showed as a hitch. The speed is capped so a fast flick cannot overshoot the title's place. */
+      const distance = end - y;
+      const carry = Math.max(0, Math.min(speed.current.v, 4 * Math.max(distance, 0)));
+      const glide =
+        distance > 0 && carry > 40
+          ? animate(y, end, { type: "spring", duration: 1.4, bounce: 0, velocity: carry, onUpdate })
+          : animate(y, end, { duration: 1.4, ease: [0.65, 0, 0.35, 1], onUpdate });
       release.current = holdScroll(() => at);
       sendTo(1);
       playing.current?.then(() => {
@@ -262,11 +290,29 @@ export function FeaturedWork() {
      placing at once then snapped cards that were mid-flight straight into place, which on phones
      (images load as you scroll) often skipped the animation entirely. */
   const placedOnce = useRef(false);
+  syncRef.current = sync;
   useMotionValueEvent(tick, "change", () => {
     const first = !placedOnce.current;
     placedOnce.current = true;
     sync(window.scrollY, first);
   });
+  useEffect(() => {
+    const query = window.matchMedia("(pointer: coarse), (max-width: 700px)");
+    const update = () => {
+      scrub.current = query.matches;
+      if (query.matches) {
+        // Hand over from the timer to the scroll position: stop any flight and any page hold
+        playing.current?.stop();
+        release.current?.();
+        release.current = null;
+        target.current = 0;
+      }
+      syncRef.current(window.scrollY, true);
+    };
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
   useEffect(
     () => () => {
       playing.current?.stop();
