@@ -1,5 +1,7 @@
 .root {
-  position: absolute;
+  /* Fixed to the screen, so the signature is centred on it; the header it sits in is taller than a
+     phone's screen, which put the middle near the bottom */
+  position: fixed;
   inset: 0;
   /* Above the bar at the top of the screen (StickyMenu, 1000), which comes in as the signature flies
      to its logo, so the signature lands on top of the bar rather than behind its glass */

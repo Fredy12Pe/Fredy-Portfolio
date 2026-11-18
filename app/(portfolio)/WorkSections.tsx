@@ -38,7 +38,8 @@ const ARROW_SRC = "/images/featured-work/project-link.svg";
 /** Each card's scroll range, as shares of the pin: each leaves a beat after the one before it */
 const pieceRange = (order: number): [number, number] => [0.1 + order * 0.05, 0.72 + order * 0.05];
 const FOLDER_OPEN: [number, number] = [-0.45, 0.12];
-const FOLDER_GONE: [number, number] = [0.55, 0.88];
+// Gone while the cards are still on their way down, so it never shows behind them
+const FOLDER_GONE: [number, number] = [0.36, 0.56];
 const FRONT_DROP: [number, number] = [0, 0.5];
 
 /* Poses for the four cards, in order: Grove details, Grove media, Samples details, Samples media.

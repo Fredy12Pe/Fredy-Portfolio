@@ -77,7 +77,7 @@ export default function SiteFooter() {
                   <li key={label}>
                     <a href={href} target="_blank" rel="noopener noreferrer">
                       <Icon />
-                      {label} <span aria-hidden>↗</span>
+                      {label}
                     </a>
                   </li>
                 ))}
@@ -87,7 +87,7 @@ export default function SiteFooter() {
                       <path d="M7 3.5h7l4 4V20.5H7z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
                       <path d="M10 11h5M10 14.5h5M10 18h3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
                     </svg>
-                    Resume <span aria-hidden>↓</span>
+                    Resume
                   </a>
                 </li>
               </ul>
