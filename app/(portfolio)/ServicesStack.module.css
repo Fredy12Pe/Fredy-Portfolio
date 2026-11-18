@@ -206,6 +206,13 @@
    just under the top bar, the deck takes the rest of the screen, and each card puts its text above
    a picture that fills what is left of the card. */
 @media (max-width: 700px) {
+  /* More scroll per card than on desktop (90% of a screen each), so a finger flick moves one card a
+     visible distance rather than throwing it off in an instant */
+  .section {
+    height: calc(100vh + (var(--count) - 1) * 90vh);
+    height: calc(100svh + (var(--count) - 1) * 90svh);
+  }
+
   .sticky {
     justify-content: flex-start;
     gap: 18px;

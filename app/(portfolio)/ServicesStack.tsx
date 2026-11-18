@@ -53,6 +53,7 @@ function useStackMode() {
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const easeIn = (t: number) => t * t;
+const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
 /** Share of the scroll spent peeling cards; the rest holds the last card in view */
 const PEEL_SHARE = 0.86;
@@ -182,8 +183,12 @@ function ServiceCard({
   // How many cards are still above it
   const depth = useTransform(peeled, (n) => Math.max(0, index - n));
 
+  // Phones: a smooth ease rather than an accelerating one, so a flick of the finger shows the card
+  // slide away instead of vanishing in a frame or two
   const y = useTransform([leave, depth], ([l, d]) =>
-    (l as number) > 0 ? `${-150 * easeIn(l as number)}%` : `${Math.min(d as number, 3) * 5}%`,
+    (l as number) > 0
+      ? `${-150 * (flat ? easeInOut(l as number) : easeIn(l as number))}%`
+      : `${Math.min(d as number, 3) * 5}%`,
   );
   const rotateX = useTransform(leave, (l) => 32 * l);
   const scale = useTransform([leave, depth], ([l, d]) =>
@@ -191,8 +196,8 @@ function ServiceCard({
   );
   const opacity = useTransform([leave, depth], ([l, d]) => {
     if ((d as number) > 3) return 0;
-    // Gone before it reaches the heading above the deck
-    return 1 - clamp01(((l as number) - 0.3) / 0.4);
+    // Gone before it reaches the heading above the deck (later on phones, so the slide is seen)
+    return flat ? 1 - clamp01(((l as number) - 0.45) / 0.4) : 1 - clamp01(((l as number) - 0.3) / 0.4);
   });
 
   const colours = PALETTE[index % PALETTE.length];

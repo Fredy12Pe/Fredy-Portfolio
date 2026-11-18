@@ -203,7 +203,10 @@ export function FeaturedWork() {
       document.documentElement.hasAttribute("data-navigating") ||
       Math.abs(y - previous) > vh * 0.6;
     if (into >= TRIGGER) {
-      if (instant || into > TRIGGER + 0.6) {
+      /* Well past the trigger (a jump, or loading partway down): out at once. But never cut short a
+         flight already under way: on phones, scrolling on during the flight passed this point and
+         snapped the cards straight into place. */
+      if (instant || (into > TRIGGER + 0.6 && target.current !== 1)) {
         if (target.current === 1 && flight.get() === 1) return;
         playing.current?.stop();
         target.current = 1;
@@ -254,7 +257,16 @@ export function FeaturedWork() {
 
   useMotionValueEvent(scrollY, "change", (y) => sync(y));
   // Arriving mid-page (reload, or a link into the section): start with the case studies already out
-  useMotionValueEvent(tick, "change", () => sync(window.scrollY, true));
+  /* The first measure (loading the page partway down, or a reload) places the case studies at once.
+     Later measures, when something on the page loads and its height changes, only update positions:
+     placing at once then snapped cards that were mid-flight straight into place, which on phones
+     (images load as you scroll) often skipped the animation entirely. */
+  const placedOnce = useRef(false);
+  useMotionValueEvent(tick, "change", () => {
+    const first = !placedOnce.current;
+    placedOnce.current = true;
+    sync(window.scrollY, first);
+  });
   useEffect(
     () => () => {
       playing.current?.stop();
