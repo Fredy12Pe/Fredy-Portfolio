@@ -86,7 +86,9 @@ export default function WelcomeSignature({
       gsap.set(mark, { xPercent: -50, yPercent: -50, x: 0, y: 0, scaleX: 1, scaleY: 1 });
 
       const tl = gsap.timeline({
-        delay: 0.15,
+        delay: 0.05,
+        // The landing flag stays until this unmounts (below), after the header has left its intro
+        // state; clearing it here first left a frame with the bar hidden again
         onComplete: () => {
           if (alive) onDoneRef.current();
         },
@@ -128,6 +130,8 @@ export default function WelcomeSignature({
         return landing;
       };
 
+      // As the signature starts to fly, the top bar comes in (StickyMenu.module.css), so it lands in its place
+      tl.call(() => document.documentElement.setAttribute("data-intro-landing", ""), undefined, "+=0.08");
       tl.to(
         mark,
         {
@@ -139,18 +143,23 @@ export default function WelcomeSignature({
           scaleX: () => land()?.scaleX ?? 1,
           scaleY: () => land()?.scaleY ?? 1,
         },
-        "+=0.08",
+        "<",
       );
       tl.to(
         scrim,
         { opacity: 0, duration: 0.4, ease: "power2.inOut" },
         "<",
       );
+
+      // The whole intro, from the first stroke to the page, fits in under 1.5 seconds
+      const MAX_SECONDS = 1.35;
+      if (tl.duration() > MAX_SECONDS) tl.timeScale(tl.duration() / MAX_SECONDS);
     }, root);
 
     return () => {
       alive = false;
       ctx.revert();
+      document.documentElement.removeAttribute("data-intro-landing");
     };
   }, [logoRef]);
 

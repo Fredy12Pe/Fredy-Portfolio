@@ -199,7 +199,7 @@ export default function FredyCard({ className }: FredyCardProps) {
         <motion.a
           className={styles.introResume}
           href={CONTACT_LINKS.resume}
-          download="Fredy Pedro - Resume.pdf"
+          download="Fredy_Pedro_Resume.pdf"
           data-node-id="248:1308"
           data-name="Link - Download resume"
           initial={REST.resume}

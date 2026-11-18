@@ -35,8 +35,10 @@
   }
 }
 
+/* Doubled, like the rule above: the mini player's own display: flex (StickyMenu.module.css) loads
+   later, and won over a single class, so the player stayed up on phones and covered the menu button */
 @media (max-width: 767px) {
-  .playhead {
+  .playhead.playhead {
     display: none;
   }
 }

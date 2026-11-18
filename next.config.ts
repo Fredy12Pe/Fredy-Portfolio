@@ -20,8 +20,13 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/redesign", destination: "/", permanent: true },
-      { source: "/redesign/about", destination: "/about", permanent: true },
-      { source: "/redesign/contact", destination: "/contact", permanent: true },
+      // The old standalone About and Contact pages: the home page has both as sections now
+      { source: "/redesign/about", destination: "/#about", permanent: true },
+      { source: "/redesign/contact", destination: "/#contact", permanent: true },
+      { source: "/about", destination: "/#about", permanent: true },
+      { source: "/contact", destination: "/#contact", permanent: true },
+      // The resume's old address, for any copies of the link already shared
+      { source: "/resume/resume.pdf", destination: "/resume/Fredy_Pedro_Resume.pdf", permanent: true },
     ];
   },
   // Add headers for static assets and performance

@@ -493,7 +493,7 @@ function ResumeCard() {
           <a
             className={styles.contactPageAction}
             href={CONTACT_LINKS.resume}
-            download="Fredy Pedro - Resume.pdf"
+            download="Fredy_Pedro_Resume.pdf"
             aria-label="Download resume"
           >
             <DownloadIcon />

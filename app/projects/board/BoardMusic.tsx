@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { MiniPlayer } from "../../(portfolio)/StickyMenu";
 import { START_VOLUME, useMusicPlayer } from "../../(portfolio)/music";
 import { registerMusicControls } from "../../(portfolio)/music-bridge";
 import { getMusicAudio } from "../../(portfolio)/persistent-audio";
-import styles from "./BoardNav.module.css";
 
-// The music player on the case studies. The home page's header runs the player; here it is run
-// from the case study's own nav, on the same shared audio, so the music carries on from the home page.
+// The music on the case studies. The home page's header runs the player; here it is run from the
+// case study's nav, on the same shared audio, so the music carries on from the home page.
 export default function BoardMusic() {
   const audioRef = useRef<HTMLAudioElement | null>(getMusicAudio());
   const music = useMusicPlayer(audioRef);
@@ -31,5 +29,6 @@ export default function BoardMusic() {
     music.setOutputLevel(START_VOLUME);
   }, [music.setOutputLevel]);
 
-  return <MiniPlayer className={styles.playhead} />;
+  // The player itself is the bar's mini player (StickyMenu); this only runs the music behind it
+  return null;
 }

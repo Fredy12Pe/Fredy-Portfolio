@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { glideOnHome } from "./nav-glide";
 import styles from "./HeaderNav.module.css";
 
 export type HeaderNavItem = { label: string; href: string };
@@ -97,7 +98,10 @@ export default function HeaderNav({ items }: { items: HeaderNavItem[] }) {
           data-active={i === displayIndex}
           onMouseEnter={() => setHoverIndex(i)}
           onFocus={() => setHoverIndex(i)}
-          onClick={() => setActiveIndex(i)}
+          onClick={(event) => {
+            setActiveIndex(i);
+            glideOnHome(event, item.href);
+          }}
         >
           {item.label}
         </Link>

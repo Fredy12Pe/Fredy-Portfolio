@@ -1,0 +1,80 @@
+/* Follow eyes (FollowEyes.tsx). Set --eye on the parent or the class to size them (and
+   --eye-bg / --pupil-bg to recolour them); the pupil and gap
+   keep the Framer button's proportions (40px eye, 12px pupil, 4px gap). */
+.eyes {
+  --eye: 34px;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: calc(var(--eye) * 0.1);
+}
+
+.eye {
+  display: grid;
+  place-items: center;
+  width: var(--eye);
+  height: var(--eye);
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--eye-bg, #fff);
+}
+
+.pupil {
+  display: block;
+  width: calc(var(--eye) * 0.3);
+  height: calc(var(--eye) * 0.3);
+  border-radius: 50%;
+  background: var(--pupil-bg, #000);
+}
+
+/* Blink, as in Framer's button: every 3 seconds the eyes close to 30% and open again, about 100ms in
+   all. Closing and opening each take about 40ms, with a short 20ms hold, so the eyelid visibly moves
+   rather than snapping. The pupils hide while closed. Pupils are moved by JS through transform, so
+   the blink animates only the eye's scale and the pupil's opacity. The keyframe percentages are of
+   the 3s cycle (40ms ≈ 1.33%). */
+.eye {
+  animation: blink 3s infinite;
+}
+
+.pupil {
+  animation: pupilBlink 3s infinite;
+}
+
+@keyframes blink {
+  0% {
+    transform: scaleY(1);
+  }
+  1.33% {
+    transform: scaleY(0.3);
+  }
+  2%,
+  2.67% {
+    transform: scaleY(0.3);
+  }
+  3.33%,
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes pupilBlink {
+  0%,
+  1.32% {
+    opacity: 1;
+  }
+  1.33%,
+  3.32% {
+    opacity: 0;
+  }
+  3.33%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eye,
+  .pupil {
+    animation: none;
+  }
+}

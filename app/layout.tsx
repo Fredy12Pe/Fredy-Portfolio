@@ -1,5 +1,5 @@
 import "./globals.css";
-import { orbitron, roboto } from "@/lib/fonts";
+import { inter, orbitron, roboto } from "@/lib/fonts";
 
 // Lets the page draw under the notch and home bar, so the safe-area insets used by the phone menu are real values
 export const viewport = {
@@ -7,19 +7,21 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: "Fredy · Portfolio",
+  title: "Fredy · Design Engineer",
   description:
-    "Fredy is a UI/UX designer and front-end developer. Explore selected projects, about, and contact.",
+    "Fredy is a Design Engineer in Los Angeles who designs and builds web and mobile products. Explore selected work, about, and contact.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${orbitron.variable} ${roboto.variable}`}>
+    <html lang="en" className={`${orbitron.variable} ${roboto.variable} ${inter.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){
   document.write('<style id="portfolio-boot">html{background:#000}body{visibility:hidden}</style>');
+  // Marks Back/Forward, so the home page can tell a return from a fresh visit (see SmoothScroll)
+  window.addEventListener("popstate",function(){window.__portfolioPopAt=performance.now()});
   var PREFIX="portfolio-scroll:";
   var AWAY=48;
   function key(){return PREFIX+location.pathname}
@@ -39,18 +41,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   var layouts={};
   var placing=false;
   var sheet=document.createElement("style");
+  function writeHistory(value){
+    try{history.replaceState(Object.assign({},history.state,{portfolioScroll:Math.round(value)}),"")}catch(e){}
+  }
   function write(value){
     try{sessionStorage.setItem(key(),String(Math.round(value)))}catch(e){}
     // Also kept in the history entry, which survives a reload even when sessionStorage is blocked
-    try{history.replaceState(Object.assign({},history.state,{portfolioScroll:Math.round(value)}),"")}catch(e){}
+    writeHistory(value);
   }
+  // While scrolling, only sessionStorage is updated each frame. The history entry is updated once
+  // scrolling stops: Safari allows only 100 history changes per 10 seconds, and going over makes the
+  // next link click (a pushState) throw, which crashed the page.
   var queued=false;
+  var historyTimer=0;
   function queueWrite(){
     if(queued||holding)return;
     queued=true;
     requestAnimationFrame(function(){
       queued=false;
-      if(!holding)write(window.scrollY);
+      if(holding)return;
+      try{sessionStorage.setItem(key(),String(Math.round(window.scrollY)))}catch(e){}
+      clearTimeout(historyTimer);
+      var path=location.pathname;
+      historyTimer=setTimeout(function(){if(!holding&&location.pathname===path)writeHistory(window.scrollY)},600);
     });
   }
   if(!away){

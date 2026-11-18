@@ -2,8 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { roboto } from "@/lib/fonts";
+import { createPortal } from "react-dom";
+import { inter } from "@/lib/fonts";
 import { HEADER_NAV_ITEMS } from "./HeaderNav";
+import { glideOnHome } from "./nav-glide";
+import { CONNECT_ITEM, readSection } from "./SiteNav";
+import { CONTACT_LINKS } from "../redesign/contact-links";
 import { getMusicControls } from "./music-bridge";
 import { getMusicAudio } from "./persistent-audio";
 import { MUSIC_TRACKS } from "./music";
@@ -21,7 +25,21 @@ const toneClass: Record<Tone, string> = {
 // 52px buttons: comfortable to tap, and large enough to read on a phone
 const roundButton = "inline-flex h-[52px] w-[52px] shrink-0 cursor-pointer items-center justify-center rounded-full md:hidden";
 
-export function PhoneMenu({ className = "", tone = "dark" }: { className?: string; tone?: Tone }) {
+type MenuItem = { label: string; href: string; id?: string };
+
+/* items: the links in the sheet (the case studies' three by default). home: the home page's
+   version, which marks the section being read and ends with Let's connect and the resume. */
+export function PhoneMenu({
+  className = "",
+  tone = "dark",
+  items = HEADER_NAV_ITEMS,
+  home = false,
+}: {
+  className?: string;
+  tone?: Tone;
+  items?: MenuItem[];
+  home?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -46,13 +64,17 @@ export function PhoneMenu({ className = "", tone = "dark" }: { className?: strin
           {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
         </svg>
       </button>
-      {open ? <MenuSheet onClose={close} /> : null}
+      {/* Rendered at the end of <body>, above everything: inside the menu's own sticky layer, parts
+          of the page painted over it and caught taps meant for its links */}
+      {open ? createPortal(<MenuSheet onClose={close} items={items} home={home} />, document.body) : null}
     </>
   );
 }
 
-function MenuSheet({ onClose }: { onClose: () => void }) {
+function MenuSheet({ onClose, items, home }: { onClose: () => void; items: MenuItem[]; home: boolean }) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  // The section on screen when the sheet opened, marked in the list
+  const [current] = useState(() => (home ? readSection().id : null));
 
   // Stops the page behind the sheet from scrolling, takes focus, and closes on Escape
   useEffect(() => {
@@ -75,7 +97,7 @@ function MenuSheet({ onClose }: { onClose: () => void }) {
       role="dialog"
       aria-modal="true"
       aria-label="Menu"
-      className={`fixed inset-0 z-[1100] flex flex-col bg-[#0b0b0c] text-white ${roboto.className}`}
+      className={`fixed inset-0 z-[1100] flex flex-col bg-[#0b0b0c] text-white ${inter.className}`}
       style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex justify-end px-4 pt-3">
@@ -92,17 +114,51 @@ function MenuSheet({ onClose }: { onClose: () => void }) {
         </button>
       </div>
       <nav aria-label="Site" className="flex flex-1 flex-col justify-center gap-1 px-8">
-        {HEADER_NAV_ITEMS.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onClose}
-            className="py-3 text-[32px] font-medium leading-tight tracking-tight text-white"
-          >
-            {item.label}
-          </Link>
-        ))}
+        {items.map((item) => {
+          const here = home && item.id === current;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={here ? "location" : undefined}
+              onClick={(event) => {
+                onClose();
+                glideOnHome(event, item.href);
+              }}
+              className={`flex items-center gap-3 py-3 text-[32px] font-medium leading-tight tracking-tight ${
+                here ? "text-white" : home ? "text-white/60" : "text-white"
+              }`}
+            >
+              {here ? <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#ffb45c]" aria-hidden /> : null}
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
+      {home ? (
+        <div className="flex flex-col gap-3 px-8 pb-8">
+          <Link
+            href={CONNECT_ITEM.href}
+            onClick={(event) => {
+              onClose();
+              glideOnHome(event, CONNECT_ITEM.href);
+            }}
+            className="flex h-14 items-center justify-center rounded-full bg-white px-6 text-[17px] font-semibold text-[#0b1314]"
+          >
+            {CONNECT_ITEM.label}
+          </Link>
+          <a
+            href={CONTACT_LINKS.resume}
+            download
+            className="flex h-14 items-center justify-center gap-2 rounded-full text-[17px] font-medium text-white ring-1 ring-white/25"
+          >
+            Download resume
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" />
+            </svg>
+          </a>
+        </div>
+      ) : null}
     </div>
   );
 }

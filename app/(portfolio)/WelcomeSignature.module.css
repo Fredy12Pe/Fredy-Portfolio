@@ -1,7 +1,9 @@
 .root {
   position: absolute;
   inset: 0;
-  z-index: 80;
+  /* Above the bar at the top of the screen (StickyMenu, 1000), which comes in as the signature flies
+     to its logo, so the signature lands on top of the bar rather than behind its glass */
+  z-index: 1100;
   /* The intro is purely visual: clicks pass through so the header's controls work during it */
   pointer-events: none;
 }

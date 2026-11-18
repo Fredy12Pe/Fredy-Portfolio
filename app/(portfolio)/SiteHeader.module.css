@@ -1,6 +1,7 @@
-/* Figma 135:303 — header over the depth parallax, 1920×1080 board */
+/* Header (Figma Portfolio-4, 79:2814). On wide screens it is the 1920×1080 design board, scaled
+   with --u so the composition holds at every size. Below 1100px it becomes a single column. */
 
-/* Black until the client knows whether the welcome intro plays (see SiteHeader.tsx) */
+/* Black opening shown before the client knows whether the signature intro plays */
 .cover {
   position: absolute;
   inset: 0;
@@ -10,339 +11,729 @@
 }
 
 .header {
-  --frame-w: 1920;
-  --frame-h: 1080;
-  --u: min(100vw / var(--frame-w), 100svh / var(--frame-h));
-
+  --u: min(100vw / 1920, 100svh / 1080);
+  --ink: #0f0f0f;
+  --chalk: #f4f1e7;
+  --muted-ink: #536568;
   position: relative;
-  z-index: 50;
-  isolation: isolate;
-  width: 100%;
   height: 100vh;
-  min-height: calc(var(--frame-h) * 0.55 * 1px);
-  /* Shapes may run past the board, but not past the viewport sides */
-  overflow-x: clip;
-  /* The depth parallax covers this area; black shows until the photo loads */
-  background: #000;
-  color: #000;
+  height: 100svh;
+  overflow: hidden;
+  background: #e8e9df;
+  color: var(--ink);
 }
 
-/* Hidden while the Projects section is on screen, so it never sits over that section */
-.header[data-away] {
-  visibility: hidden;
-}
-
-/* While the page is moving, the grain and the leaks hold still. Nothing changing behind the
-   widgets means the browser can reuse their frosted blur instead of recomputing it each frame,
-   and the pause is invisible against the motion of the scroll itself. */
-:global(html[data-scrolling]) .grain,
-:global(html[data-scrolling]) .leaks,
-:global(html[data-scrolling]) .leaks::before,
-:global(html[data-scrolling]) .leaks::after {
-  animation-play-state: paused;
-}
-
-/* Scrolled past the header: the decorative layers stop animating and are taken out of the
-   compositor. They cost a blur and a repaint on every frame otherwise, even unseen. */
-.header[data-offscreen] .texture,
-.header[data-offscreen] .paper,
-.header[data-offscreen] .wash,
-.header[data-offscreen] .scanlines,
-.header[data-offscreen] .grain,
-.header[data-offscreen] .leaks,
-.header[data-offscreen] .musicPulse,
-.header[data-offscreen] .cursorGlow {
-  display: none;
-}
-
-/* Wrapper for the photo so the music player can scale it; it fills the header like the photo did */
-.photo {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  transform-origin: 50% 50%;
-  transition: opacity 0.6s ease;
-}
-
-/* Visualizer canvas, sized by the music player to the header's pixel size.
-   Translucent, so the photo still shows through the visuals. */
-.visualizer {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.25;
-  pointer-events: none;
-}
-
-/* Figma 135:303 — 1920×1080 board placed over the depth parallax.
-   Every design px is written as calc(N * var(--u)) so the board scales as one unit.
-   No transform or z-index here: either would isolate the board, and the widgets'
-   blend modes need to reach the photo underneath. Coming last in the header, it
-   still paints above the photo and overlays. */
 .frame {
   position: absolute;
   top: 0;
   left: calc(50% - 960 * var(--u));
   width: calc(1920 * var(--u));
   height: calc(1080 * var(--u));
-  color: #fff;
+}
+
+/* ---------- top bar: signature and section pills ---------- */
+
+/* Tablet and up: the bar at the top of the screen (StickyMenu) carries the logo and the section
+   links, so the header's own are hidden (the intro's signature lands on the bar's logo) */
+@media (min-width: 768px) {
+  .bar {
+    visibility: hidden;
+  }
+}
+
+.bar {
+  position: absolute;
+  /* Above the ticket, so the swinging cord passes behind the nav buttons */
+  z-index: 2;
+  left: calc(260 * var(--u));
+  top: calc(56 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(1400 * var(--u));
 }
 
 .signature {
-  position: absolute;
-  left: calc(220 * var(--u));
-  top: calc(55 * var(--u));
+  display: block;
+  width: calc(100.33 * var(--u));
 }
 
 .signature img {
   display: block;
-  width: calc(101 * var(--u));
-  height: calc(58 * var(--u));
+  width: 100%;
+  height: auto;
 }
 
+.nav {
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--u));
+}
 
+/* The pill's icon waits off to the right, tilted and hidden; on hover it slides in beside the label */
+.pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  /* Smaller than the design's 60px pills, so the bar reads lighter than the hero */
+  height: calc(46 * var(--u));
+  padding: 0 calc(22 * var(--u));
+  overflow: hidden;
+  border: 1px solid var(--ink);
+  border-radius: calc(130 * var(--u));
+  /* Filled with the header's colour, so nothing behind shows through */
+  background: #e8e9df;
+  font-size: calc(16 * var(--u));
+  line-height: 1.5;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    padding 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.pillIcon {
+  position: absolute;
+  right: calc(12 * var(--u));
+  top: 50%;
+  width: calc(19 * var(--u));
+  height: calc(19 * var(--u));
+  opacity: 0;
+  transform: translate3d(calc(14 * var(--u)), -50%, 0) rotate(18deg);
+  transition:
+    opacity 0.25s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pill:hover,
+.pill:focus-visible {
+  padding-right: calc(40 * var(--u));
+}
+
+.pill:hover .pillIcon,
+.pill:focus-visible .pillIcon {
+  opacity: 1;
+  transform: translate3d(0, -50%, 0) rotate(0deg);
+}
+
+.pillPrimary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--chalk);
+}
+
+.pillPrimary .pillIcon {
+  filter: invert(1);
+}
+
+/* "Let's connect": the label with two eyes in the right end, as in Framer's Eye Follow Button
+   (6px around the eyes, 20px before the label). The eyes stay put, so it doesn't widen on hover. */
+.pillPrimary,
+.pillPrimary:hover,
+.pillPrimary:focus-visible {
+  gap: calc(12 * var(--u));
+  padding: 0 calc(6 * var(--u)) 0 calc(20 * var(--u));
+}
+
+.pillEyes {
+  --eye: calc(28 * var(--u));
+}
+
+/* ---------- hero copy ---------- */
+
+.hero {
+  position: absolute;
+  left: calc(257 * var(--u));
+  top: calc(362 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Heading and paragraph sit close together; the buttons get more room (.actions) */
+  gap: calc(20 * var(--u));
+  width: calc(800 * var(--u));
+}
 
 .title {
-  position: absolute;
-  left: calc(220 * var(--u));
-  top: calc(868 * var(--u));
   margin: 0;
-  font-size: calc(62 * var(--u));
-  font-weight: 700;
-  line-height: normal;
+  /* Sized so the longest changing word ("responsive") ends about where the paragraph below does */
+  font-size: calc(94 * var(--u));
+  font-weight: 400;
+  line-height: calc(100 * var(--u));
+  letter-spacing: calc(-3.9 * var(--u));
+}
+
+.titleAccent {
+  display: inline-block;
+  color: #a259ff;
+  will-change: transform, opacity, filter;
+}
+
+/* The heading's second line, "that are …", always starts a line of its own and never wraps, so the
+   heading stays on two lines whichever word is showing */
+.titleLine {
+  display: block;
   white-space: nowrap;
-  /* Keeps the offset copies below the white text, inside this title only */
-  isolation: isolate;
 }
 
-/* Chromatic aberration: red and cyan copies slide apart behind the title on hover */
-.title::before,
-.title::after {
-  content: attr(data-text);
+/* Holds the changing word at the end of the second line */
+.titleAccentSlot {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.srOnly {
   position: absolute;
-  left: 0;
-  top: 0;
-  z-index: -1;
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.25s ease, opacity 0.25s ease;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
-
-.title::before {
-  color: #ff2d55;
-}
-
-.title::after {
-  color: #00e5ff;
-}
-
-.title:hover::before {
-  opacity: 0.85;
-  transform: translateX(calc(-4 * var(--u)));
-}
-
-.title:hover::after {
-  opacity: 0.85;
-  transform: translateX(calc(4 * var(--u)));
-}
-
 
 .intro {
-  position: absolute;
-  left: calc(220 * var(--u));
-  top: calc(958 * var(--u));
-  width: calc(648 * var(--u));
+  max-width: calc(760 * var(--u));
+  /* No lone word left at a line's end or start */
+  text-wrap: pretty;
   margin: 0;
-  font-size: calc(22 * var(--u));
-  font-weight: 400;
-  line-height: normal;
+  font-size: calc(23.4 * var(--u));
+  line-height: calc(33.6 * var(--u));
 }
 
-/* Binary texture (Figma 135:307): blends over the photo, cropped to the board */
-.texture {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: calc(1920 * var(--u));
-  height: calc(1080 * var(--u));
-  transform: translateX(-50%);
+.actions {
+  margin-top: calc(28 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(20 * var(--u));
+}
+
+.resume {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: calc(274 * var(--u));
+  height: calc(60 * var(--u));
+  border: 1px solid var(--ink);
+  border-radius: calc(120 * var(--u));
+  font-size: calc(19.4 * var(--u));
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.resume:hover,
+.resume:focus-visible {
+  background: var(--ink);
+  color: var(--chalk);
+}
+
+/* On hover the label makes room and a download arrow slides in beside it, as in the section pills */
+.resume {
+  position: relative;
   overflow: hidden;
-  opacity: 0.03;
-  pointer-events: none;
 }
 
-.textureImg {
+.resumeLabel {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.resumeIcon {
   position: absolute;
-  left: calc(719 * var(--u));
-  top: calc(-15 * var(--u));
-  width: calc(1237 * var(--u));
-  height: calc(1110 * var(--u));
-  max-width: none;
-  object-fit: cover;
-}
-
-/* Figma "textture-Overlay" (135:308): two gradient fills plus a noise effect, over the texture */
-.wash {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(102, 102, 102, 0) 100%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0.03, 2.6, 3.98, 0.64) 86%);
-  pointer-events: none;
-}
-
-.noise {
-  position: absolute;
-  inset: 0;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: calc(180 * var(--u)) calc(180 * var(--u));
-  pointer-events: none;
-}
-
-/* Worn vintage paper: warm fibres and an edge wear, multiplied over the photo */
-.paper {
-  position: absolute;
-  inset: 0;
-  opacity: 0.04;
-  background-image:
-    radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 55%, rgba(60, 40, 20, 0.45) 100%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.03' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.56  0 0 0 0 0.45  0 0 0 0 0.3  0 0 0 -1.6 1.15'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
-  background-size: 100% 100%, 400px 400px;
-  pointer-events: none;
-}
-
-/* Scanlines: faint horizontal lines over the photo, like a CRT or VHS picture */
-.scanlines {
-  position: absolute;
-  inset: 0;
-  opacity: 0.22;
-  background-image: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0 1px, transparent 1px calc(3 * var(--u)));
-  pointer-events: none;
-}
-
-/* Film grain: a noise tile that shifts in steps so the grain crawls */
-.grain {
-  position: absolute;
-  inset: -20%;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: calc(200 * var(--u)) calc(200 * var(--u));
-  animation: grain-shift 0.6s steps(4) infinite;
-  pointer-events: none;
-}
-
-@keyframes grain-shift {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-3%, 2%); }
-  50% { transform: translate(2%, -4%); }
-  75% { transform: translate(-2%, 3%); }
-  100% { transform: translate(0, 0); }
-}
-
-/* Music pulse: a warm glow low on the photo that brightens and grows with the bass */
-.musicPulse {
-  /* Only the lower middle of the header, and no blend mode: blending a full-size layer every frame is costly */
-  position: absolute;
-  left: 15%;
-  right: 15%;
-  bottom: 0;
-  height: 65%;
-  background: radial-gradient(
-    ellipse 50% 50% at 50% 70%,
-    rgba(255, 190, 120, 0.45),
-    rgba(255, 190, 120, 0) 100%
-  );
-  /* opacity and transform are set from the music player on each frame */
+  right: calc(30 * var(--u));
+  top: 50%;
+  width: calc(22 * var(--u));
+  height: calc(22 * var(--u));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   opacity: 0;
-  transform-origin: 50% 70%;
-  pointer-events: none;
+  transform: translate3d(calc(14 * var(--u)), -50%, 0) rotate(18deg);
+  transition:
+    opacity 0.25s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Light leaks: warm and pink glows that drift slowly across the photo */
-.leaks {
-  position: absolute;
-  inset: 0;
-  opacity: 0.25;
-  pointer-events: none;
-  animation: leaks-breathe 9s ease-in-out infinite alternate;
+.resume:hover .resumeLabel,
+.resume:focus-visible .resumeLabel {
+  transform: translateX(calc(-16 * var(--u)));
 }
 
-.leaks::before,
-.leaks::after {
+.resume:hover .resumeIcon,
+.resume:focus-visible .resumeIcon {
+  opacity: 1;
+  transform: translate3d(0, -50%, 0) rotate(0deg);
+}
+
+.available {
+  display: flex;
+  align-items: center;
+  gap: calc(13 * var(--u));
+  margin: 0;
+  font-size: calc(16 * var(--u));
+  letter-spacing: 0.1px;
+  /* Quieter than the copy above, so the green dot leads */
+  color: rgba(15, 15, 15, 0.5);
+}
+
+/* A green dot with a ring that keeps pulsing out from it */
+.availableDot {
+  position: relative;
+  flex: none;
+  width: calc(10 * var(--u));
+  height: calc(10 * var(--u));
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.availableDot::before {
   content: "";
   position: absolute;
+  inset: 0;
   border-radius: 50%;
-  filter: blur(calc(60 * var(--u)));
+  background: #22c55e;
+  animation: availablePulse 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
-.leaks::before {
-  top: -20%;
-  right: -12%;
-  width: 62%;
-  height: 80%;
-  background: radial-gradient(closest-side, rgba(255, 140, 60, 0.6), rgba(255, 140, 60, 0));
-  animation: leak-drift-a 14s ease-in-out infinite alternate;
-}
-
-.leaks::after {
-  bottom: -28%;
-  left: -10%;
-  width: 56%;
-  height: 74%;
-  background: radial-gradient(closest-side, rgba(255, 70, 150, 0.45), rgba(255, 70, 150, 0));
-  animation: leak-drift-b 18s ease-in-out infinite alternate;
-}
-
-@keyframes leaks-breathe {
-  0% { opacity: 0.18; }
-  100% { opacity: 0.32; }
-}
-
-@keyframes leak-drift-a {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(-6%, 8%); }
-}
-
-@keyframes leak-drift-b {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(8%, -6%); }
-}
-
-/* Cursor glow: a soft light that follows the pointer. Position is set from SiteHeader. */
-.cursorGlow {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: calc(260 * var(--u));
-  height: calc(260 * var(--u));
-  margin: calc(-130 * var(--u)) 0 0 calc(-130 * var(--u));
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(255, 236, 200, 0.05), rgba(255, 236, 200, 0));
-  opacity: 0;
-  transition: opacity 0.4s ease, transform 0.12s ease-out;
-  pointer-events: none;
+@keyframes availablePulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .grain,
-  .leaks,
-  .leaks::before,
-  .leaks::after {
+  .availableDot::before {
     animation: none;
-  }
-
-  .cursorGlow {
-    display: none;
+    opacity: 0;
   }
 }
 
-/* Below the desktop width the header stacks into a column. The 1920 board only shrinks to fit a phone
-   or tablet and leaves the logo, title and widgets unreadable, so each gets its own size here. --u is
-   1px on phones and tablets: the cards keep their real size, and only the logo and title are sized
-   separately for the wider screen. */
-@media (max-width: 1279px) {
+/* ---------- profile ticket ---------- */
+
+.ticket {
+  --t: var(--u);
+  position: absolute;
+  left: calc(1203 * var(--u));
+  top: calc(258.32 * var(--u));
+  width: calc(372.926 * var(--t));
+  height: calc(681.36 * var(--t));
+  /* It swings around the top of its cord, at the top of the header, above the punch hole */
+  transform-origin: calc(186.47 * var(--t)) calc(-258.32 * var(--u));
+  /* Its own compositing layer: the ticket and its soft shadows are painted once and the swing only
+     turns that layer. Repainting the blurred shadows on every frame of the swing is what left faint
+     streaks along its sides and bottom in some browsers. */
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* The shadow goes on the ticket's three shapes rather than the whole ticket: a filter on the whole
+   ticket, with its moving parts inside, could paint a grey box behind it in some browsers */
+.tHeaderBg,
+.tProfileBg,
+.tStubBg {
+  filter: drop-shadow(0 calc(10 * var(--t)) calc(16 * var(--t)) rgba(15, 15, 15, 0.07));
+}
+
+.tCord {
+  left: 0;
+  top: calc(-1400 * var(--t));
+  width: calc(372.926 * var(--t));
+  height: calc(1460 * var(--t));
+  overflow: visible;
+  pointer-events: none;
+  /* The cord runs all the way up and passes behind the bar at the top of the screen (StickyMenu),
+     so the ticket hangs from it */
+}
+
+.tCordStrand,
+.tCordLoop {
+  fill: none;
+  stroke: #111;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+}
+
+.tCordKnot {
+  fill: #111;
+}
+
+.ticket > * {
+  position: absolute;
+  margin: 0;
+}
+
+.ticket > img {
+  display: block;
+  max-width: none;
+}
+
+.tHeaderBg {
+  left: 0;
+  top: 0;
+  width: calc(372.926 * var(--t));
+  height: calc(141.862 * var(--t));
+}
+
+.tPunch {
+  left: calc(159.06 * var(--t));
+  top: calc(23.64 * var(--t));
+  width: calc(54.81 * var(--t));
+  height: calc(54.81 * var(--t));
+}
+
+.tName {
+  left: calc(35.47 * var(--t));
+  top: calc(70.93 * var(--t));
+  transform: translateY(-50%);
+  font-size: calc(30 * var(--t));
+  font-weight: 500;
+  line-height: normal;
+}
+
+.tFigma {
+  left: calc(251.48 * var(--t));
+  top: calc(38.69 * var(--t));
+  width: calc(64.48 * var(--t));
+  height: calc(64.48 * var(--t));
+}
+
+.tProfileBg {
+  left: 0;
+  top: calc(141.86 * var(--t));
+  width: calc(372.926 * var(--t));
+  height: calc(397.644 * var(--t));
+}
+
+.tTopPerf,
+.tBottomPerf {
+  width: calc(322.414 * var(--t));
+  height: 1px;
+}
+
+.tTopPerf {
+  left: calc(24.72 * var(--t));
+  top: calc(141.36 * var(--t));
+}
+
+.tBottomPerf {
+  left: calc(26.87 * var(--t));
+  top: calc(539 * var(--t));
+}
+
+.tPortrait {
+  left: calc(12.9 * var(--t));
+  top: calc(154.75 * var(--t));
+  width: calc(347.535 * var(--t));
+  height: calc(278.028 * var(--t));
+  overflow: hidden;
+  border-radius: calc(24 * var(--t));
+}
+
+.tPortrait img {
+  object-fit: cover;
+}
+
+.tPhotoDivider {
+  left: calc(12.9 * var(--t));
+  top: calc(446.58 * var(--t));
+  width: calc(347.132 * var(--t));
+  height: 1px;
+}
+
+.tDetails {
+  left: calc(44 * var(--t));
+  top: calc(464.68 * var(--t));
+  display: flex;
+  align-items: flex-start;
+  gap: calc(13 * var(--t));
+}
+
+.tDetails > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.tDetails dt {
+  font-size: calc(10 * var(--t));
+  line-height: calc(10 * var(--t));
+  letter-spacing: 0.1px;
+  color: var(--muted-ink);
+}
+
+.tDetails dd {
+  margin: 0;
+  font-size: calc(14 * var(--t));
+  line-height: normal;
+  letter-spacing: 0.6px;
+}
+
+.tRole {
+  width: calc(70 * var(--t));
+  gap: calc(6 * var(--t));
+}
+
+.tLocation {
+  width: calc(96 * var(--t));
+  gap: calc(15 * var(--t));
+}
+
+.tExperience {
+  width: calc(70 * var(--t));
+  gap: calc(15 * var(--t));
+}
+
+.tRule {
+  flex: none;
+  width: 1px;
+  height: calc(52 * var(--t));
+  background: var(--ink);
+}
+
+/* The stub's shape is the name strip's, turned upside down */
+.tStubBg {
+  left: calc(1.07 * var(--t));
+  top: calc(539.5 * var(--t));
+  width: calc(372.926 * var(--t));
+  height: calc(141.862 * var(--t));
+  transform: rotate(180deg);
+}
+
+.tBarcode {
+  left: 0;
+  top: calc(572.82 * var(--t));
+  width: 100%;
+  height: calc(54.81 * var(--t));
+}
+
+.tBarcode span {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: var(--ink);
+}
+
+.tCode {
+  left: calc(113.38 * var(--t));
+  top: calc(631.93 * var(--t));
+  width: calc(121.44 * var(--t));
+  transform: translateX(-50%);
+  font-size: calc(10 * var(--t));
+  line-height: 1.4;
+  text-align: center;
+  color: var(--muted-ink);
+  white-space: nowrap;
+}
+
+.tStubDivider {
+  left: calc(211.72 * var(--t));
+  top: calc(559.92 * var(--t));
+  width: 1px;
+  height: calc(101.02 * var(--t));
+  background: var(--ink);
+}
+
+.tActivity {
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+  left: calc(228.91 * var(--t));
+  top: calc(576.04 * var(--t));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: calc(115 * var(--t));
+  height: calc(68.78 * var(--t));
+  padding: calc(10 * var(--t)) calc(22 * var(--t));
+  border-radius: calc(14 * var(--t));
+  background: var(--ink);
+  color: var(--chalk);
+  font-size: calc(12 * var(--t));
+  line-height: normal;
+  letter-spacing: 0.6px;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.tActivity:hover,
+.tActivity:focus-visible {
+  background: #a259ff;
+  transform: translateY(-2px);
+}
+
+/* ---------- the ticket's mood view ---------- */
+
+.tMoodPanel {
+  left: calc(12.9 * var(--t));
+  top: calc(154.75 * var(--t));
+  width: calc(347.535 * var(--t));
+  height: calc(278.028 * var(--t));
+  overflow: hidden;
+  border-radius: calc(24 * var(--t));
+  transition: background 0.4s ease;
+}
+
+.tMoodQuestion {
+  position: absolute;
+  left: 50%;
+  top: calc(37 * var(--t));
+  z-index: 1;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  font-size: calc(15 * var(--t));
+  letter-spacing: 0.6px;
+  color: #fff;
+  white-space: nowrap;
+  /* Reads over the top of a character's head */
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.28);
+}
+
+/* The character's top sits under the question; anything below the panel is cropped (MoodCharacter) */
+.tMoodArt {
+  position: absolute;
+  inset: 0;
+}
+
+.tMoodFrame {
+  position: absolute;
+  inset: 0;
+}
+
+.tMoodVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* The character's comment: a speech bubble beside its head, hanging past the ticket's right edge,
+   with its tail pointing back down at the character (the old header widget's bubble) */
+.tReply {
+  left: calc(280 * var(--t));
+  top: calc(212 * var(--t));
+  z-index: 3;
+  width: max-content;
+  max-width: calc(200 * var(--t));
+  box-sizing: border-box;
+  padding: calc(12 * var(--t)) calc(16 * var(--t));
+  border-radius: calc(26 * var(--t));
+  background: rgba(16, 24, 26, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 calc(8 * var(--t)) calc(24 * var(--t)) rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: calc(14 * var(--t));
+  font-weight: 500;
+  line-height: 1.3;
+  transform-origin: 0 100%;
+  pointer-events: none;
+}
+
+.tReply::before {
+  content: "";
+  position: absolute;
+  left: calc(14 * var(--t));
+  bottom: calc(-12 * var(--t));
+  width: calc(20 * var(--t));
+  height: calc(14 * var(--t));
+  background: inherit;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.tMoodRow {
+  left: calc(30 * var(--t));
+  top: calc(464.68 * var(--t));
+  display: flex;
+  align-items: center;
+  gap: calc(15 * var(--t));
+  width: calc(313 * var(--t));
+  height: calc(52 * var(--t));
+}
+
+.tMoodArrow {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: calc(64 * var(--t));
+  height: calc(32 * var(--t));
+  padding: 0;
+  border: 0;
+  border-radius: calc(32 * var(--t));
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 15, 15, 0.06);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.tMoodArrow svg {
+  width: calc(18 * var(--t));
+  height: calc(18 * var(--t));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tMoodArrow:hover:not(:disabled) {
+  transform: scale(1.06);
+}
+
+.tMoodArrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.tMoodName {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: calc(15 * var(--t));
+  min-width: 0;
+}
+
+.tMoodName span {
+  font-size: calc(10 * var(--t));
+  line-height: calc(10 * var(--t));
+  letter-spacing: 0.1px;
+  color: #929292;
+}
+
+.tMoodName strong {
+  font-size: calc(14 * var(--t));
+  font-weight: 400;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill,
+  .pillIcon,
+  .resume,
+  .resumeLabel,
+  .resumeIcon,
+  .tActivity {
+    transition: none;
+  }
+}
+
+/* ---------- tablets and phones: one column ---------- */
+
+@media (max-width: 1100px) {
   .header {
     --u: 1px;
     height: auto;
@@ -351,142 +742,140 @@
 
   .frame {
     position: relative;
-    top: auto;
     left: auto;
     width: 100%;
     height: auto;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: calc(24 * var(--u));
-    padding: 104px 40px 72px;
+    gap: 48px;
+    padding: 28px clamp(20px, 5vw, 56px) 64px;
+  }
+
+  .bar,
+  .hero,
+  .ticket {
+    position: relative;
+    left: auto;
+    top: auto;
+  }
+
+  .bar {
+    width: 100%;
   }
 
   .signature {
-    position: relative;
-    left: auto;
-    top: auto;
-  }
-
-  .signature img {
-    width: 130px;
-    height: auto;
-  }
-
-  .title {
-    position: relative;
-    left: auto;
-    top: auto;
-    font-size: clamp(40px, 5.2vw, 60px);
-    white-space: normal;
-  }
-
-  .intro {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: 100%;
-    max-width: 560px;
-    font-size: 18px;
-  }
-
-  /* The logo first, then the widgets (HeaderWidgets), then the title and its line */
-  .title {
-    order: 2;
-  }
-
-  .intro {
-    order: 3;
-  }
-}
-
-/* Phones: a single column with its own sizes. The menu bar at the top right is in StickyMenu. */
-@media (max-width: 767px) {
-  .header {
-    --u: 1px;
-  }
-
-  /* A full screen, like the tablet: the logo at the top, the widgets in the middle and the title at the
-     bottom (HeaderWidgets and the order rules above) */
-  .frame {
-    /* The 96px logo is about 55px tall; this puts its centre level with the 52px menu button's
-       centre (0.75rem + 26px down, below the safe area) */
-    min-height: 100svh;
-    padding: calc(10px + env(safe-area-inset-top)) 20px 56px;
-    gap: 22px;
-  }
-
-  .signature img {
     width: 96px;
   }
 
-  .intro {
-    max-width: 300px;
+  .hero {
+    width: 100%;
+    gap: 16px;
   }
 
   .title {
-    font-size: clamp(30px, 9vw, 46px);
+    max-width: 14ch;
+    font-size: clamp(2.6rem, 8.5vw, 5rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
   }
 
   .intro {
+    max-width: 34rem;
+    font-size: clamp(1.0625rem, 2.6vw, 1.3rem);
+    line-height: 1.45;
+  }
+
+  .resume {
+    width: 240px;
+    height: 54px;
     font-size: 17px;
   }
-}
 
-/* Tablet: the same composition as the desktop board. The logo at the top, the widgets in the middle
-   (HeaderWidgets), and the title with its line at the bottom, so the column fills the screen's height. */
-@media (min-width: 768px) and (max-width: 1279px) {
-  /* The widgets read a little larger on a tablet; the logo and title keep their own sizes */
-  .header {
-    --u: 1.25px;
+  .available {
+    font-size: 15px;
   }
 
+  .ticket {
+    --t: calc(min(373px, 88vw) / 372.926);
+    align-self: center;
+  }
+
+  /* One column, in this order: logo, heading, intro, then the lanyard ticket, then the resume
+     button and "Available for work". The hero's own box steps aside (display: contents) so its
+     heading, intro and buttons can sit either side of the ticket. */
   .frame {
-    min-height: 100svh;
-    /* The 74px logo's centre sits level with the nav pill's centre (65px down, 51px tall) */
-    padding-top: 53px;
+    gap: 0;
+  }
+
+  .hero {
+    display: contents;
+  }
+
+  .bar {
+    order: 0;
+  }
+
+  .title {
+    order: 1;
+    margin-top: 48px;
+  }
+
+  .intro {
+    order: 2;
+    margin-top: 16px;
+  }
+
+  .ticket {
+    order: 3;
+    margin-top: 48px;
+  }
+
+  .actions {
+    order: 4;
+    margin-top: 48px;
+  }
+
+  .tCord {
+    display: none;
+  }
+
+  /* No room beside the ticket here, so the comment stays over the mood panel's right side */
+  .tReply {
+    left: auto;
+    top: calc(200 * var(--t));
+    right: calc(16 * var(--t));
+    max-width: calc(150 * var(--t));
+  }
+
+  .pill {
+    height: 42px;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+
+  .pillPrimary,
+  .pillPrimary:hover,
+  .pillPrimary:focus-visible {
+    gap: 10px;
+    padding: 0 5px 0 16px;
+  }
+
+  .pillEyes {
+    --eye: 27px;
   }
 }
 
-/* Landscape tablets are short: the widgets keep their real size so the title stays on the first screen */
-@media (min-width: 768px) and (max-width: 1279px) and (max-height: 900px) {
-  .header {
-    --u: 1px;
+/* Narrow phones: a little smaller, so the longest word still fits on the heading's second line */
+@media (max-width: 400px) {
+  .title {
+    font-size: 2.3rem;
   }
 }
 
-/* The header stays put while the About section rises over it (see AboutIntro.module.css). Sticky is
-   handled by the browser, so it keeps up with the scroll where a script pin snapped into place a frame
-   late. A header taller than the screen still scrolls to its bottom before it holds. Once the sheet covers the screen the header is
-   hidden: nothing of it shows, and its shader and frosted panels stop costing anything underneath. */
-@media (prefers-reduced-motion: no-preference) {
-  .header {
-    position: sticky;
-    /* 0, or the amount the header is taller than the screen (--header-h is set from SiteHeader.tsx) */
-    top: min(0px, calc(100svh - var(--header-h, 0px)));
-  }
-
-  /* Hidden, not removed from layout: taking the photo out with display: none meant coming back up past the
-     card relaid out the WebGL photo and restarted its shader in one frame, which was the stutter when
-     scrolling up. visibility keeps the layout and costs nothing to toggle. */
-  .header[data-covered] {
-    visibility: hidden;
-  }
-}
-
-/* Phones and tablets: the film grain and the light leaks hold still. Their endless animation, and the
-   blurred shapes that drift, keep the GPU repainting full-screen layers while the page scrolls, which
-   made scrolling stutter. Still, they look the same at rest. There is no pointer to follow either. */
-@media (max-width: 1279px) {
-  .grain,
-  .leaks,
-  .leaks::before,
-  .leaks::after {
-    animation: none;
-  }
-
-  .cursorGlow {
+/* Phones: the section pills give way to the menu button in the corner (StickyMenu) */
+@media (max-width: 767px) {
+  .nav {
     display: none;
   }
 }

@@ -1,47 +1,78 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { roboto } from "@/lib/fonts";
+import Link from "next/link";
+import { inter } from "@/lib/fonts";
 import { getMusicControls, useMusicMuted } from "./music-bridge";
 import { coverForSource } from "./music";
-import HeaderNav, { HEADER_NAV_ITEMS } from "./HeaderNav";
+import SiteNav, { HOME_NAV_ITEMS } from "./SiteNav";
 import { PhoneMenu, PhonePlayButton } from "./MobileMenu";
 import styles from "./StickyMenu.module.css";
 
-/* The site menu. It starts where the header's menu is, and CSS sticky keeps it at the top of the
-   screen once the page has scrolled past it, so it follows the page without any JavaScript
-   moving it. Once scrolled it glides to the centre. A single element, never remounted. */
-const FOLLOW_AFTER_PX = 40;
+/* The site's header bar, flush with the top of the screen from the first screen down and staying
+   there while the page scrolls. On tablet and up it replaces the header's own logo and section
+   buttons (hidden in SiteHeader.module.css once the intro has played). */
 
-export default function StickyMenu() {
+/* phoneLogo: pages without the home page's header (the case studies) show the signature at the top
+   left on phones too, opposite the menu button. phone: false leaves out the phone controls, for a
+   page that is a full-screen app on phones (the Mood Tracker). */
+export default function StickyMenu({
+  phoneLogo = false,
+  phone = true,
+}: {
+  phoneLogo?: boolean;
+  phone?: boolean;
+}) {
   const [stuck, setStuck] = useState(false);
   // Diagnostic: ?nomenu=1 turns this menu off, to compare a page load with and without it
   const [disabled, setDisabled] = useState(false);
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).has("nomenu")) setDisabled(true);
+    if (new URLSearchParams(window.location.search).has("nomenu"))
+      setDisabled(true);
   }, []);
 
+  // In place from the first screen, as the site's header bar. Set after mounting, so it drops in.
   useEffect(() => {
-    const update = () => setStuck(window.scrollY > FOLLOW_AFTER_PX);
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
+    const frame = requestAnimationFrame(() => setStuck(true));
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   if (disabled) return null;
 
   return (
-    <div className={`${styles.anchor} ${roboto.className}`} data-sticky-menu>
+    <div className={`${styles.anchor} ${inter.className}`} data-sticky-menu>
       {/* Phones: the menu and the play button sit in the top corners, where a thumb reaches them.
           The wrapper ignores touches, so the page under it still scrolls and taps through. */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 flex items-start justify-end gap-2.5 px-4 pt-[calc(0.75rem+env(safe-area-inset-top))] md:hidden">
-        {/* The play button shows only while music plays, to pause it; it sits beside the menu */}
-        <PhonePlayButton className="pointer-events-auto" />
-        <PhoneMenu className="pointer-events-auto" />
-      </div>
-      {/* Tablet and up: the pill nav with its mini player */}
-      <div className={`${styles.menu} hidden md:block`} data-stuck={stuck ? "" : undefined}>
-        <HeaderNav items={HEADER_NAV_ITEMS} />
+      {phone ? (
+        <div className="pointer-events-none fixed inset-x-0 top-0 flex items-start justify-end gap-2.5 px-4 pt-[calc(0.75rem+env(safe-area-inset-top))] md:hidden">
+          {phoneLogo ? (
+            <Link
+              href="/"
+              aria-label="Fredy, home"
+              className="pointer-events-auto mr-auto inline-flex h-[52px] items-center rounded-full bg-black/55 px-4 ring-1 ring-white/15 backdrop-blur-md"
+            >
+              <img
+                src="/images/figma-header/signature.svg"
+                alt=""
+                className="h-7 w-auto"
+              />
+            </Link>
+          ) : null}
+          {/* The play button shows only while music plays, to pause it; it sits beside the menu */}
+          <PhonePlayButton className="pointer-events-auto" />
+          <PhoneMenu
+            className="pointer-events-auto"
+            items={HOME_NAV_ITEMS}
+            home
+          />
+        </div>
+      ) : null}
+      {/* Tablet and up: the section menu, Let's connect, and the mini player */}
+      <div
+        className={`${styles.menu} hidden md:block`}
+        data-stuck={stuck ? "" : undefined}
+      >
+        <SiteNav />
         <MiniPlayer />
       </div>
     </div>
@@ -56,7 +87,8 @@ export function MiniPlayer({ className = "" }: { className?: string }) {
   const muted = useMusicMuted();
 
   useEffect(() => {
-    const audio = document.querySelector<HTMLAudioElement>("[data-music-audio]");
+    const audio =
+      document.querySelector<HTMLAudioElement>("[data-music-audio]");
     if (!audio) return;
 
     const onPlay = () => setPlaying(true);
@@ -79,7 +111,10 @@ export function MiniPlayer({ className = "" }: { className?: string }) {
   }, []);
 
   return (
-    <div className={`${styles.playhead} ${className}`} data-playing={playing ? "" : undefined}>
+    <div
+      className={`${styles.playhead} ${className}`}
+      data-playing={playing ? "" : undefined}
+    >
       <img className={styles.art} src={cover} alt="" />
       <div className={styles.buttons}>
         <button
@@ -88,7 +123,12 @@ export function MiniPlayer({ className = "" }: { className?: string }) {
           aria-label="Previous track"
           onClick={() => getMusicControls()?.previous()}
         >
-          <img src="/images/figma-header/skip-back.svg" alt="" width={20} height={20} />
+          <img
+            src="/images/figma-header/skip-back.svg"
+            alt=""
+            width={20}
+            height={20}
+          />
         </button>
         <button
           type="button"
@@ -103,7 +143,12 @@ export function MiniPlayer({ className = "" }: { className?: string }) {
               <rect x="19" y="6" width="5" height="20" rx="1" />
             </svg>
           ) : (
-            <img src="/images/figma-header/play.svg" alt="" width={20} height={20} />
+            <img
+              src="/images/figma-header/play.svg"
+              alt=""
+              width={20}
+              height={20}
+            />
           )}
         </button>
         <button
@@ -112,7 +157,12 @@ export function MiniPlayer({ className = "" }: { className?: string }) {
           aria-label="Next track"
           onClick={() => getMusicControls()?.next()}
         >
-          <img src="/images/figma-header/skip-forward.svg" alt="" width={20} height={20} />
+          <img
+            src="/images/figma-header/skip-forward.svg"
+            alt=""
+            width={20}
+            height={20}
+          />
         </button>
         <button
           type="button"
@@ -123,7 +173,11 @@ export function MiniPlayer({ className = "" }: { className?: string }) {
         >
           <svg className={styles.mute} viewBox="0 0 24 24" aria-hidden>
             <path d="M11 5 6 9H2v6h4l5 4V5z" />
-            {muted ? <path d="M16 9l5 6M21 9l-5 6" /> : <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />}
+            {muted ? (
+              <path d="M16 9l5 6M21 9l-5 6" />
+            ) : (
+              <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
+            )}
           </svg>
         </button>
       </div>

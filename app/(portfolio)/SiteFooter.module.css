@@ -1,13 +1,13 @@
 /* Photo footer with a large rounded top edge. It overlaps the white section above,
    so the rounded corners show white rather than the black page behind. */
-/* A white frame the footer sits in. It overlaps the white section above and stays white
-   until the footer fades up, so the page's black background never shows through. */
+/* The frame the footer sits in. It overlaps the contact section above by its corner radius. */
 .frame {
   position: relative;
   z-index: 1;
   margin-top: calc(-1 * clamp(3rem, 6vw, 5rem));
   border-radius: clamp(3rem, 6vw, 5rem) clamp(3rem, 6vw, 5rem) 0 0;
-  background: #fff;
+  /* Black, like the Contact section it overlaps */
+  background: #000;
 }
 
 .footer {
@@ -91,12 +91,13 @@
 }
 
 .pill:hover {
-  background: #fff;
+  background: #a259ff;
+  color: #fff;
 }
 
 .pill:focus-visible,
 .email:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid #a259ff;
   outline-offset: 3px;
 }
 
@@ -109,7 +110,7 @@
 }
 
 .email:hover {
-  color: #fff;
+  color: var(--accent, #fff);
 }
 
 @media (max-width: 860px) {
@@ -154,4 +155,29 @@
     padding: 10px 0;
     margin: -10px 0;
   }
+}
+
+/* Profiles and resume, under the email */
+.elsewhere {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.elsewhere a {
+  color: inherit;
+  font-size: 1rem;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.3);
+  text-underline-offset: 0.25em;
+  opacity: 0.85;
+  transition: opacity 180ms ease, text-decoration-color 180ms ease;
+}
+
+.elsewhere a:hover {
+  opacity: 1;
+  text-decoration-color: currentColor;
 }

@@ -1623,3 +1623,27 @@
     transition: none;
   }
 }
+
+/* The site's bar sits above the store (BoardNav): the page starts below it. On phones that is the
+   row with the site's signature and menu button, and the store's sticky header and its menu sit
+   just below that row. */
+.page {
+  padding-top: 62px;
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding-top: 76px;
+  }
+}
+
+@media (max-width: 720px) {
+  .navbar {
+    top: 76px;
+  }
+
+  .menu {
+    top: 140px;
+    max-height: calc(100dvh - 140px);
+  }
+}

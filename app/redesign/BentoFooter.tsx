@@ -20,7 +20,7 @@ const LINKS = [
     label: "Resume",
     href: CONTACT_LINKS.resume,
     external: false,
-    download: "Fredy Pedro - Resume.pdf",
+    download: "Fredy_Pedro_Resume.pdf",
   },
 ] as const;
 

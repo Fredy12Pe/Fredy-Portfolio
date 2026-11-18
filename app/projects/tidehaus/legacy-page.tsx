@@ -342,7 +342,7 @@ export default function TidehausCaseStudyPage() {
                     </p>
                     <motion.div className="mt-8 flex flex-wrap items-center gap-4">
                       <a
-                        href="https://online-surf-shop-a8b1mqoyh-fredys-projects-8feeb27c.vercel.app/#"
+                        href="https://online-surf-shop.vercel.app/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-medium text-black shadow-sm transition-transform hover:scale-[1.03]"

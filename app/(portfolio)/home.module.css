@@ -1,47 +1,1038 @@
+/* Home page. The tokens below are shared by every section, card and widget on the page. */
 .page {
+  /* The one accent colour: status, links, focus rings and hover states. On the white page
+     it is used in a darker tone for text and outlines, so it keeps AA contrast. */
+  --accent: #ffb45c;
+  --accent-text: #9a5200;
+  --bg: #fff;
+  --text: #0b1314;
+  --text-muted: rgba(11, 19, 20, 0.66);
+  /* One card radius and one glass style */
+  --card-radius: 24px;
+  --glass-fill: rgba(9, 44, 48, 0.04);
+  --glass-fill-hover: rgba(9, 44, 48, 0.075);
+  --glass-line: rgba(9, 44, 48, 0.14);
+  /* 12-column grid */
+  --gutter: clamp(12px, 1.6vw, 24px);
+  --margin: clamp(20px, 5vw, 88px);
+  --section-gap: clamp(128px, 20vh, 240px);
+
   /* Stops the menu's top margin from collapsing out of the page (see StickyMenu.module.css) */
   display: flow-root;
   min-height: 100%;
-  background: #000;
-  color: #fff;
+  background: var(--bg);
+  color: var(--text);
 }
 
-.stickerRange {
+.page :where(a, button, input, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 3px;
+}
+
+/* ---------- shared pieces ---------- */
+
+.section {
+  width: min(100%, 1560px);
+  margin: var(--section-gap) auto 0;
+  padding-inline: var(--margin);
+  box-sizing: border-box;
+  scroll-margin-top: 6.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gutter);
+}
+
+.glass {
+  border-radius: var(--card-radius);
+  background: var(--glass-fill);
+  box-shadow: inset 0 0 0 1px var(--glass-line);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: clamp(28px, 4vh, 48px);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.heading {
+  margin: 0;
+  font-size: clamp(2.5rem, 6vw, 5.25rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 1.75rem;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--glass-line);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+/* ---------- 2. outcome strip ---------- */
+
+.strip {
+  position: relative;
+  overflow: hidden;
+  border-block: 1px solid var(--glass-line);
+  background: var(--bg);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.stripTrack {
+  display: flex;
+  width: max-content;
+  animation: strip-slide 48s linear infinite;
+}
+
+.strip:hover .stripTrack,
+.strip:focus-within .stripTrack {
+  animation-play-state: paused;
+}
+
+.stripList {
+  display: flex;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stripItem {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  padding: 1.15rem 0 1.15rem clamp(1.5rem, 3vw, 3rem);
+  font-size: clamp(0.8125rem, 0.95vw, 0.9375rem);
+  font-weight: 500;
+  white-space: nowrap;
+  /* Greyed out, a quiet backdrop rather than a headline */
+  color: rgba(15, 15, 15, 0.45);
+}
+
+.stripItem::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+@keyframes strip-slide {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* ---------- 3. featured work ---------- */
+
+.featuredHeading {
+  margin: 0 0 clamp(32px, 4vw, 56px);
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+/* Sized to the title's text, so the title grows from its own middle when it flies into place */
+.headingSlot {
+  width: fit-content;
+  margin-bottom: clamp(32px, 4vw, 56px);
+}
+
+.headingSlot .featuredHeading {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.featuredList {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Scroll stage: the folder layer spans the whole section so its sticky child can hold the middle
+   of the screen; the case studies scroll over it. */
+.workStage {
   position: relative;
 }
 
-.projects {
-  position: relative;
+.folderLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.folderSticky {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100vh;
-  background: #000;
+  height: 100svh;
 }
 
-@media (max-width: 860px) {
-  /* Cards sit on the dial at the bottom of this block. A full screen
-     left a long empty band under the intro paragraph. */
-  .projects {
-    height: 72svh;
-  }
+.workContent {
+  position: relative;
+  z-index: 1;
 }
 
-/* Portrait tablets: as on phones, the cards sit on the dial at the bottom of this block, and a
-   full (very tall) screen left a long empty band under the intro paragraph */
-@media (min-width: 861px) and (max-width: 1279px) and (orientation: portrait) {
-  .projects {
-    height: 62svh;
-  }
+.folderSpacer {
+  height: 100vh;
+  height: 100svh;
 }
 
-/* The About section holds with CSS sticky while its photo turns in and its copy appears
-   (AboutIntro.module.css). This is the scroll it holds for: 170% of the screen. With reduced motion
-   nothing holds, so it takes no room. */
-.aboutHold {
+.flyCard {
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.inlineFolder {
   display: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .aboutHold {
+/* Reduced motion: the whole folder sits above the cards instead of holding the screen */
+@media (prefers-reduced-motion: reduce) {
+  .flyOnly {
+    display: none;
+  }
+
+  .inlineFolder {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 40px;
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* One case study per row: a details card beside a media panel, 720px tall on desktop */
+.featuredRow {
+  /* Each card's resting place is read from its offset inside the row (see FlyingPiece) */
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 600px) minmax(0, 1fr);
+  gap: 32px;
+  height: 720px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.featuredRowReverse {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 600px);
+}
+
+/* The media leads on the reversed row. The DOM keeps the details first for small screens. */
+.featuredRowReverse .featuredMedia {
+  order: -1;
+}
+
+.featuredDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  min-width: 0;
+  padding: 40px;
+  box-sizing: border-box;
+  border-radius: 40px;
+  background: #f3f3f3;
+  transition: background-color 0.3s ease;
+}
+
+.featuredRow:hover .featuredDetails,
+.featuredRow:focus-visible .featuredDetails {
+  background: #ebebeb;
+}
+
+.featuredCategory {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  align-self: flex-start;
+  box-sizing: border-box;
+  min-width: 130px;
+  height: 46px;
+  padding: 0 20px;
+  border: 1px solid #7f7f7f;
+  border-radius: 40px;
+  font-size: 14px;
+  color: #7f7f7f;
+  white-space: nowrap;
+}
+
+.featuredContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  min-height: 0;
+}
+
+.featuredCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.featuredTitle {
+  margin: 0;
+  /* Narrower than "Samples Store" on one line, so it breaks after "Samples" as in the design */
+  max-width: 6em;
+  font-size: clamp(2.25rem, 3.2vw, 3.75rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.featuredDescription {
+  margin: 0;
+  max-width: 24rem;
+  font-size: clamp(1rem, 1.15vw, 1.375rem);
+  line-height: 1.45;
+  color: #464646;
+}
+
+.featuredFooter {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.featuredFacts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.featuredFacts > span {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 46px;
+  padding: 0 20px;
+  border: 1px solid #adb2a6;
+  border-radius: 40px;
+  font-size: 14px;
+  color: #464646;
+  white-space: nowrap;
+}
+
+.featuredYear {
+  min-width: 130px;
+}
+
+.featuredArrow {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  transition: transform 0.3s ease;
+}
+
+.featuredRow:hover .featuredArrow,
+.featuredRow:focus-visible .featuredArrow {
+  transform: translate3d(3px, 0, 0);
+}
+
+/* Media panels. Each child is placed in percentages of the panel, which is 760 x 720px in the
+   design, so the mockups keep their proportions as the panel resizes. */
+.featuredMedia {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 40px;
+}
+
+.featuredMediaGarden {
+  background: #a4cd18;
+}
+
+.featuredMediaMaterials {
+  background: #000;
+}
+
+.gardenBackdrop {
+  position: absolute;
+  left: -74.08%;
+  top: -6.94%;
+  width: 238.3%;
+  height: 113.6%;
+  pointer-events: none;
+}
+
+.gardenScreen img,
+.habitPhone img {
+  /* Never stretched, whatever shape the panel takes */
+  object-fit: cover;
+}
+
+.gardenBackdropImage {
+  object-fit: cover;
+  opacity: 0.28;
+}
+
+.gardenScreen {
+  position: absolute;
+  left: 60.53%;
+  top: 28.33%;
+  width: 39.47%;
+  height: 71.67%;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.habitWrap {
+  position: absolute;
+  left: 19.74%;
+  top: 28.33%;
+  width: 52.49%;
+  height: 89.9%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.habitPhone {
+  position: relative;
+  flex: none;
+  width: 71.57%;
+  aspect-ratio: 285.474 / 602.515;
+  overflow: hidden;
+  border-radius: 18px;
+  transform: rotate(-11.45deg) skewX(-0.04deg);
+}
+
+.materialsFrame {
+  position: absolute;
+  left: 8.82%;
+  top: 10.28%;
+  width: 81.18%;
+  height: 79.17%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.materialsImage {
+  position: absolute;
+  left: -43.03%;
+  top: -24.37%;
+  width: 192.09%;
+  height: 138.69%;
+  max-width: none;
+  /* Never stretched, whatever shape the panel takes */
+  object-fit: cover;
+}
+
+/* ---------- 4. more work ---------- */
+
+/* Sits closer to Featured work than the usual section gap, as a continuation of it */
+.moreSection {
+  margin-top: clamp(56px, 7vh, 88px);
+}
+
+.more {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.moreItem {
+  grid-column: span 4;
+}
+
+.moreCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.moreCard:hover,
+.moreCard:focus-visible {
+  background: var(--glass-fill-hover);
+}
+
+.moreThumb {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  width: 96px;
+  height: 120px;
+  border-radius: calc(var(--card-radius) - 8px);
+  background: #e9eeee;
+}
+
+.moreThumb img {
+  object-fit: cover;
+  object-position: top;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.moreCard:hover .moreThumb img,
+.moreCard:focus-visible .moreThumb img {
+  transform: scale(1.06);
+}
+
+.moreText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.moreTitle {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.moreCaption {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+/* ---------- 5. about ---------- */
+
+.aboutIntro {
+  grid-column: span 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+/* Holds the layer the HAPPY stickers are placed into (StickerDock) */
+.stickerSection {
+  position: relative;
+}
+
+/* The intro sits in a card like the Samples Store card: same radius, fill, padding and type */
+.aboutBox {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 40px;
+  min-height: 0;
+  padding: 40px;
+  box-sizing: border-box;
+  border-radius: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #f3f3f3;
+  /* Same edge and shadow as the About cards from the redesign board */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88), 0 8px 28px rgba(31, 38, 46, 0.1);
+}
+
+/* Same size and weight as the Featured work titles, such as Grove */
+.aboutTitle {
+  margin: 0;
+  font-size: clamp(2.25rem, 3.2vw, 3.75rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.aboutCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  /* A comfortable reading length, like the Featured work descriptions */
+  max-width: 26rem;
+}
+
+.aboutCopy p {
+  margin: 0;
+  /* Same size as the other About cards' text, such as the map's coordinates */
+  font-size: clamp(0.9375rem, 1.05vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.45;
+  color: #464646;
+}
+
+/* The About cards come from the redesign board, where each places itself on a shared artboard.
+   Here each fills a cell that keeps the card's designed proportions (--pw × --ph). The shell
+   supplies the board's dark theme variables without its page layout. */
+.aboutShell.aboutShell {
+  --art-w: 1920;
+  --art-h: 2099;
+  display: contents;
+  min-height: 0;
+  padding: 0;
+  background: none;
+}
+
+.cell {
+  position: relative;
+  aspect-ratio: var(--pw) / var(--ph);
+  /* The cards size their app icons from the width of the board they were designed on.
+     That width follows from this cell's own: the card is --pw of the board's 1920 units. */
+  container-type: inline-size;
+  --board-w: calc(100cqw * 1920 / var(--pw));
+}
+
+.cell > * {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  border-radius: var(--card-radius) !important;
+  box-shadow: inset 0 0 0 1px var(--glass-line);
+}
+
+.cellPhoto {
+  grid-column: span 7;
+}
+
+/* Second row: the streak card beside the map and interests, sized so both sides end level */
+.aboutRow {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.76fr) minmax(0, 1fr);
+  gap: var(--gutter);
+  align-items: stretch;
+}
+
+/* The streak card gets the same drop shadow as the map and other About cards */
+.aboutRow > .cell > [class*="aboutDuo"] {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88), 0 8px 28px rgba(31, 38, 46, 0.1) !important;
+}
+
+/* The streak card takes the full height of the map and activities stack beside it, so both sides end level */
+.aboutRow > .cell {
+  aspect-ratio: auto;
+}
+
+.aboutStack {
+  display: grid;
+  gap: var(--gutter);
+}
+
+/* ---------- 6. experience and what I do ---------- */
+
+.column {
+  grid-column: span 6;
+  padding: clamp(24px, 2.6vw, 40px);
+  box-sizing: border-box;
+}
+
+.columnWide {
+  grid-column: 1 / -1;
+}
+
+.columnTitle {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.4rem, 2vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.25rem 1.5rem;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--glass-line);
+}
+
+.rowTitle {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.rowSub {
+  grid-column: 1;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.rowAside {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.roleShort {
+  display: none;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1100px) {
+  /* Below the desktop width each case study stacks: the media panel, then its details */
+  .featuredRow,
+  .featuredRowReverse {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+
+  .featuredMedia,
+  .featuredRowReverse .featuredMedia {
+    order: -1;
+  }
+
+  .featuredMedia {
+    aspect-ratio: 19 / 18;
+  }
+
+  .moreItem {
+    grid-column: span 6;
+  }
+
+  .aboutIntro,
+  .cellPhoto {
+    grid-column: 1 / -1;
+  }
+
+  .column {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .featuredRow,
+  .featuredRowReverse {
+    gap: 16px;
+  }
+
+  .featuredDetails {
+    gap: 40px;
+    padding: 28px;
+  }
+
+  /* The panels keep their designed, nearly square shape (as on tablets): their artwork is placed in
+     percentages of it, and a tall 4:5 panel pulled the images out of proportion */
+  .featuredMedia {
+    aspect-ratio: 19 / 18;
+  }
+
+  /* Role can wrap on a narrow card rather than run past the border */
+  /* A long fact (the role) stays on one line and trails off with "…" rather than wrapping; the
+     arrow stays at the bottom right, beside it */
+  .featuredFacts {
+    flex: 1 1 auto;
+  }
+
+  .featuredFooter {
+    gap: 10px;
+  }
+
+  /* About: a roomier card, with more of its width for the copy and the stickers */
+  .aboutBox {
+    gap: 36px;
+    padding: 36px 28px 32px;
+    border-radius: 32px;
+  }
+
+  .featuredFacts > span {
     display: block;
-    height: 170vh;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 0 12px;
+    font-size: 12.5px;
+    line-height: 44px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .roleFull {
+    display: none;
+  }
+
+  .roleShort {
+    display: inline;
+  }
+
+  /* The secondary projects become a two-column gallery: each tile shows its screenshot on top,
+     then the tag, title and a two-line description */
+  .more {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .moreItem {
+    grid-column: auto;
+  }
+
+  .moreCard {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 8px 8px 14px;
+  }
+
+  .moreThumb {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+  }
+
+  .moreText {
+    gap: 6px;
+    padding: 0 6px;
+  }
+
+  .moreText .tag {
+    height: 1.5rem;
+    padding: 0 0.6rem;
+    font-size: 0.6875rem;
+  }
+
+  .moreTitle {
+    font-size: 0.9375rem;
+  }
+
+  .moreCaption {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    font-size: 0.8125rem;
+  }
+
+  .aboutRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .aboutRow > .cell {
+    aspect-ratio: var(--pw) / var(--ph);
+  }
+
+  .sectionHead {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rowAside {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+/* Activities card, desktop: keeps the designed hover reveal and the card's own type sizes, which
+   match the map card beside it. The copy gets more width so it stays on two lines, and the icons
+   are a little smaller and lower, so they always clear the copy. */
+@media (min-width: 1101px) {
+  .cellActivities [class*="aboutActivitiesCopy"] {
+    width: 70% !important;
+  }
+
+  .cellActivities [class*="aboutActivitiesCircle"] {
+    width: 8.5cqw;
+  }
+
+  .cellActivities [data-node-id="174:301"],
+  .cellActivities [data-node-id="174:302"],
+  .cellActivities [data-node-id="174:304"] {
+    top: 46% !important;
+  }
+
+  .cellActivities [data-node-id="174:303"],
+  .cellActivities [data-node-id="174:305"] {
+    top: 72% !important;
+  }
+}
+
+/* Tablets and phones: the card lays its title, text and icons out in rows and is as tall as
+   they need, instead of the designed layout with the icons scattered over the card */
+@media (max-width: 1100px) {
+  .cellActivities {
+    aspect-ratio: auto;
+  }
+
+.cellActivities > * {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    gap: 10px 0;
+    height: auto !important;
+    padding: 16px 16px 20px;
+    box-sizing: border-box;
+    container-type: normal !important;
+  }
+
+  .cellActivities [class*="aboutActivitiesCopy"] {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    padding-right: 52px;
+    box-sizing: border-box;
+  }
+
+  .cellActivities [class*="aboutActivitiesIcon"] {
+    position: absolute !important;
+    left: auto !important;
+    right: 16px;
+    top: 16px;
+    width: 40px !important;
+  }
+
+  .cellActivities [class*="aboutActivitiesAccent"] {
+    display: none;
+  }
+
+  .cellActivities [class*="aboutActivitiesItem"] {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 33.33% !important;
+    height: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .cellActivities [class*="aboutActivitiesItemInner"] {
+    width: 100% !important;
+  }
+
+  .cellActivities [class*="aboutActivitiesCircle"] {
+    width: 56px !important;
+    height: 56px !important;
+    margin: 0 auto;
+  }
+
+  .cellActivities [class*="aboutActivitiesBody"] {
+    font-size: 13px !important;
+    line-height: 1.35;
+  }
+
+  .cellActivities [class*="aboutActivitiesLabel"] {
+    margin-top: 4px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stripTrack {
+    animation: none;
+  }
+
+  /* Without the slide the strip is a plain row that can be scrolled sideways */
+  .strip {
+    overflow-x: auto;
+    mask-image: none;
+  }
+
+  .stripList[aria-hidden] {
+    display: none;
+  }
+
+  .featuredArrow,
+  .featuredDetails,
+  .moreThumb img {
+    transition: none;
+    transform: none !important;
+  }
+}
+
+/* Phones: a tall, narrow screen, so the folder's stage is shorter than a full screen and Featured
+   work starts closer to the strip above. Otherwise the folder sat in a screen-high stage below a
+   desktop-sized section gap, with a large empty space above and below it. */
+@media (max-width: 700px) {
+  /* The folder is centred in its stage, so the title sits about (36% of the screen - 185px) below
+     the stage's top; this margin takes that back out, so the space above the title is the same
+     section gap as everywhere else */
+  .section:has(.workStage) {
+    margin-top: calc(var(--section-gap, 80px) - 36svh + 185px);
+  }
+
+  .folderSticky,
+  .folderSpacer {
+    height: 72vh;
+    height: 72svh;
+  }
+
+  /* While held, the shorter stage sits in the middle of the screen, so the folder is centred */
+  .folderSticky {
+    top: 14vh;
+    top: 14svh;
+  }
+}
+
+/* Phones: one gap between every section, smaller than the desktop's (which grows with the screen's
+   height, and a phone's tall screen made it 170px or more). Sections that add their own space at the
+   top take it back out on phones (ServicesStack, OpenToWork, ContactSection). */
+@media (max-width: 700px) {
+  .page {
+    --section-gap: 160px;
+  }
+
+  /* More work follows on from Featured work, so it sits closer than a new section would */
+  .moreSection {
+    margin-top: 64px;
   }
 }

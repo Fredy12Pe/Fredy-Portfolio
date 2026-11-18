@@ -3,8 +3,9 @@
 import * as React from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { MOODS, type MoodId } from "../projects/mood-tracker/moods";
+import { MOODS } from "../projects/mood-tracker/moods";
 import MoodCharacter from "./MoodCharacter";
+import { REPLY_DELAY_MS, REPLY_VISIBLE_MS, pickReply } from "./mood-replies";
 import { START_VOLUME, useMusicPlayer } from "./music";
 import { registerMusicControls } from "./music-bridge";
 import { getMusicAudio } from "./persistent-audio";
@@ -155,137 +156,6 @@ function WeatherWidget() {
 
 const MOOD_START_INDEX = MOODS.findIndex((mood) => mood.id === "happy");
 
-// Ten witty lines per mood; one is picked at random each time a reply pops up
-const MOOD_REPLIES: Record<MoodId, string[]> = {
-  "freaking-out": [
-    "Deep breaths. Mostly.",
-    "Nothing is on fire. Probably.",
-    "Let's pretend this is a calm day.",
-    "Hair, pants, and feelings: all on fire.",
-    "Maybe the snacks will help.",
-    "Phone down, shoulders down.",
-    "Panic is just excitement in a hurry.",
-    "One thing at a time. Start with breathing.",
-    "The bad news can wait until after lunch.",
-    "This feeling is loud, but it's temporary.",
-  ],
-  sad: [
-    "Rain never lasts forever. Usually.",
-    "Hot chocolate is a valid response.",
-    "Blankets have been known to help.",
-    "Your feelings are allowed to take up space.",
-    "Tomorrow is a fresh sheet of paper.",
-    "Tea, a playlist, and no emails. Deal?",
-    "Even clouds move along eventually.",
-    "I'll be here if you need a minute.",
-    "Sad days are for slow songs.",
-    "Sunshine's on backorder. Hang in there.",
-  ],
-  anxious: [
-    "Your to-do list can wait five minutes.",
-    "Breathe in for four. Out for six.",
-    "Most things we worry about never happen.",
-    "Put the phone down. The world will wait.",
-    "One small step is still a step.",
-    "Your brain is just overachieving today.",
-    "Sip some water. Shoulders down.",
-    "You've handled hard days before. This one too.",
-    "Worry is a lot of effort for nothing.",
-    "Name three things you can see right now.",
-  ],
-  tired: [
-    "Nap detected. Good call.",
-    "Coffee has entered the chat.",
-    "Sleep is a productivity hack, right?",
-    "Horizontal is an acceptable position.",
-    "Five more minutes of blankets. Earned.",
-    "Your battery is at 4%. Time to charge.",
-    "Yawns are contagious. Sorry.",
-    "Let's be a potato for a bit.",
-    "Dreams are waiting. Go get them.",
-    "Snooze is a love language.",
-  ],
-  meh: [
-    "Meh is a valid mood, honestly.",
-    "Mediocre days are underrated.",
-    "Not bad, not great. Just vibing.",
-    "Lukewarm coffee, same energy.",
-    "Sometimes meh is the plot twist.",
-    "Even a plain sandwich is still lunch.",
-    "Could be worse. Could be a Monday.",
-    "A shrug is basically a full sentence.",
-    "Mild is a flavour too.",
-    "Let's aim for slightly better than meh.",
-  ],
-  content: [
-    "Content looks good on you.",
-    "Good vibes only, for now.",
-    "Tiny joys are doing their job.",
-    "Sitting back and enjoying the moment.",
-    "Happiness is quietly showing up.",
-    "This is what peace looks like.",
-    "No notes. Just a nice Tuesday.",
-    "Keep it cozy. You've earned it.",
-    "A warm drink and a soft chair. Perfect.",
-    "Life is good when nothing is urgent.",
-  ],
-  happy: [
-    "Yep, it's Friday.",
-    "Your smile is contagious.",
-    "Sunshine looks good on you.",
-    "Dancing is allowed. Encouraged, even.",
-    "Who needs sunshine with that grin?",
-    "Happiness looks great on you.",
-    "Good mood detected. Spread it around.",
-    "Okay, now the playlist is mandatory.",
-    "Keep that energy. It's working.",
-    "Somebody's having a good day.",
-  ],
-  excited: [
-    "Okay, calm down. Actually, don't.",
-    "Easy, you'll pop a spring.",
-    "This energy is illegal in some countries.",
-    "Save some confetti for later.",
-    "Hold on, is that a dance break?",
-    "Patience is also a superpower.",
-    "Your excitement is contagious. Keep going.",
-    "Zero to a hundred. Impressive.",
-    "Good news? Tell me everything.",
-    "Please don't spill the fizzy drink.",
-  ],
-  overjoyed: [
-    "Somebody had a great coffee.",
-    "Lottery numbers, anyone?",
-    "Rainbows are jealous of this.",
-    "This is peak main-character energy.",
-    "You're basically glowing.",
-    "Pure joy detected. Please bottle it.",
-    "Confetti budget approved.",
-    "Dancing in the kitchen counts, right?",
-    "Scientists are studying this smile.",
-    "I'll have what you're having.",
-  ],
-  angry: [
-    "Step away from the keyboard.",
-    "Breathe. Rage later, if you still want to.",
-    "Deep breath. The coffee is just wrong.",
-    "Your blood pressure has opinions.",
-    "Pillows are great for screaming into.",
-    "Is this a problem for future you?",
-    "Let's shake it off with a walk.",
-    "Tone it down. Your face is loud.",
-    "Revenge is a dish best served cold.",
-    "Take five. The mess will still be there.",
-  ],
-};
-
-const pickReply = (mood: MoodId) => {
-  const lines = MOOD_REPLIES[mood];
-  return lines[Math.floor(Math.random() * lines.length)];
-};
-
-const REPLY_DELAY_MS = 2000;
-const REPLY_VISIBLE_MS = 6000;
 
 /* Emotions: the mood tracker's characters, one at a time, after pressing start */
 function MoodWidget() {

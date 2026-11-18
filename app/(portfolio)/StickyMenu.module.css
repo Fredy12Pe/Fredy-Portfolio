@@ -2,40 +2,62 @@
    the page below does not move. Sticky keeps it at the top of the screen once scrolled. */
 .anchor {
   --u: min(100vw / 1920, 100svh / 1080);
-  position: sticky;
-  top: calc(18 * var(--u));
+  /* Fixed to the top of the screen, so the same bar works on every page, wherever it is placed */
+  position: fixed;
+  left: 0;
+  right: 0;
+  /* The bar sits flush with the top of the screen */
+  top: 0;
   z-index: 1000;
   height: 0;
-  margin-top: calc(65 * var(--u));
-  margin-bottom: calc(-65 * var(--u));
+  /* At the very top of the page too: the bar is the site header from the first screen down */
+  margin: 0;
 }
 
 /* Hidden while the header's intro plays (SiteHeader sets data-intro on the header) */
-:global(body:has(header[data-intro])) .anchor {
+:global(body:has(header[data-intro])) .anchor,
+:global(body:has(header[data-intro])) .anchor .menu {
   visibility: hidden;
 }
 
-/* Where the header's menu was: 60% across the 1920 board, less half the menu's width */
+/* ...until the intro's signature starts flying to the bar's logo (WelcomeSignature): then the bar
+   comes in, so the signature lands in its place */
+:global(html[data-intro-landing] body) .anchor,
+:global(html[data-intro-landing] body) .anchor .menu {
+  visibility: visible;
+}
+
+/* Across the top, flush with the edges. Hidden (and lifted a little) until the header's pills have
+   scrolled off, then it drops in and stays. */
 .menu {
   position: absolute;
   top: 0;
-  left: calc(50% + 148 * var(--u));
-  border-radius: 999px;
+  left: 0;
+  right: 0;
   font-size: calc(20 * var(--u));
   line-height: normal;
+  translate: 0 calc(-28 * var(--u));
+  visibility: hidden;
+  opacity: 0;
   transition:
-    left 600ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    translate 500ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 300ms ease,
+    visibility 0s linear 500ms;
 }
 
-/* Once scrolled, the menu moves to the centre */
 .menu[data-stuck] {
-  left: 50%;
-  transform: translateX(-50%);
+  translate: 0 0;
+  visibility: visible;
+  opacity: 1;
+  transition:
+    translate 500ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 300ms ease,
+    visibility 0s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .menu {
+  .menu,
+  .menu[data-stuck] {
     transition: none;
   }
 }
@@ -45,9 +67,9 @@
    is following the page and music plays: in the header, the player there is the one. */
 .playhead {
   position: absolute;
-  top: 50%;
-  left: calc(100% + 14 * var(--u));
-  transform: translate3d(0, -50%, 0);
+  /* The bar spans the screen, so the player hangs just below it, at the right edge of the content */
+  top: calc(100% + 8px);
+  right: calc(max(0px, (100% - 1560px) / 2) + var(--margin, clamp(20px, 5vw, 88px)));
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -135,26 +157,11 @@
   stroke-linejoin: round;
 }
 
-/* Tablet: the pill nav is sized in real pixels and sits at the right, level with the logo on the left
-   and in line with the header's 40px side margin */
+/* Tablet: the bar is sized in real pixels and spans the screen */
 @media (max-width: 1279px) and (min-width: 768px) {
   .anchor {
     --u: 1px;
     /* The hidden mini player waits to the right of the menu; clipped so it never widens the page */
     overflow-x: clip;
-  }
-
-  .menu,
-  .menu[data-stuck] {
-    left: auto;
-    right: 40px;
-    transform: none;
-    transition: right 600ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  /* Scrolled with music playing: the mini player opens to the menu's right, so the menu slides left by
-     the player's width (about 212px) plus its 14px gap, keeping both on screen */
-  .menu[data-stuck]:has(.playhead[data-playing]) {
-    right: calc(40px + 226px);
   }
 }

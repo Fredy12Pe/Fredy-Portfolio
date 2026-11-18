@@ -39,7 +39,7 @@
   top: 0;
   left: 0;
   border-radius: 999px;
-  background: #2a2a2a;
+  background: var(--pill-bg, #2a2a2a);
 }
 
 /* Glides between items once it has its first position (data-ready), not before */

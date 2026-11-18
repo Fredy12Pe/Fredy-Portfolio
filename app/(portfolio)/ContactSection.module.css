@@ -1,66 +1,139 @@
+/* Contact. Radius and glass come from the home page tokens (home.module.css); the colours are the
+   dark set, since the page has faded to black by here (see ServicesStack). */
 .section {
+  --text: #fff;
+  --text-muted: rgba(255, 255, 255, 0.68);
+  --glass-fill: rgba(255, 255, 255, 0.06);
+  --glass-fill-hover: rgba(255, 255, 255, 0.11);
+  --glass-line: rgba(255, 255, 255, 0.16);
+  --accent-text: #c39bff;
   position: relative;
   overflow: hidden;
-  background: #fff;
-  color: #111;
-  /* Space from the bottom of the About cards down to this section's top: the sticky frame's
-     space around the tallest card (720 artboard units, scaled to the board width), plus the
-     About section's bottom padding. The board width mirrors --board-w in AboutSection.module.css. */
-  --about-gap: calc(
-    (100vh - 720 / 1920 * min(calc(100vw - 80px), 1620px, calc((100vh - 140px) * 1.98))) / 2
-      + clamp(4rem, 9vh, 6rem)
-  );
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  /* The bottom padding makes the space below the form, down to the footer, equal to the
-     space above it. The footer overlaps the section by its top-corner radius. */
+  margin-top: var(--section-gap, 8rem);
+  /* The footer overlaps this section by its top-corner radius, which is added back below */
   padding:
-    clamp(4rem, 9vh, 6rem) clamp(1.25rem, 6vw, 6.5rem)
-    calc(clamp(4rem, 9vh, 6rem) + clamp(3rem, 6vw, 5rem) + var(--about-gap));
-  scroll-margin-top: 7rem;
+    clamp(3rem, 7vh, 5rem) var(--margin, 1.25rem)
+    calc(var(--section-gap, 8rem) + clamp(3rem, 6vw, 5rem));
+  color: var(--text, #0b1314);
+  scroll-margin-top: 4rem;
+}
+
+/* A subtle backdrop: warm and cool glows low in the section, and a faint dot grid fading out
+   toward the top, so the black isn't flat */
+.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(60% 55% at 15% 95%, rgba(255, 180, 92, 0.1), transparent 70%),
+    radial-gradient(50% 50% at 90% 60%, rgba(124, 92, 255, 0.09), transparent 70%),
+    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.2px) 0 0 / 22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%);
+  mask-image: linear-gradient(to bottom, transparent, #000 35%);
+  pointer-events: none;
 }
 
 .inner {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 28.5rem);
-  gap: clamp(2.5rem, 6vw, 5.5rem);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gutter, 1.5rem);
   align-items: stretch;
-  width: min(100%, 68rem);
+  width: min(100%, calc(1560px - 2 * var(--margin, 0px)));
   margin: 0 auto;
 }
 
 .copy {
+  grid-column: span 6;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 3rem;
-  min-height: 100%;
   padding: 0.35rem 0 0.2rem;
 }
 
 .heading {
   margin: 0;
-  max-width: 10ch;
-  font-size: clamp(3.25rem, 5.6vw, 4.75rem);
+  font-size: clamp(2.5rem, 7vw, 6.5rem);
   font-weight: 700;
   line-height: 0.95;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
 
 .subhead {
-  margin: 1.15rem 0 0;
-  max-width: 28rem;
-  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
-  font-weight: 400;
-  line-height: 1.45;
-  color: #3a3a3a;
+  margin: 1.5rem 0 0;
+  max-width: 30rem;
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+  line-height: 1.5;
+  color: var(--text-muted, #4a5556);
+}
+
+/* Email with click-to-copy */
+.emailRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 2rem;
+}
+
+.email {
+  font-size: clamp(1.05rem, 1.5vw, 1.4rem);
+  font-weight: 500;
+  color: var(--text, #0b1314);
+  text-decoration: underline;
+  text-decoration-color: var(--glass-line, rgba(255, 255, 255, 0.2));
+  text-underline-offset: 0.3em;
+  overflow-wrap: anywhere;
+  transition: color 180ms ease, text-decoration-color 180ms ease;
+}
+
+.email:hover {
+  color: var(--accent-text, #9a5200);
+  text-decoration-color: currentColor;
+}
+
+.copyButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 2.5rem;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--glass-fill, rgba(255, 255, 255, 0.06));
+  box-shadow: inset 0 0 0 1px var(--glass-line, rgba(255, 255, 255, 0.14));
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.copyButton:hover {
+  background: var(--glass-fill-hover, rgba(255, 255, 255, 0.1));
+}
+
+.copyButton:active {
+  transform: scale(0.96);
+}
+
+.copyButton[data-copied] {
+  color: var(--accent-text, #9a5200);
+}
+
+.copyButton svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .socials {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.7rem;
   margin: 0;
@@ -71,135 +144,297 @@
 .social {
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.7rem;
-  background: #e6e4e0;
-  color: #1a1a1a;
-  transition: background-color 180ms ease, transform 180ms ease;
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 12px;
+  background: var(--glass-fill, rgba(255, 255, 255, 0.06));
+  box-shadow: inset 0 0 0 1px var(--glass-line, rgba(255, 255, 255, 0.14));
+  color: inherit;
+  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
 .social:hover {
-  background: #dddcd8;
-}
-
-.social:focus-visible {
-  outline: 2px solid #111;
-  outline-offset: 3px;
+  background: var(--glass-fill-hover, rgba(255, 255, 255, 0.1));
+  color: var(--accent-text, #9a5200);
+  transform: translateY(-2px);
 }
 
 .social svg {
   display: block;
-  width: 1.05rem;
-  height: 1.05rem;
-}
-
-.resume {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  height: 2.75rem;
-  padding: 0 0.95rem;
-  border-radius: 0.7rem;
-  background: #e6e4e0;
-  color: #1a1a1a;
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background-color 180ms ease;
-}
-
-.resume:hover {
-  background: #dddcd8;
-}
-
-.resume:focus-visible {
-  outline: 2px solid #111;
-  outline-offset: 3px;
-}
-
-.resume svg {
-  display: block;
-  width: 1rem;
-  height: 1rem;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .form {
+  --mx: 50%;
+  --my: 0%;
+  position: relative;
+  grid-column: 8 / -1;
   display: flex;
   flex-direction: column;
-  gap: 1.15rem;
+  gap: 0.9rem;
   margin: 0;
-  padding: 1.7rem 1.45rem 1.25rem;
-  border-radius: 1.7rem;
-  background: #111;
+  padding: clamp(1.35rem, 2.2vw, 2rem);
+  overflow: hidden;
+  border-radius: var(--card-radius, 24px);
+  background: var(--glass-fill, rgba(255, 255, 255, 0.06));
+  box-shadow: inset 0 0 0 1px var(--glass-line, rgba(255, 255, 255, 0.14));
+  isolation: isolate;
+}
+
+/* A soft light that follows the pointer across the card */
+.form::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(420px circle at var(--mx) var(--my), rgba(162, 89, 255, 0.12), transparent 60%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.form:hover::before,
+.form:focus-within::before {
+  opacity: 1;
+}
+
+.formHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.formTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.formCount {
+  margin: 0;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted, rgba(255, 255, 255, 0.68));
+}
+
+/* Fills as the three fields are completed */
+.progress {
+  height: 3px;
+  margin: -0.2rem 0 0.3rem;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #a259ff, #22c55e);
+  transform-origin: 0 50%;
+  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Message starters */
+.topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.topic {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.topic:hover {
+  border-color: rgba(255, 255, 255, 0.45);
   color: #fff;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
+.topic:active {
+  transform: scale(0.96);
 }
 
-.label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  line-height: 1.2;
+.topic[aria-pressed="true"] {
+  border-color: #a259ff;
+  background: rgba(162, 89, 255, 0.14);
+  color: #a259ff;
+}
+
+/* A field: the label sits inside the box, and floats up once the box is focused or filled */
+.field {
+  position: relative;
+  display: block;
 }
 
 .input,
 .textarea {
+  display: block;
   width: 100%;
   margin: 0;
-  padding: 0.85rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 0.7rem;
-  background: transparent;
-  color: #fff;
+  padding: 1.55rem 2.75rem 0.6rem 1rem;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text, #fff);
   font: inherit;
-  font-size: 0.95rem;
-  line-height: 1.4;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  outline: none;
+  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
 }
 
 .textarea {
   min-height: 8.5rem;
-  resize: vertical;
+  max-height: 22rem;
+  resize: none;
+  overflow-y: auto;
 }
 
-.input::placeholder,
-.textarea::placeholder {
-  color: #8d8d8d;
+.input:hover,
+.textarea:hover {
+  border-color: rgba(255, 255, 255, 0.36);
 }
 
-.input:focus-visible,
-.textarea:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
+.input:focus,
+.textarea:focus {
+  border-color: #a259ff;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 4px rgba(162, 89, 255, 0.16);
+}
+
+.label {
+  position: absolute;
+  left: 1rem;
+  top: 1.05rem;
+  font-size: 0.98rem;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  transform-origin: 0 0;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms ease;
+}
+
+.input:focus + .label,
+.input:not(:placeholder-shown) + .label,
+.textarea:focus + .label,
+.textarea:not(:placeholder-shown) + .label {
+  transform: translateY(-0.6rem) scale(0.76);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.input:focus + .label,
+.textarea:focus + .label {
+  color: #a259ff;
+}
+
+/* A check pops in once a field is complete */
+.check {
+  position: absolute;
+  right: 1rem;
+  top: 1.15rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  opacity: 0;
+  transition: stroke-dashoffset 350ms ease, opacity 150ms ease;
+}
+
+.field[data-done] .check {
+  stroke-dashoffset: 0;
+  opacity: 1;
+}
+
+/* After a send attempt, fields still missing are marked, with a small shake */
+.field[data-invalid] .input,
+.field[data-invalid] .textarea {
+  border-color: #ff8a80;
+  animation: shake 360ms ease;
+}
+
+.field[data-invalid] .label {
+  color: #ff8a80;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
 }
 
 .submit {
-  margin-top: 0.15rem;
-  padding: 0.95rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+  padding: 1rem;
   border: none;
-  border-radius: 0.7rem;
-  background: #f3f3f3;
-  color: #111;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.75);
   font: inherit;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.98rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 180ms ease;
+  transition: background-color 250ms ease, color 250ms ease, transform 180ms ease;
+}
+
+.submit svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Lights up once every field is filled in */
+.submit[data-ready] {
+  background: #fff;
+  color: #0b1314;
 }
 
 .submit:hover {
-  background: #fff;
+  background: #a259ff;
+  color: #fff;
 }
 
-.submit:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 3px;
+.submit:hover svg {
+  transform: translateX(4px);
+}
+
+.submit:active {
+  transform: scale(0.98);
 }
 
 .submit:disabled {
@@ -208,79 +443,93 @@
 }
 
 .status {
-  margin: -0.35rem 0 0;
+  margin: 0;
   font-size: 0.85rem;
   line-height: 1.4;
-  color: #d7d7d7;
+  color: var(--text-muted, #4a5556);
 }
 
 .status[data-tone="error"] {
-  color: #ffb4b4;
+  color: #ff8a80;
 }
 
-@media (max-width: 860px) {
+/* The resume button is the main action here: solid and light, with a soft warm glow */
+.resumeItem > a {
+  --background: #fff;
+  --rectangle: rgba(11, 19, 20, 0.08);
+  --success: rgba(34, 197, 94, 0.25);
+  --shadow: rgba(162, 89, 255, 0.45);
+  background: #fff;
+  color: #0b1314;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 12px 32px -10px var(--shadow);
+}
+
+.resumeItem > a:hover {
+  background: #a259ff;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px #a259ff,
+    0 16px 36px -10px var(--shadow);
+}
+
+/* Phones: no padding above the heading, so the space above it is just the section gap */
+@media (max-width: 700px) {
   .section {
-    padding: 4.5rem 1.25rem 4rem;
-    scroll-margin-top: 5.5rem;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 1100px) {
+  .copy,
+  .form {
+    grid-column: 1 / -1;
   }
 
   .inner {
-    grid-template-columns: 1fr;
-    gap: 2.25rem;
+    row-gap: 2.5rem;
   }
 
   .copy {
-    gap: 1.75rem;
-    min-height: 0;
+    gap: 2rem;
   }
 
-  .heading {
-    max-width: 8ch;
-    font-size: clamp(2.75rem, 14vw, 3.75rem);
-  }
-
-  .subhead {
-    max-width: 34rem;
-    font-size: 1rem;
-  }
-
-  .form {
-    padding: 1.35rem 1.1rem 1.15rem;
-  }
-
+  /* 16px keeps a phone from zooming in when a field is focused */
   .input,
   .textarea,
   .submit {
     font-size: 16px;
   }
-}
 
-/* Tablets: the space above this section is the room the pinned About frame leaves under its cards
-   (the tallest card is 720 of 1920 units of the tablet board width in AboutSection.module.css).
-   No padding is added above, and the same room is mirrored below, so the form sits centred between
-   the cards and the footer. The footer overlaps by its top-corner radius, which is added back. */
-@media (min-width: 768px) and (max-width: 1279px) {
-  .section {
-    padding:
-      0 clamp(1.25rem, 6vw, 6.5rem)
-      calc(
-        (100vh - 0.375 * min(calc((100vw - 96px) * 2.13), calc((100vh - 200px) * 2.4))) / 2
-          + clamp(3rem, 6vw, 5rem)
-      );
+  .label {
+    font-size: 16px;
   }
 }
 
-/* Phones: the gap above the form is about 52px: the row's last card sits centred in the frame, and the
-   frame ends about 20px below it (AboutSection.module.css). The footer overlaps this section by 48px, so
-   the bottom padding is 52px plus that overlap, which centres the form between the two. */
-@media (max-width: 767px) {
-  .section {
-    padding: 0 1.25rem 6.25rem;
+@media (prefers-reduced-motion: reduce) {
+  .social,
+  .copyButton,
+  .submit,
+  .submit svg,
+  .topic,
+  .label,
+  .check,
+  .progress span {
+    transition: none;
+    transform: none;
   }
-}
 
-/* The About and Contact sections are both white, but they can meet on a fraction of a pixel, where
-   the black page behind them blends into a thin grey line. Overlapping by 1px closes that seam. */
-.section {
-  margin-top: -1px;
+  .field[data-invalid] .input,
+  .field[data-invalid] .textarea {
+    animation: none;
+  }
+
+  .input:focus + .label,
+  .input:not(:placeholder-shown) + .label,
+  .textarea:focus + .label,
+  .textarea:not(:placeholder-shown) + .label {
+    transform: translateY(-0.6rem) scale(0.76);
+  }
 }

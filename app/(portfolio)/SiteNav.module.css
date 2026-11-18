@@ -1,0 +1,191 @@
+/* The home page's following menu (SiteNav.tsx). Shares the gooey pill from HeaderNav.module.css;
+   sizes use the board unit --u from StickyMenu. */
+.wrap {
+  /* One bar across the top of the screen, flush to the edges like a site header. The signature
+     sits at the left edge of the page's content; the sections and Let's connect sit together at
+     its right edge. */
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  width: 100%;
+  padding: 10px calc(max(0px, (100% - 1560px) / 2) + var(--margin, clamp(20px, 5vw, 88px)));
+  box-sizing: border-box;
+  border-radius: 0;
+  /* Always the same dark, mostly solid glass, so it reads the same over light and dark sections */
+  background: rgba(18, 18, 20, 0.88);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* The sections and Let's connect, together at the right of the bar */
+.middle {
+  justify-self: end;
+  /* Drawn in a little from the content's right edge */
+  margin-right: clamp(24px, 4vw, 72px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav {
+  /* The bar carries the glass, so the section menu has none of its own */
+  --nav-glass: transparent;
+  padding: 0;
+}
+
+.nav > [aria-hidden]:not(svg) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.item {
+  /* Small, fixed sizes: the bar stays slim and readable at every screen width */
+  padding: 8px 14px;
+  font-size: 14px;
+  transition:
+    color 0.2s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.item:hover {
+  transform: translateY(-1px);
+}
+
+/* The signature, at the bar's far left */
+.logo {
+  justify-self: start;
+  display: grid;
+  place-items: center;
+  height: 36px;
+  padding: 0;
+  box-sizing: border-box;
+  border-radius: 999px;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease;
+}
+
+.logo img {
+  display: block;
+  width: auto;
+  height: 28px;
+}
+
+.logo:hover {
+  transform: translateY(-1px) rotate(-3deg);
+}
+
+.logo:focus-visible {
+  outline: 2px solid #a259ff;
+  outline-offset: 3px;
+}
+
+/* Reading progress through the current section, inside the pill */
+.fillTrack {
+  position: absolute;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 999px;
+  pointer-events: none;
+  transition: opacity 250ms ease;
+}
+
+.fillTrack[data-ready] {
+  transition:
+    opacity 250ms ease,
+    left 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    top 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.16));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+/* Let's connect: black with white eyes, turning the heading's purple on hover */
+.connect {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 42px;
+  padding: 0 9px 0 20px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: #0b1314;
+  color: #fff;
+  /* The same type as the section links */
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  /* A thin light edge, so the black button still reads over the page's black sections */
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    0 calc(6 * var(--u)) calc(18 * var(--u)) rgba(0, 0, 0, 0.25);
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease;
+}
+
+.connect:hover {
+  /* The purple of the heading's changing word (SiteHeader .titleAccent) */
+  background: #a259ff;
+  transform: translateY(-1px);
+}
+
+.connect:focus-visible {
+  outline: 2px solid #a259ff;
+  outline-offset: 3px;
+}
+
+/* While the Contact section is the one being read */
+.connect[aria-current] {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    0 0 0 3px rgba(162, 89, 255, 0.7),
+    0 calc(6 * var(--u)) calc(18 * var(--u)) rgba(0, 0, 0, 0.25);
+}
+
+.eyes {
+  --eye: 24px;
+}
+
+/* The eyes on Let's connect in the phone menu sheet */
+.sheetEyes {
+  --eye: 40px;
+  --eye-bg: #0b1314;
+  --pupil-bg: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .connect,
+  .fillTrack[data-ready] {
+    transition: none;
+  }
+
+  .item:hover,
+  .logo:hover,
+  .connect:hover {
+    transform: none;
+  }
+}
+
+
+/* Keyboard focus on the section links: purple, like the rest of the bar's highlights */
+.item:focus-visible {
+  outline: 2px solid #a259ff;
+  outline-offset: 2px;
+}
+
+/* While the intro's signature flies in to land here (WelcomeSignature), the bar's own waits unseen,
+   so there is only ever one signature on screen */
+:global(html[data-intro-landing]) .logo img {
+  visibility: hidden;
+}

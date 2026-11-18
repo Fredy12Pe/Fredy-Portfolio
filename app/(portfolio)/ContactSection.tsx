@@ -1,15 +1,16 @@
 "use client";
 
-import { CSSProperties, FormEvent, useState } from "react";
-import { roboto } from "@/lib/fonts";
-import { CursorTrail } from "@/components/ui/cursor-trail";
+import { CSSProperties, FormEvent, useEffect, useRef, useState, type PointerEvent } from "react";
+import { inter } from "@/lib/fonts";
 import { useReveal } from "@/lib/reveal";
 import { CONTACT_EMAIL, CONTACT_LINKS } from "../redesign/contact-links";
+import ResumeDownload from "./ResumeDownload";
 import styles from "./ContactSection.module.css";
 
 const SOCIALS = [
   { label: "Instagram", href: CONTACT_LINKS.instagram, icon: InstagramIcon },
   { label: "LinkedIn", href: CONTACT_LINKS.linkedin, icon: LinkedInIcon },
+  { label: "GitHub", href: CONTACT_LINKS.github, icon: GitHubIcon },
 ] as const;
 
 type Status = { tone: "neutral" | "error"; text: string } | null;
@@ -56,21 +57,27 @@ export default function ContactSection() {
     <section
       ref={revealRef}
       id="contact"
-      className={`${styles.section} ${roboto.className}`}
+      className={`${styles.section} ${inter.className}`}
       aria-label="Get in contact"
     >
-      <CursorTrail className="absolute inset-0" />
       <div className={styles.inner}>
         <div className={styles.copy}>
           <div>
-            <h2 className={`${styles.heading} fade-up`} style={stagger(0)}>
+            <h2 className={`${styles.heading} ${inter.className} fade-up`} style={stagger(0)}>
               Let’s talk.
             </h2>
             <p className={`${styles.subhead} fade-up`} style={stagger(1)}>
-              Have a project or need help? Fill out the form, and I’ll get back to you soon.
+              Have a project or a role in mind? Email me or fill out the form, and I’ll get back
+              to you soon.
             </p>
+            <div className={`${styles.emailRow} fade-up`} style={stagger(2)}>
+              <a className={styles.email} href={CONTACT_LINKS.email}>
+                {CONTACT_EMAIL}
+              </a>
+              <CopyEmailButton />
+            </div>
           </div>
-          <ul className={`${styles.socials} fade-up`} style={stagger(2)}>
+          <ul className={`${styles.socials} fade-up`} style={stagger(3)}>
             {SOCIALS.map(({ label, href, icon: Icon }) => (
               <li key={label}>
                 <a
@@ -84,67 +91,191 @@ export default function ContactSection() {
                 </a>
               </li>
             ))}
-            <li>
-              <a
-                className={styles.resume}
-                href={CONTACT_LINKS.resume}
-                download="Fredy Pedro - Resume.pdf"
-              >
-                <DownloadIcon />
-                Download Resume
-              </a>
+            <li className={styles.resumeItem}>
+              <ResumeDownload />
             </li>
           </ul>
         </div>
 
-        <form
-          className={`${styles.form} fade-up`}
-          style={stagger(1)}
-          onSubmit={onSubmit}
-          noValidate
-        >
-          <label className={styles.field}>
-            <span className={styles.label}>Name</span>
-            <input
-              className={styles.input}
-              name="name"
-              type="text"
-              autoComplete="name"
-              placeholder="Enter your name"
-              required
-            />
-          </label>
-          <label className={styles.field}>
-            <span className={styles.label}>Email</span>
-            <input
-              className={styles.input}
-              name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="Enter your email"
-              required
-            />
-          </label>
-          <label className={styles.field}>
-            <span className={styles.label}>Your Project</span>
-            <textarea
-              className={styles.textarea}
-              name="project"
-              placeholder="Tell us about your project"
-              required
-            />
-          </label>
-          {status ? (
-            <p className={styles.status} data-tone={status.tone} role="status">
-              {status.text}
-            </p>
-          ) : null}
-          <button className={styles.submit} type="submit" disabled={sending}>
-            Submit
-          </button>
-        </form>
+        <ContactForm onSubmit={onSubmit} status={status} sending={sending} />
       </div>
     </section>
+  );
+}
+
+/* Starters for the message: picking one writes an opening line the visitor can keep or change */
+const TOPICS = [
+  { label: "Hiring for a role", text: "Hi Fredy, I'm hiring for a role and think you could be a great fit. " },
+  { label: "A project", text: "Hi Fredy, I have a project I'd love your help with. " },
+  { label: "Just saying hi", text: "Hi Fredy, I came across your portfolio and wanted to say hi. " },
+] as const;
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/* The form. Sending is unchanged (onSubmit in ContactSection); this adds the interaction around it:
+   a progress line that fills as the fields are completed, labels that float up, a check on each
+   finished field, message starters, a message box that grows with the text, a soft light that
+   follows the pointer, and a send button that lights up once everything is filled in. */
+function ContactForm({
+  onSubmit,
+  status,
+  sending,
+}: {
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  status: Status;
+  sending: boolean;
+}) {
+  const [values, setValues] = useState({ name: "", email: "", project: "" });
+  const [tried, setTried] = useState(false);
+  const [topic, setTopic] = useState<string | null>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+
+  const done = {
+    name: values.name.trim() !== "",
+    email: EMAIL_PATTERN.test(values.email.trim()),
+    project: values.project.trim() !== "",
+  };
+  const count = Object.values(done).filter(Boolean).length;
+  const ready = count === 3;
+
+  const update = (field: keyof typeof values) => (event: { currentTarget: { value: string } }) => {
+    // Read now: the event's target is gone by the time the state update runs
+    const value = event.currentTarget.value;
+    setValues((v) => ({ ...v, [field]: value }));
+  };
+
+  // The message box grows with what is written in it
+  useEffect(() => {
+    const box = messageRef.current;
+    if (!box) return;
+    box.style.height = "auto";
+    box.style.height = `${box.scrollHeight}px`;
+  }, [values.project]);
+
+  const pickTopic = (label: string, text: string) => {
+    setTopic(label);
+    setValues((v) => {
+      // Swaps out an earlier starter, but never what the visitor wrote themselves
+      const starters = TOPICS.map((t) => t.text);
+      const current = v.project;
+      const own = starters.reduce((rest, s) => (rest.startsWith(s) ? rest.slice(s.length) : rest), current);
+      return { ...v, project: text + own };
+    });
+    requestAnimationFrame(() => {
+      const box = messageRef.current;
+      if (!box) return;
+      box.focus();
+      box.setSelectionRange(box.value.length, box.value.length);
+    });
+  };
+
+  const follow = (event: PointerEvent<HTMLFormElement>) => {
+    const box = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--mx", `${event.clientX - box.left}px`);
+    event.currentTarget.style.setProperty("--my", `${event.clientY - box.top}px`);
+  };
+
+  const invalid = (field: keyof typeof done) => (tried && !done[field] ? "" : undefined);
+
+  return (
+    <form
+      className={`${styles.form} fade-up`}
+      style={stagger(1)}
+      onSubmit={(event) => {
+        setTried(true);
+        onSubmit(event);
+      }}
+      onPointerMove={follow}
+      noValidate
+    >
+      <div className={styles.formHead}>
+        <p className={styles.formTitle}>Send a message</p>
+        <p className={styles.formCount} aria-live="polite">
+          {count}/3
+        </p>
+      </div>
+      <div className={styles.progress} aria-hidden>
+        <span style={{ transform: `scaleX(${count / 3})` }} />
+      </div>
+
+      <div className={styles.topics} role="group" aria-label="What is this about?">
+        {TOPICS.map((t) => (
+          <button
+            key={t.label}
+            type="button"
+            className={styles.topic}
+            aria-pressed={topic === t.label}
+            onClick={() => pickTopic(t.label, t.text)}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <label className={styles.field} data-done={done.name ? "" : undefined} data-invalid={invalid("name")}>
+        <input
+          className={styles.input}
+          name="name"
+          type="text"
+          autoComplete="name"
+          placeholder=" "
+          required
+          value={values.name}
+          onChange={update("name")}
+        />
+        <span className={styles.label}>Your name</span>
+        <Check />
+      </label>
+      <label className={styles.field} data-done={done.email ? "" : undefined} data-invalid={invalid("email")}>
+        <input
+          className={styles.input}
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder=" "
+          required
+          value={values.email}
+          onChange={update("email")}
+        />
+        <span className={styles.label}>Email</span>
+        <Check />
+      </label>
+      <label className={styles.field} data-done={done.project ? "" : undefined} data-invalid={invalid("project")}>
+        <textarea
+          ref={messageRef}
+          className={styles.textarea}
+          name="project"
+          placeholder=" "
+          rows={4}
+          required
+          value={values.project}
+          onChange={update("project")}
+        />
+        <span className={styles.label}>Tell me about the role or project</span>
+        <Check />
+      </label>
+
+      {/* An error goes once the fields it was about are filled in */}
+      {status && !(status.tone === "error" && ready) ? (
+        <p className={styles.status} data-tone={status.tone} role="status">
+          {status.text}
+        </p>
+      ) : null}
+      <button className={styles.submit} type="submit" disabled={sending} data-ready={ready ? "" : undefined}>
+        <span>Send message</span>
+        <svg viewBox="0 0 24 24" aria-hidden>
+          <path d="M5 12h13m0 0-5.5-5.5M18 12l-5.5 5.5" />
+        </svg>
+      </button>
+    </form>
+  );
+}
+
+function Check() {
+  return (
+    <svg className={styles.check} viewBox="0 0 24 24" aria-hidden>
+      <path d="M5 12.5 10 17.5 19 7" />
+    </svg>
   );
 }
 
@@ -158,17 +289,45 @@ function InstagramIcon() {
   );
 }
 
-function DownloadIcon() {
+/* Copies the email address and confirms it, in words that a screen reader also hears */
+function CopyEmailButton() {
+  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
+  const timer = useRef(0);
+
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(CONTACT_EMAIL);
+      setState("copied");
+    } catch {
+      setState("failed");
+    }
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setState("idle"), 2200);
+  }
+
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M12 4v10.5M7.5 11.5 12 16l4.5-4.5M5 19.5h14"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <button
+      type="button"
+      className={styles.copyButton}
+      data-copied={state === "copied" ? "" : undefined}
+      onClick={copy}
+    >
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+        {state === "copied" ? (
+          <path d="M5 12.5 10 17.5 19 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        ) : (
+          <>
+            <rect x="8.5" y="8.5" width="11" height="11" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+            <path d="M15.5 5.5h-8a2 2 0 0 0-2 2v8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          </>
+        )}
+      </svg>
+      <span aria-live="polite">
+        {state === "copied" ? "Copied" : state === "failed" ? "Copy failed" : "Copy email"}
+      </span>
+    </button>
   );
 }
 
@@ -176,6 +335,14 @@ function LinkedInIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path d="M6.7 9.3H4V20h2.7V9.3ZM5.3 4a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2ZM20 20h-2.7v-5.6c0-1.6-.6-2.6-2-2.6-1 0-1.6.7-1.9 1.4-.1.2-.1.6-.1.9V20H10.6V9.3h2.6v1.5c.4-.7 1.3-1.8 3.2-1.8 2.3 0 4 1.5 4 4.8V20Z" />
+    </svg>
+  );
+}
+
+function GitHubIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 2.5a9.5 9.5 0 0 0-3 18.52c.47.09.65-.2.65-.46v-1.6c-2.65.58-3.2-1.27-3.2-1.27-.44-1.1-1.06-1.4-1.06-1.4-.87-.6.06-.58.06-.58.96.07 1.46.98 1.46.98.85 1.46 2.23 1.04 2.78.8.09-.62.33-1.04.6-1.28-2.11-.24-4.33-1.06-4.33-4.7 0-1.04.37-1.89.98-2.55-.1-.24-.42-1.21.09-2.52 0 0 .8-.26 2.61.97a9.1 9.1 0 0 1 4.76 0c1.81-1.23 2.6-.97 2.6-.97.52 1.31.2 2.28.1 2.52.61.66.98 1.51.98 2.55 0 3.65-2.23 4.46-4.35 4.69.34.3.65.88.65 1.78v2.64c0 .26.17.56.66.46A9.5 9.5 0 0 0 12 2.5Z" />
     </svg>
   );
 }

@@ -259,6 +259,7 @@ export default function AboutPhotoCard({ className }: AboutPhotoCardProps) {
             {/* Camera body — transparent LCD */}
             <div
               className={styles.aboutPhotoCamera}
+              data-sticker-surface
               data-node-id="177:250"
               data-name="Exclude"
               style={{
@@ -332,6 +333,10 @@ export default function AboutPhotoCard({ className }: AboutPhotoCardProps) {
                 unoptimized
               />
             </div>
+
+            {/* Stickers dropped on the camera are moved in here (see HappyStickers), so they ride
+                along with the camera's tilt, parallax and shuffle */}
+            <StickerDock />
           </motion.div>
         </motion.div>
 
@@ -394,5 +399,21 @@ export default function AboutPhotoCard({ className }: AboutPhotoCardProps) {
         </button>
       </div>
     </section>
+  );
+}
+
+/** A layer that stickers can be moved into. React only renders the three probes; the stickers are
+    added by HappyStickers, which reads the probes to map screen points into the layer. */
+export function StickerDock({ free = false }: { free?: boolean }) {
+  const probe = { position: "absolute", width: 0, height: 0 } as const;
+  return (
+    <div
+      data-sticker-dock={free ? "free" : "camera"}
+      style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: free ? 30 : 5 }}
+    >
+      <span data-dock-probe="o" style={{ ...probe, left: 0, top: 0 }} />
+      <span data-dock-probe="x" style={{ ...probe, left: "100%", top: 0 }} />
+      <span data-dock-probe="y" style={{ ...probe, left: 0, top: "100%" }} />
+    </div>
   );
 }

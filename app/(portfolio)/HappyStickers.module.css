@@ -1,0 +1,138 @@
+/* HAPPY letter stickers, ported from the earlier header and set small below the About copy. Widths
+   are the original design px times --s. Right-over-left stack with a soft shadow. */
+.stickerGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.caption {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: rgba(11, 19, 20, 0.55);
+}
+
+.letterStickers {
+  --s: clamp(0.22px, 0.021vw, 0.34px);
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: flex-end;
+  width: max-content;
+  max-width: 100%;
+  overflow: visible;
+  user-select: none;
+}
+
+.sticker {
+  position: relative;
+  flex-shrink: 0;
+  line-height: 0;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.18));
+}
+
+.letterPeel {
+  --peel: 0;
+}
+
+.letterPeel[data-peel-active="true"] {
+  z-index: 20;
+}
+
+.letterPeel[data-lifted="true"] {
+  z-index: 40;
+  cursor: grabbing;
+  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.28));
+}
+
+.peelEnter,
+.peelTilt {
+  width: 100%;
+}
+
+/* The hop lives here so the tilt's rotate and the fold's clip stay untouched */
+.peelHop {
+  position: relative;
+  width: 100%;
+}
+
+.peelMain {
+  clip-path: inset(calc(var(--peel) * 1%) 0 0 0);
+}
+
+.peelFace {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The folded-back top: a mirrored, pale copy of the sticker that grows as --peel rises */
+.peelFlap {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  top: calc(-100% + (var(--peel) * 2%));
+  overflow: hidden;
+  pointer-events: none;
+  transform: scaleY(-1);
+  transform-origin: center center;
+  clip-path: inset(0 0 calc(100% - (var(--peel) * 1%)) 0);
+}
+
+.peelFlapImg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: grayscale(1) brightness(2.4) contrast(0.35);
+}
+
+/* H sits on top of A; the rest stack left to right */
+.stickerH {
+  z-index: 2;
+  width: calc(220 * var(--s));
+  margin-right: calc(-18 * var(--s));
+}
+
+.stickerA {
+  z-index: 1;
+  width: calc(284 * var(--s));
+  margin-right: calc(-22 * var(--s));
+}
+
+.stickerP1 {
+  z-index: 3;
+  width: calc(213 * var(--s));
+  margin-right: calc(-20 * var(--s));
+}
+
+.stickerP2 {
+  z-index: 4;
+  width: calc(210 * var(--s));
+  margin-right: calc(-20 * var(--s));
+}
+
+.stickerY {
+  z-index: 5;
+  width: calc(247 * var(--s));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticker {
+    cursor: default;
+  }
+}
+
+/* Phones: as big as the card allows. The row is 1094 design px wide at --s: 1px, so it is scaled
+   to the card's inner width (the screen less its margins and the card's 28px padding), up to 0.34px */
+@media (max-width: 700px) {
+  .letterStickers {
+    --s: min(0.34px, calc((100vw - 2 * var(--margin, 20px) - 56px) / 1094));
+  }
+}

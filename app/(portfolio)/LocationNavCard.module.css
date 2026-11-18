@@ -1,0 +1,264 @@
+/* Location card (LocationNavCard.tsx). Two scales:
+   --kv maps the 560-wide design card onto this card's width, for the road scene and glows, so they
+   stay locked to the video. --kh is a little smaller, for the directions and arrow tile, so they fit
+   the shorter, wider slot. */
+.card {
+  --kv: calc(100cqw / 560);
+  --kh: calc(100cqw / 700);
+  position: relative;
+  overflow: hidden;
+  container-type: size;
+  /* The same edge and drop shadow as the other About cards. Important, because the bento cell
+     (home.module.css) gives every card an outline that would otherwise replace them. */
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 24px;
+  background: #000;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 8px 28px rgba(31, 38, 46, 0.1) !important;
+  color: #fff;
+  font-family: inherit;
+  user-select: none;
+}
+
+/* Wider than tall here, so the design card is cropped to the band around the puck */
+.scene {
+  position: absolute;
+  left: 0;
+  top: calc((100cqh - 678 * var(--kv)) * 0.61);
+  width: 100%;
+  aspect-ratio: 560 / 678;
+}
+
+.road {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.puck {
+  position: absolute;
+  left: calc(234 * var(--kv));
+  top: calc(385 * var(--kv));
+  width: calc(93 * var(--kv));
+  height: calc(64 * var(--kv));
+  transform-origin: 50% 50%;
+}
+
+/* The arrow art carries its own glow, so it overflows the puck box (from the design) */
+.puck img {
+  position: absolute;
+  top: -54.36%;
+  right: -33.24%;
+  bottom: -55.92%;
+  left: -33.24%;
+  width: 166.48%;
+  height: 210.28%;
+  max-width: none;
+}
+
+.turnFog {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 46%;
+  background: linear-gradient(
+    180deg,
+    rgb(13, 13, 15) 0%,
+    rgba(13, 13, 15, 0.95) 50%,
+    rgba(13, 13, 15, 0.6) 72%,
+    rgba(13, 13, 15, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.bottomHaze {
+  position: absolute;
+  inset: auto 0 0;
+  /* Shallower than the design's, and without its blur, so the road still reads in this short card */
+  height: 34%;
+  background: linear-gradient(
+    180deg,
+    rgba(90, 69, 248, 0) 0%,
+    rgba(109, 90, 255, 0.12) 36%,
+    rgba(146, 131, 255, 0.45) 75%,
+    rgba(150, 136, 253, 0.8) 92%,
+    rgb(211, 176, 255) 100%
+  );
+  pointer-events: none;
+}
+
+.horizonHaze {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 34%;
+  background: linear-gradient(180deg, #1a1a20 35.577%, rgba(26, 26, 32, 0));
+  pointer-events: none;
+}
+
+/* Glows sit across the bottom edge, positioned from the card's bottom in design px */
+.glow {
+  position: absolute;
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+
+.glow img {
+  position: absolute;
+  max-width: none;
+}
+
+.glowCore {
+  left: calc(-51.58 * var(--kv));
+  top: calc(100cqh - 51.68 * var(--kv));
+  width: calc(663.16 * var(--kv));
+  height: calc(191.58 * var(--kv));
+}
+
+.glowCore img {
+  inset: -26.92% -7.78%;
+  width: 115.56%;
+  height: 153.84%;
+}
+
+.glowLeft,
+.glowRight {
+  top: calc(100cqh - 140.1 * var(--kv));
+  width: calc(338.95 * var(--kv));
+  height: calc(280 * var(--kv));
+}
+
+.glowLeft {
+  left: calc(-191.58 * var(--kv));
+}
+
+.glowRight {
+  left: calc(412.63 * var(--kv));
+}
+
+/* The corner glow art is 501×442 around a 339×280 ellipse */
+.glowLeft img,
+.glowRight img {
+  left: -23.91%;
+  top: -28.95%;
+  width: 147.83%;
+  height: 157.89%;
+}
+
+/* Frosted tile with the turn arrow, top right like the app icons on the other About cards */
+.tile {
+  position: absolute;
+  top: calc(36 * var(--kh));
+  right: calc(36 * var(--kh));
+  width: calc(110 * var(--kh));
+  height: calc(110 * var(--kh));
+  overflow: hidden;
+  border-radius: calc(36.667 * var(--kh));
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    inset 0 calc(18.333 * var(--kh)) calc(36.667 * var(--kh)) calc(-7.333 * var(--kh)) rgba(255, 255, 255, 0.12),
+    inset 0 calc(5.5 * var(--kh)) calc(11 * var(--kh)) 0 rgba(255, 255, 255, 0.2);
+}
+
+.arrowTurn {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 14.67 * var(--kh));
+  width: calc(57.75 * var(--kh));
+  height: calc(80.667 * var(--kh));
+  translate: -50% -50%;
+}
+
+/* The turn art carries its glow, 25.5 design px beyond the arrow on every side */
+img.arrowTurn {
+  width: calc(108.75 * var(--kh));
+  height: calc(131.667 * var(--kh));
+  top: calc(50% + 14.67 * var(--kh));
+  max-width: none;
+}
+
+.arrowStraight {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 4 * var(--kh));
+  width: calc(42 * var(--kh));
+  height: calc(62 * var(--kh));
+  translate: -50% -50%;
+}
+
+.arrowStraight img {
+  position: absolute;
+  inset: -41.4% -61.11%;
+  width: 222.22%;
+  height: 182.8%;
+  max-width: none;
+}
+
+/* Location, top left */
+.info {
+  position: absolute;
+  left: calc(48 * var(--kh));
+  top: calc(40 * var(--kh));
+  display: flex;
+  flex-direction: column;
+  width: calc(320 * var(--kh));
+  pointer-events: none;
+}
+
+.action {
+  margin: 0;
+  font-size: calc(16 * var(--kh));
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.street {
+  margin: calc(4 * var(--kh)) 0 0;
+  font-size: calc(40 * var(--kh));
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.meter {
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--kh));
+  margin-top: calc(16 * var(--kh));
+}
+
+.track {
+  position: relative;
+  width: calc(232 * var(--kh));
+  height: calc(6 * var(--kh));
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(139, 124, 255, 0.6), #b9afff);
+  box-shadow: 0 0 10px rgba(139, 124, 255, 0.9);
+  transform-origin: 0 50%;
+}
+
+/* One distance per turn, stacked in the same spot and shown with its arrow */
+.distances {
+  display: grid;
+}
+
+.distance {
+  grid-area: 1 / 1;
+  font-size: calc(18 * var(--kh));
+  font-weight: 600;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.9);
+}
