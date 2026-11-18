@@ -84,11 +84,10 @@
   }
 }
 
-/* Phones: no 3D tip (it flickered in mobile Safari), a smooth ease, and a later fade so the slide is seen */
-@keyframes skillsLeaveFlat {
+@keyframes skillsLeavePhone {
   0% {
     opacity: 1;
-    transform: translateY(0%) scale(1);
+    transform: perspective(1400px) translateY(0%) rotateX(0deg) scale(1);
     animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
   }
   45% {
@@ -99,7 +98,7 @@
   }
   100% {
     opacity: 0;
-    transform: translateY(-150%) scale(0.94);
+    transform: perspective(1400px) translateY(-150%) rotateX(32deg) scale(0.94);
   }
 }
 
@@ -455,11 +454,12 @@
       exit-crossing calc(var(--pin) * var(--a2)) exit-crossing calc(var(--pin) * var(--b2));
   }
 
-  /* No 3D tip on phones */
+  /* Phones: the same 3D tip as desktop (the browser runs it now, so it no longer flickers as the
+     script-driven version did), with a later fade so the tip is seen on the narrow screen */
   .section .card {
     animation:
       skillsApproach 1s linear both,
-      skillsLeaveFlat 1s linear forwards;
+      skillsLeavePhone 1s linear forwards;
     animation-timeline: --skills, --skills;
     animation-range:
       exit-crossing calc(var(--pin) * var(--a)) exit-crossing calc(var(--pin) * var(--b)),
