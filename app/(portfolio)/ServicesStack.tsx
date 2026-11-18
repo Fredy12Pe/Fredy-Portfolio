@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { SERVICES } from "./home-data";
 import { CONTACT_LINKS } from "../redesign/contact-links";
@@ -9,11 +8,12 @@ import { CONTACT_LINKS } from "../redesign/contact-links";
 /** Skills listed on LinkedIn: Figma, and the three Skill Assessments Fredy passed */
 const VERIFIED_SKILLS = ["Figma", "Adobe Photoshop", "Adobe Illustrator", "Adobe XD"];
 import { useReveal } from "@/lib/reveal";
+import { rangeStyle, useTimelineFallback } from "./scroll-timeline";
 import styles from "./ServicesStack.module.css";
 
 /* What I do: the services as a deck of cards. The deck is pinned while the section scrolls past,
    and each card in turn tips back and lifts away to reveal the next one underneath. On phones,
-   and with reduced motion, the cards are a plain list. */
+   with reduced motion, the cards are a plain list. */
 
 /** Card colour, the picture panel's colour, and its illustration (from Figma, Portfolio-4 72:372–376).
     width is the illustration's share of the panel's width in the 480px design panel. */
@@ -25,7 +25,7 @@ const PALETTE = [
   { bg: "#1d4f30", tint: "#d6f0dc", art: "/images/skills/front-end.svg", w: 285.119, h: 361.476 },
 ];
 
-/** Phone widths, where the deck is drawn without its 3D tip */
+/** Phone widths, where the deck is drawn without its 3D tip and each card takes more scrolling */
 function usePhone() {
   const [phone, setPhone] = useState(false);
   useEffect(() => {
@@ -38,82 +38,54 @@ function usePhone() {
   return phone;
 }
 
-/** The deck moves at every width, phones included, unless motion is reduced; matches ServicesStack.module.css */
-function useStackMode() {
-  const [stack, setStack] = useState(false);
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: no-preference)");
-    const update = () => setStack(query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-  return stack;
-}
-
-const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
-const easeIn = (t: number) => t * t;
-const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
-
-/** Share of the scroll spent peeling cards; the rest holds the last card in view */
+/** Share of the pinned scrolling spent peeling cards; the rest holds the last card in view */
 const PEEL_SHARE = 0.86;
+const STEP = PEEL_SHARE / (SERVICES.length - 1);
+/** Scrolling per card, in screen heights; matches --pin in ServicesStack.module.css */
+const PER_CARD = { desk: 0.7, phone: 0.9 };
 
+/* The deck is pinned (sticky) while the section scrolls past, and each card in turn lifts away to show
+   the next. Run by the browser from the scroll position (see scroll-timeline.ts): no script moves the
+   cards, so they follow the finger exactly. */
 export default function ServicesStack() {
   const sectionRef = useRef<HTMLElement>(null);
   // The heading, its line and the LinkedIn row fade up as they come into view (see .fade-up)
   const headRef = useReveal<HTMLDivElement>();
   const verifiedRef = useReveal<HTMLDivElement>(0.4);
-  const stack = useStackMode();
-  const flat = usePhone();
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
-  // 0 → 4: how many cards have peeled away so far
-  const peeled = useTransform(scrollYProgress, (p) => clamp01(p / PEEL_SHARE) * (SERVICES.length - 1));
-  // The last card is up and the pile is gone: on phones the LinkedIn row only shows from here, as it
-  // sits where the pile was (ServicesStack.module.css)
-  const [deckDone, setDeckDone] = useState(false);
-  useMotionValueEvent(peeled, "change", (v) => setDeckDone(v > SERVICES.length - 1.15));
+  const phone = usePhone();
+  useTimelineFallback(sectionRef);
 
-  /* The page fades to black as the section comes up the screen, and stays black through Contact and
-     the footer below. Scrolling back up fades it to white again. */
-  const { scrollYProgress: dark } = useScroll({ target: sectionRef, offset: ["start 0.85", "start 0.25"] });
-  const background = useTransform(dark, [0, 1], ["#ffffff", "#000000"]);
-  const ink = useTransform(dark, [0, 1], ["#0b1314", "#ffffff"]);
-  const inkMuted = useTransform(dark, [0, 1], ["rgba(11, 19, 20, 0.66)", "rgba(255, 255, 255, 0.68)"]);
-
-  // The colour goes on the whole page, so the black reaches the screen's edges
-  useMotionValueEvent(background, "change", (colour) => {
-    const page = sectionRef.current?.closest("main");
-    if (page) page.style.backgroundColor = colour;
-  });
-  useEffect(
-    () => () => {
-      const page = sectionRef.current?.closest("main");
-      if (page) page.style.backgroundColor = "";
-    },
-    [],
-  );
+  /* The page fades to black as the section comes up the screen (its top from 85% to 25% of the screen
+     height), and stays black through Contact and the footer. In shares of the pin, which starts when
+     the top reaches the top of the screen. */
+  const pinScreens = (SERVICES.length - 1) * (phone ? PER_CARD.phone : PER_CARD.desk);
+  const dark: [number, number] = [-0.85 / pinScreens, -0.25 / pinScreens];
+  // Phones: the LinkedIn row sits where the pile was, so it shows once the last card is up
+  const lastUp: [number, number] = [STEP * (SERVICES.length - 1.25), STEP * (SERVICES.length - 1.05)];
 
   return (
-    <motion.section
+    <section
       ref={sectionRef}
       id="skills"
       className={styles.section}
       aria-labelledby="services-heading"
-      style={{ "--count": SERVICES.length, "--ink": ink, "--ink-muted": inkMuted } as unknown as CSSProperties}
+      style={{ "--count": SERVICES.length } as CSSProperties}
     >
+      {/* The black behind the page from here down, faded in by the scroll */}
+      <div className={styles.night} aria-hidden {...rangeProps(dark)} />
       <div className={styles.sticky}>
         <div ref={headRef} className={styles.head}>
-          <h2 id="services-heading" className={`${styles.heading} fade-up`}>
+          <h2 id="services-heading" className={`${styles.heading} ${styles.inked} fade-up`} {...rangeProps(dark)}>
             Skills that turn ideas into outcomes
           </h2>
-          <p className={`${styles.subheading} fade-up`} style={{ "--fade-i": 1 } as CSSProperties}>
+          <p className={`${styles.subheading} ${styles.inked} fade-up`} {...rangeProps(dark, { "--fade-i": 1 })}>
             From the first question to shipped code, the work I do to make products people understand,
             trust and enjoy.
           </p>
         </div>
         <ol className={styles.deck}>
           {SERVICES.map((service, index) => (
-            <ServiceCard key={service.name} index={index} peeled={peeled} stack={stack} flat={flat}>
+            <ServiceCard key={service.name} index={index}>
               <div className={styles.text}>
                 <span className={styles.number}>{String(index + 1).padStart(2, "0")}</span>
                 <h3 className={styles.title}>{service.name}</h3>
@@ -135,7 +107,7 @@ export default function ServicesStack() {
         </ol>
 
         {/* Proof for the skills above: the LinkedIn Skill Assessments Fredy passed */}
-        <div ref={verifiedRef} className={`${styles.verified} fade-up`} data-deck-done={deckDone ? "" : undefined}>
+        <div ref={verifiedRef} className={`${styles.verified} ${styles.inked} fade-up`} {...rangeProps(dark, {}, lastUp)}>
           <p className={styles.verifiedLabel}>Verified on LinkedIn</p>
           <ul className={styles.verifiedList}>
             {VERIFIED_SKILLS.map((skill) => (
@@ -157,69 +129,41 @@ export default function ServicesStack() {
           </a>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }
 
-/* One card. While cards above it remain it waits lower and smaller in the pile; its own turn tips
-   it back and lifts it off the top of the screen. */
-function ServiceCard({
-  index,
-  peeled,
-  stack,
-  flat,
-  children,
-}: {
-  index: number;
-  peeled: MotionValue<number>;
-  stack: boolean;
-  /** Phones: the cards peel away without the 3D tip, which flickered in mobile Safari while scrolling */
-  flat: boolean;
-  children: ReactNode;
-}) {
+/** Range props for an element: its CSS vars (plus any extra style) and the fallback's data-range */
+function rangeProps(range: [number, number], extra: Record<string, string | number> = {}, second?: [number, number]) {
+  const { style, ...rest } = second ? rangeStyle(range, second) : rangeStyle(range);
+  return { style: { ...style, ...extra } as CSSProperties, ...rest };
+}
+
+/* One card. It waits lower and smaller in the pile while cards above it remain (moving up a place as
+   each one goes), and on its own turn lifts off the top of the screen. Both are CSS animations on the
+   scroll (ServicesStack.module.css): "approach" and then "leave". */
+function ServiceCard({ index, children }: { index: number; children: ReactNode }) {
   const last = index === SERVICES.length - 1;
-  // How far this card has lifted away (0 still, 1 gone)
-  const leave = useTransform(peeled, (n) => (last ? 0 : clamp01(n - index)));
-  // How many cards are still above it
-  const depth = useTransform(peeled, (n) => Math.max(0, index - n));
-
-  // Phones: a smooth ease rather than an accelerating one, so a flick of the finger shows the card
-  // slide away instead of vanishing in a frame or two
-  const y = useTransform([leave, depth], ([l, d]) =>
-    (l as number) > 0
-      ? `${-150 * (flat ? easeInOut(l as number) : easeIn(l as number))}%`
-      : `${Math.min(d as number, 3) * 5}%`,
-  );
-  const rotateX = useTransform(leave, (l) => 32 * l);
-  const scale = useTransform([leave, depth], ([l, d]) =>
-    (l as number) > 0 ? 1 - 0.06 * (l as number) : 1 - Math.min(d as number, 3) * 0.05,
-  );
-  const opacity = useTransform([leave, depth], ([l, d]) => {
-    if ((d as number) > 3) return 0;
-    // Gone before it reaches the heading above the deck (later on phones, so the slide is seen)
-    return flat ? 1 - clamp01(((l as number) - 0.45) / 0.4) : 1 - clamp01(((l as number) - 0.3) / 0.4);
-  });
-
+  // Approach: from its place in the pile (up to 3 deep) to the top, while the cards above it go
+  const approach: [number, number] = index === 0 ? [0, 0.0001] : [STEP * Math.max(0, index - 3), STEP * index];
+  // Leave: its own turn. The last card stays (its range is never reached).
+  const leave: [number, number] = last ? [9, 10] : [STEP * index, STEP * (index + 1)];
   const colours = PALETTE[index % PALETTE.length];
-  const style = {
-    "--card": colours.bg,
-    "--tint": colours.tint,
-    // Phones: each card slides up over the one before it, so later cards sit on top
-    zIndex: flat ? index + 1 : SERVICES.length - index,
-    "--i": index,
-  } as CSSProperties;
+  const depth = Math.min(index, 3);
 
   return (
-    <motion.li
+    <li
       className={styles.card}
-      style={
-        /* Phones: no scroll-driven transforms at all. The cards are pinned by CSS (position: sticky) and
-           stack as the page scrolls, which the browser does on its own scrolling thread, so it can't
-           lag behind the finger or stall the way script-driven motion did in mobile Safari. */
-        !stack || flat ? style : { ...style, y, rotateX, scale, opacity, transformPerspective: 1400 }
-      }
+      {...rangeProps(approach, {
+        "--card": colours.bg,
+        "--tint": colours.tint,
+        "--d": depth,
+        // A fifth card waits hidden behind the pile until there is room for it
+        "--o": index > 3 ? 0 : 1,
+        zIndex: SERVICES.length - index,
+      }, leave)}
     >
       {children}
-    </motion.li>
+    </li>
   );
 }

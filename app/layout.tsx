@@ -49,22 +49,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // Also kept in the history entry, which survives a reload even when sessionStorage is blocked
     writeHistory(value);
   }
-  // While scrolling, only sessionStorage is updated each frame. The history entry is updated once
-  // scrolling stops: Safari allows only 100 history changes per 10 seconds, and going over makes the
-  // next link click (a pushState) throw, which crashed the page.
-  var queued=false;
-  var historyTimer=0;
+  // The position is saved once scrolling stops, never during it: nothing runs per frame while the
+  // page moves. (Safari also allows only 100 history changes per 10 seconds; going over made the next
+  // link click throw.) pagehide below saves it as the page is left, so nothing is lost.
+  var saveTimer=0;
   function queueWrite(){
-    if(queued||holding)return;
-    queued=true;
-    requestAnimationFrame(function(){
-      queued=false;
-      if(holding)return;
-      try{sessionStorage.setItem(key(),String(Math.round(window.scrollY)))}catch(e){}
-      clearTimeout(historyTimer);
-      var path=location.pathname;
-      historyTimer=setTimeout(function(){if(!holding&&location.pathname===path)writeHistory(window.scrollY)},600);
-    });
+    if(holding)return;
+    clearTimeout(saveTimer);
+    var path=location.pathname;
+    saveTimer=setTimeout(function(){if(!holding&&location.pathname===path)write(window.scrollY)},200);
   }
   if(!away){
     var boot=document.getElementById("portfolio-boot");

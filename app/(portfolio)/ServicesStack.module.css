@@ -8,6 +8,147 @@
   /* One screen for the first card, then most of a screen for each card that peels away */
   height: calc(100vh + (var(--count) - 1) * 70vh);
   height: calc(100svh + (var(--count) - 1) * 70svh);
+  /* The scrolling the deck stays pinned for, and the timeline its animations follow: "exit-crossing 0"
+     is the moment the section's top reaches the top of the screen and the deck pins. Each animated
+     element has its range as --a and --b (and --a2 and --b2 for a second animation), shares of --pin
+     from that moment (see scroll-timeline.ts). */
+  --pin: calc((var(--count) - 1) * 70vh);
+  --pin: calc((var(--count) - 1) * 70svh);
+  view-timeline: --skills block;
+}
+
+/* Behind the whole page from here down: fades in as the section comes up the screen, and stays */
+.night {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: #000;
+  pointer-events: none;
+}
+
+@keyframes skillsNight {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes skillsInk {
+  from {
+    color: #0b1314;
+  }
+  to {
+    color: #fff;
+  }
+}
+
+@keyframes skillsInkMuted {
+  from {
+    color: rgba(11, 19, 20, 0.66);
+  }
+  to {
+    color: rgba(255, 255, 255, 0.68);
+  }
+}
+
+/* A card moving up the pile as the cards above it go */
+@keyframes skillsApproach {
+  from {
+    opacity: var(--o);
+    transform: translateY(calc(var(--d) * 5%)) scale(calc(1 - var(--d) * 0.05));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0%) scale(1);
+  }
+}
+
+/* A card's own turn: it tips back and lifts off the top, fading before it reaches the heading */
+@keyframes skillsLeave {
+  0% {
+    opacity: 1;
+    transform: perspective(1400px) translateY(0%) rotateX(0deg) scale(1);
+    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.5);
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+    transform: perspective(1400px) translateY(-150%) rotateX(32deg) scale(0.94);
+  }
+}
+
+/* Phones: no 3D tip (it flickered in mobile Safari), a smooth ease, and a later fade so the slide is seen */
+@keyframes skillsLeaveFlat {
+  0% {
+    opacity: 1;
+    transform: translateY(0%) scale(1);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  45% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-150%) scale(0.94);
+  }
+}
+
+@keyframes skillsShow {
+  from {
+    opacity: 0;
+    visibility: hidden;
+  }
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.night {
+  animation: skillsNight 1s linear both;
+}
+
+.heading.inked {
+  animation: skillsInk 1s linear both;
+}
+
+.subheading.inked,
+.verified.inked {
+  animation: skillsInkMuted 1s linear both;
+}
+
+.card {
+  animation:
+    skillsApproach 1s linear both,
+    skillsLeave 1s linear forwards;
+}
+
+/* Run by the scroll (after the shorthand, which resets the timeline) */
+.section :is(.night, .inked, .card) {
+  animation-timeline: --skills;
+  animation-range: exit-crossing calc(var(--pin) * var(--a)) exit-crossing calc(var(--pin) * var(--b));
+}
+
+.section .card {
+  animation-timeline: --skills, --skills;
+  animation-range:
+    exit-crossing calc(var(--pin) * var(--a)) exit-crossing calc(var(--pin) * var(--b)),
+    exit-crossing calc(var(--pin) * var(--a2)) exit-crossing calc(var(--pin) * var(--b2));
+}
+
+/* Browsers without scroll-driven animations: paused, and moved by script (scroll-timeline.ts) */
+.section[data-timeline="script"] :is(.night, .inked, .card) {
+  animation-play-state: paused;
 }
 
 .sticky {
@@ -169,10 +310,9 @@
 }
 
 .verifiedLink:hover {
-  color: var(--ink, #0b1314);
+  color: #fff;
 }
 
-/* Phones and reduced motion: a plain list of cards, no pinning */
 /* Reduced motion: a plain list of cards, no pinning */
 @media (prefers-reduced-motion: reduce) {
   .section {
@@ -191,10 +331,11 @@
     height: auto;
   }
 
-  .card {
+  .section .card {
     position: relative;
     inset: auto;
     will-change: auto;
+    animation: none;
   }
 
   .verified {
@@ -202,24 +343,24 @@
   }
 }
 
-/* Phones: a stack of cards, all CSS. The heading scrolls in as normal, then each card pins just under
-   the top bar and the next one slides up over it, a little lower so the edges of the earlier cards
-   show above. No script moves anything, so it follows the finger exactly in mobile Safari. */
+/* Phones: the same pinned deck that peels away, sized for a tall, narrow screen. The heading sits
+   just under the top bar, the deck takes the rest of the screen, and each card puts its text above
+   a picture that fills what is left of the card. */
 @media (max-width: 700px) {
+  /* More scroll per card than on desktop (90% of a screen each), so a finger flick moves one card a
+     visible distance rather than throwing it off in an instant */
   .section {
-    height: auto;
-    margin-top: var(--section-gap);
+    height: calc(100vh + (var(--count) - 1) * 90vh);
+    height: calc(100svh + (var(--count) - 1) * 90svh);
+    --pin: calc((var(--count) - 1) * 90vh);
+    --pin: calc((var(--count) - 1) * 90svh);
   }
 
   .sticky {
-    position: static;
-    display: block;
-    height: auto;
-    padding: 0;
-  }
-
-  .head {
-    margin-bottom: 28px;
+    justify-content: flex-start;
+    gap: 18px;
+    padding: 84px 0 20px;
+    box-sizing: border-box;
   }
 
   .heading {
@@ -231,29 +372,23 @@
   }
 
   .deck {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+    flex: 1 1 auto;
     height: auto;
+    min-height: 0;
+    /* Room for the cards waiting lower in the pile, below the top card, so it stays on screen */
+    margin-bottom: 72px;
   }
 
   .card {
-    position: sticky;
-    inset: auto;
-    top: calc(84px + var(--i) * 12px);
-    height: min(68svh, 560px);
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     gap: 8px;
     padding: 8px;
     border-radius: 26px;
-    transform: none;
-    will-change: auto;
-    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
   }
 
   .text {
-    padding: 22px 18px 14px;
+    padding: 26px 18px 18px;
   }
 
   .number {
@@ -277,6 +412,7 @@
     border-radius: 20px;
   }
 
+  /* The art is sized by width on the desktop cards; here it fits the picture area, whatever its height */
   .art {
     width: auto !important;
     height: 82% !important;
@@ -285,8 +421,90 @@
     object-fit: contain;
   }
 
+  /* The heading sits 84px down the pinned view, clear of the nav bar; the section's top margin
+     gives that back, so the space above the heading is the same section gap as everywhere else */
+  .section {
+    margin-top: max(0px, calc(var(--section-gap) - 84px));
+  }
+
+  /* The LinkedIn row leaves the pinned view, so the deck has the screen's full height: it shows
+     just after the deck, in the space before Open to work */
+  .sticky {
+    position: sticky;
+  }
+
   .verified {
-    margin-top: 40px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    /* Pulled up into the room the deck keeps for its pile (72px + 20px), which is empty once the
+       last card is all that is left, so the row sits about 40px below that card */
+    margin-top: -52px;
     font-size: 0.8rem;
+  }
+
+  /* It sits where the pile is, so it stays hidden until the last card is up and the pile gone */
+  .section .verified.inked {
+    animation:
+      skillsInkMuted 1s linear both,
+      skillsShow 1s linear both;
+    animation-timeline: --skills, --skills;
+    animation-range:
+      exit-crossing calc(var(--pin) * var(--a)) exit-crossing calc(var(--pin) * var(--b)),
+      exit-crossing calc(var(--pin) * var(--a2)) exit-crossing calc(var(--pin) * var(--b2));
+  }
+
+  /* No 3D tip on phones */
+  .section .card {
+    animation:
+      skillsApproach 1s linear both,
+      skillsLeaveFlat 1s linear forwards;
+    animation-timeline: --skills, --skills;
+    animation-range:
+      exit-crossing calc(var(--pin) * var(--a)) exit-crossing calc(var(--pin) * var(--b)),
+      exit-crossing calc(var(--pin) * var(--a2)) exit-crossing calc(var(--pin) * var(--b2));
+  }
+
+  .section[data-timeline="script"] :is(.card, .verified.inked) {
+    animation-play-state: paused;
+  }
+
+  /* With reduced motion the cards are a list, so the picture area needs its own height */
+  @media (prefers-reduced-motion: reduce) {
+    .sticky {
+      padding: 0;
+    }
+
+    .visual {
+      height: 220px;
+    }
+
+    .art {
+      height: 188px !important;
+      max-height: 188px !important;
+    }
+
+    .section .card {
+      animation: none;
+    }
+
+    .section .verified.inked {
+      position: static;
+      animation: skillsInkMuted 1s linear both;
+      animation-timeline: --skills;
+      animation-range: exit-crossing calc(var(--pin) * var(--a)) exit-crossing calc(var(--pin) * var(--b));
+    }
+  }
+}
+
+/* Short phones: the line under the heading steps aside while the deck is pinned, for the cards' room */
+@media (max-width: 700px) and (max-height: 740px) and (prefers-reduced-motion: no-preference) {
+  .subheading {
+    display: none;
+  }
+
+  .description {
+    font-size: 0.85rem;
   }
 }

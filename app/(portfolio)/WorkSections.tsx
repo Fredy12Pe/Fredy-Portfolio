@@ -3,25 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  motion,
-  useMotionValue,
-  useScroll,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from "motion/react";
-import {
   createContext,
   useContext,
   useEffect,
   useRef,
-  useState,
   type CSSProperties,
   type ReactNode,
-  type RefObject,
 } from "react";
 import { inter } from "@/lib/fonts";
 import { useReveal } from "@/lib/reveal";
+import { rangeStyle, useTimelineFallback } from "./scroll-timeline";
 import { FEATURED_PROJECTS, MORE_PROJECTS, type FeaturedProject } from "./home-data";
 import WorkFolder from "./WorkFolder";
 import styles from "./home.module.css";
@@ -33,282 +24,25 @@ function stagger(index: number) {
 
 const ARROW_SRC = "/images/featured-work/project-link.svg";
 
-/* How Featured work arrives.
-   fly: desktop. The folder holds the middle of the screen and each case study flies out of it
-        to its place as you scroll.
-   rise: phones. The folder sits above the cards, which rise and fade in as they come into view.
-   still: reduced motion, and the first render before the screen size is known. No movement. */
-type Mode = "fly" | "rise" | "still";
+/* Featured work's fly-out, run by the browser from the scroll position (see scroll-timeline.ts).
 
-function useArrivalMode(): Mode {
-  const [mode, setMode] = useState<Mode>("still");
+   The whole section (title, folder and both case studies) is pinned under the menu for --pin of
+   scrolling. Over that stretch the folder opens, the four cards rise out of its pocket, and each
+   travels down to its own place; then the folder fades and the section scrolls on. Everything moves
+   inside the pinned section, so nothing has to keep up with the page: the cards' places never move
+   while they fly. Scrolling back plays it in reverse.
 
-  useEffect(() => {
-    /* Desktop: the folder fly-out, tied to the scroll. Phones and tablets: the folder sits above the
-       case studies, which rise in as they come into view. Script-driven motion that counters the
-       scroll lags a frame behind the finger in mobile Safari, which showed as glitches. */
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const touch = window.matchMedia("(pointer: coarse), (max-width: 900px)");
-    const update = () => setMode(reduced.matches ? "still" : touch.matches ? "rise" : "fly");
-    update();
-    reduced.addEventListener("change", update);
-    touch.addEventListener("change", update);
-    return () => {
-      reduced.removeEventListener("change", update);
-      touch.removeEventListener("change", update);
-    };
-  }, []);
+   Script only measures: where each card sits and where the folder's pocket is, on load and when the
+   layout changes. Those become each card's starting poses (--px, --py…), and the CSS does the rest. */
 
-  return mode;
-}
+/** Each card's scroll range, as shares of the pin: each leaves a beat after the one before it */
+const pieceRange = (order: number): [number, number] => [0.1 + order * 0.05, 0.72 + order * 0.05];
+const FOLDER_OPEN: [number, number] = [-0.45, 0.12];
+const FOLDER_GONE: [number, number] = [0.55, 0.88];
+const FRONT_DROP: [number, number] = [0, 0.5];
 
-/** Runs measure now, on window resize, and whenever the page's height changes (images and fonts
-    loading above can move the section). Bumps the returned value so scroll-driven values recompute. */
-function useMeasured(measure: () => void, active: boolean): MotionValue<number> {
-  const tick = useMotionValue(0);
-  const measureRef = useRef(measure);
-  measureRef.current = measure;
-
-  useEffect(() => {
-    if (!active) return;
-    // A phone's address bar sliding in and out changes the window's height by a little as the page
-    // scrolls; re-measuring on that made the cards jump, so only width changes and big height changes
-    // (a rotation, a real resize) count. Changes to the page's own height still re-measure.
-    let lastW = window.innerWidth;
-    let lastH = window.innerHeight;
-    const run = () => {
-      measureRef.current();
-      tick.set(tick.get() + 1);
-    };
-    const onResize = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      if (w === lastW && Math.abs(h - lastH) < 160) return;
-      lastW = w;
-      lastH = h;
-      run();
-    };
-    run();
-    window.addEventListener("resize", onResize);
-    const observer = new ResizeObserver(run);
-    observer.observe(document.body);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      observer.disconnect();
-    };
-  }, [active, tick]);
-
-  return tick;
-}
-
-const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-
-/* Fly-out timing, in fractions of the screen height scrolled into the section */
-const OPEN_FROM = -0.1; // folder starts opening just before it settles in the middle
-const TRIGGER = 0.45; // scrolling past this sends the case studies out
-/* Scrolling back above this brings them home. Low enough that there is room to look at both case
-   studies on the way up, high enough that the folder is still held in the middle of the screen. */
-const RETURN = 0.2;
-/** The case studies' flight: out of the pocket and up (first part), then down into place */
-const RISE_SHARE = 0.36;
-/* The flight follows the scroll position over this stretch of scrolling, in screen heights from the
-   stage's top */
-const SCRUB_FROM = 0.3;
-const SCRUB_SPAN = 0.7;
-
-/** Size of the folder on screen; matches .folder in WorkFolder.module.css */
-function folderSize(vw: number) {
-  const width = Math.min(540, Math.max(260, vw * 0.32));
-  return { width, height: (width * 420) / 556 };
-}
-
-/* Featured work: one case study per row, a details card beside a media panel. Rows alternate. */
-export function FeaturedWork() {
-  const mode = useArrivalMode();
-  const fly = mode === "fly";
-  const stageRef = useRef<HTMLDivElement>(null);
-  const { scrollY } = useScroll();
-  // hold: the folder stage's height (a full screen on desktop, less on phones), whose middle is where the folder is held
-  const stage = useRef({ top: 0, vh: 1, hold: 1, holdTop: 0 });
-
-  const tick = useMeasured(() => {
-    const el = stageRef.current;
-    if (!el) return;
-    const sticky = el.querySelector<HTMLElement>(`.${styles.folderSticky}`);
-    stage.current = {
-      top: el.getBoundingClientRect().top + window.scrollY,
-      vh: window.innerHeight,
-      hold: sticky?.offsetHeight || window.innerHeight,
-      // How far down the screen the stage sticks (0 on desktop; on phones it is centred on screen)
-      holdTop: sticky ? parseFloat(getComputedStyle(sticky).top) || 0 : 0,
-    };
-  }, fly);
-
-  /* flight: 0 home in the folder, 1 out in place. It follows the scroll position directly: no timer,
-     no holding or steering the page. Scrolling back plays it in reverse, and nothing can stall part way. */
-  const scrubbed = useTransform([scrollY, tick], ([y]) => {
-    const { top, vh } = stage.current;
-    return clamp01((((y as number) - top) / vh - SCRUB_FROM) / SCRUB_SPAN);
-  });
-  // A light spring smooths the steps of a mouse wheel, so the cards glide rather than jump per notch
-  const flight = useSpring(scrubbed, { stiffness: 260, damping: 38, restDelta: 0.0005 });
-
-  /* The folder opens as it settles in the middle, stays open while the case studies are out,
-     and closes again once they are back inside. */
-  const open = useTransform([scrollY, tick, flight], ([y, , f]) => {
-    const { top, vh } = stage.current;
-    const byScroll = clamp01(((y as number) - top - OPEN_FROM * vh) / ((TRIGGER - OPEN_FROM) * vh));
-    return easeInOut(Math.max(byScroll, clamp01((f as number) / 0.25)));
-  });
-  /* Gone behind the cards once they have landed and cover it. Scrolling back up above the
-     trigger shows it again, open and waiting, while the cards hold their places for a moment. */
-  /* How far the folder has gone (0 shown, 1 gone): it eases out over the second half of the
-     cards' flight, sinking and settling back a little as it fades, and eases back the same way. */
-  const folderGone = useTransform([scrollY, tick, flight], ([y, , f]) => {
-    const { top, vh } = stage.current;
-    const into = ((y as number) - top) / vh;
-    const landed = easeInOut(clamp01(((f as number) - 0.45) / 0.55));
-    const covered = easeInOut(clamp01((into - RETURN) / (TRIGGER - RETURN)));
-    return landed * covered;
-  });
-  const folderOpacity = useTransform(folderGone, (g) => 1 - g);
-  const folderScale = useTransform(folderGone, (g) => 1 - 0.07 * g);
-  const folderSink = useTransform(folderGone, (g) => g * 28);
-  // The front panel covers the cards while they are in the pocket, then drops behind them
-  const frontLayer = useTransform(flight, (f) => (f < RISE_SHARE * 0.85 ? 2 : 0));
-
-  const subtitle = `${FEATURED_PROJECTS.length} case studies`;
-
-  return (
-    <section id="work" className={`${styles.section} ${inter.className}`} aria-labelledby="work-heading">
-      <div ref={stageRef} className={styles.workStage} data-mode={mode}>
-        {/* Desktop: the folder's back and front in separate layers, so the case studies come out
-            from between them */}
-        <div className={`${styles.folderLayer} ${styles.flyOnly}`}>
-          <div className={styles.folderSticky}>
-            <motion.div style={{ opacity: folderOpacity, scale: folderScale, y: folderSink }}>
-              <WorkFolder part="back" open={open} />
-            </motion.div>
-          </div>
-        </div>
-        <motion.div className={`${styles.folderLayer} ${styles.flyOnly}`} style={{ zIndex: frontLayer }}>
-          <div className={styles.folderSticky}>
-            <motion.div style={{ opacity: folderOpacity, scale: folderScale, y: folderSink }}>
-              <WorkFolder part="front" open={open} subtitle={subtitle} />
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Phones and reduced motion: the whole folder above the cards */}
-        <div className={styles.inlineFolder}>
-          <WorkFolder subtitle={subtitle} />
-        </div>
-
-        <div className={styles.workContent}>
-          {/* One screen of folder on its own before the case studies come out */}
-          <div className={`${styles.folderSpacer} ${styles.flyOnly}`} aria-hidden />
-
-          <FlyHeading fly={fly} flight={flight} scrollY={scrollY} stage={stage} />
-
-          <div className={styles.featuredList}>
-            {FEATURED_PROJECTS.map((project, index) => (
-              <ArrivingRow
-                key={project.id}
-                index={index}
-                mode={mode}
-                flight={flight}
-                scrollY={scrollY}
-                stage={stage}
-              >
-                <Link
-                  href={project.href}
-                  className={
-                    index % 2 === 1 ? `${styles.featuredRow} ${styles.featuredRowReverse}` : styles.featuredRow
-                  }
-                  aria-label={`${project.title}: view case study`}
-                >
-                  <ProjectDetails project={project} />
-                  <FeaturedMedia kind={project.media} />
-                </Link>
-              </ArrivingRow>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* The section title. In fly mode it waits above the folder at full size, and moves to its place
-   above Grove as the cards fly out; on the way back it returns to its spot above the folder. */
-function FlyHeading({
-  fly,
-  flight,
-  scrollY,
-  stage,
-}: {
-  fly: boolean;
-  flight: MotionValue<number>;
-  scrollY: MotionValue<number>;
-  stage: { current: { top: number; vh: number; hold: number; holdTop: number } };
-}) {
-  const slotRef = useRef<HTMLDivElement>(null);
-  const geo = useRef({ cx: 0, cy: 0, fontSize: 80, vw: 1, vh: 1 });
-
-  const tick = useMeasured(() => {
-    const slot = slotRef.current;
-    if (!slot) return;
-    const r = slot.getBoundingClientRect();
-    const heading = slot.firstElementChild;
-    geo.current = {
-      cx: r.left + r.width / 2,
-      cy: r.top + window.scrollY + r.height / 2,
-      fontSize: heading ? parseFloat(getComputedStyle(heading).fontSize) : 80,
-      vw: document.documentElement.clientWidth,
-      vh: window.innerHeight,
-    };
-  }, fly);
-
-  const pose = (sy: number, f: number) => {
-    const { cx, cy, fontSize, vw } = geo.current;
-    const t = easeInOut(clamp01(f));
-    const folder = folderSize(vw);
-    const half = stage.current.hold / 2;
-    const folderY = Math.max(stage.current.holdTop + half, stage.current.top - sy + half);
-    // Waiting: full size, centred above the folder and the cards peeking out of it
-    const rest = { x: vw / 2, y: folderY - folder.height * 0.7 - fontSize * 0.6, s: 1 };
-    const place = { x: cx, y: cy - sy, s: 1 };
-    return {
-      x: lerp(rest.x, place.x, t) - place.x,
-      y: lerp(rest.y, place.y, t) - place.y,
-      s: lerp(rest.s, place.s, t),
-    };
-  };
-
-  const x = useTransform([scrollY, flight, tick], ([sy, f]) => pose(sy as number, f as number).x);
-  const y = useTransform([scrollY, flight, tick], ([sy, f]) => pose(sy as number, f as number).y);
-  const scale = useTransform([scrollY, flight, tick], ([sy, f]) => pose(sy as number, f as number).s);
-
-  return (
-    <div ref={slotRef} className={styles.headingSlot}>
-      {fly ? (
-        <motion.h2 id="work-heading" className={`${styles.featuredHeading} ${styles.flyCard}`} style={{ x, y, scale }}>
-          Featured work
-        </motion.h2>
-      ) : (
-        <h2 id="work-heading" className={styles.featuredHeading}>
-          Featured work
-        </h2>
-      )}
-    </div>
-  );
-}
-
-/* Fly-out poses for the four cards, in order: Grove details, Grove media, Samples details,
-   Samples media. Offsets are in folder widths/heights, angles in degrees. */
+/* Poses for the four cards, in order: Grove details, Grove media, Samples details, Samples media.
+   Offsets are in folder widths/heights, angles in degrees. */
 const TUCKED = [
   { x: -0.17, y: -0.24, r: -11 },
   { x: -0.06, y: -0.2, r: -4 },
@@ -322,160 +56,150 @@ const LIFTED = [
   { x: 0.48, r: 7 },
 ];
 
-type FlyState = {
-  row: number;
-  flight: MotionValue<number>;
-  scrollY: MotionValue<number>;
-  stage: { current: { top: number; vh: number; hold: number; holdTop: number } };
-  slotRef: RefObject<HTMLDivElement | null>;
-};
-
-const FlyContext = createContext<FlyState | null>(null);
-
-/* One case study. In fly mode its two cards, the details and the media, are moved on their own
-   by FlyPiece; this box never moves, so it is what they measure against. It only takes clicks
-   once the cards have landed. */
-function ArrivingRow({
-  index,
-  mode,
-  flight,
-  scrollY,
-  stage,
-  children,
-}: {
-  index: number;
-  mode: Mode;
-  flight: MotionValue<number>;
-  scrollY: MotionValue<number>;
-  stage: { current: { top: number; vh: number; hold: number; holdTop: number } };
-  children: ReactNode;
-}) {
-  const slotRef = useRef<HTMLDivElement>(null);
-  const pointerEvents = useTransform(flight, (f) => (f > 0.98 ? "auto" : "none"));
-
-  if (mode === "fly") {
-    return (
-      <FlyContext.Provider value={{ row: index, flight, scrollY, stage, slotRef }}>
-        <motion.div ref={slotRef} className={styles.arrivalSlot} style={{ pointerEvents }}>
-          {children}
-        </motion.div>
-      </FlyContext.Provider>
-    );
+/** An element's offset inside an ancestor, ignoring transforms (so a card is measured at its place
+    even while it is posed in the folder) */
+function offsetIn(el: HTMLElement, ancestor: HTMLElement) {
+  let x = 0;
+  let y = 0;
+  let node: HTMLElement | null = el;
+  while (node && node !== ancestor) {
+    x += node.offsetLeft;
+    y += node.offsetTop;
+    node = node.offsetParent as HTMLElement | null;
   }
+  return { x, y };
+}
+
+const RowContext = createContext<number | null>(null);
+
+/* Featured work: one case study per row, a details card beside a media panel. Rows alternate. */
+export function FeaturedWork() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const pinnedRef = useRef<HTMLDivElement>(null);
+  const folderRef = useRef<HTMLDivElement>(null);
+  useTimelineFallback(stageRef);
+
+  useEffect(() => {
+    const pinned = pinnedRef.current;
+    const folderBox = folderRef.current;
+    if (!pinned || !folderBox) return;
+
+    const measure = () => {
+      const folder = folderBox.firstElementChild as HTMLElement | null;
+      if (!folder || !folder.offsetWidth) return;
+      const f = offsetIn(folder, pinned);
+      const fw = folder.offsetWidth;
+      const fh = folder.offsetHeight;
+      const cx = f.x + fw / 2;
+      const cy = f.y + fh / 2;
+      const wide = window.innerWidth > 700;
+      const pieces = pinned.querySelectorAll<HTMLElement>("[data-piece]");
+      pieces.forEach((el) => {
+        const order = Number(el.dataset.piece);
+        const tucked = TUCKED[order] ?? TUCKED[0];
+        const lifted = LIFTED[order] ?? LIFTED[0];
+        const p = offsetIn(el, pinned);
+        const ex = p.x + el.offsetWidth / 2;
+        const ey = p.y + el.offsetHeight / 2;
+        const h = el.offsetHeight || 1;
+        const set = (name: string, value: number, unit: string) => el.style.setProperty(name, `${value.toFixed(3)}${unit}`);
+        // In the pocket: small, tilted, the top showing above the front panel
+        set("--px", cx + tucked.x * fw - ex, "px");
+        set("--py", cy + (tucked.y + (wide ? 0.05 : 0)) * fh - ey, "px");
+        set("--ps", (fh * (wide ? 0.68 : 0.58)) / h, "");
+        set("--pr", tucked.r, "deg");
+        // Lifted clear above the folder, fanned out
+        set("--lx", cx + lifted.x * fw - ex, "px");
+        set("--ly", f.y - fh * 0.2 - ey, "px");
+        set("--ls", (fh * (wide ? 0.72 : 0.62)) / h, "");
+        set("--lr", lifted.r, "deg");
+      });
+      pinned.dataset.measured = "";
+    };
+
+    measure();
+    // Re-measure when the layout changes (images, fonts, a new width), never while scrolling
+    const observer = new ResizeObserver(measure);
+    observer.observe(pinned);
+    let width = window.innerWidth;
+    const onResize = () => {
+      if (window.innerWidth === width) return; // a phone's toolbar sliding doesn't move anything here
+      width = window.innerWidth;
+      measure();
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
+  const subtitle = `${FEATURED_PROJECTS.length} case studies`;
 
   return (
-    <div ref={slotRef} className={styles.arrivalSlot}>
-      {mode === "rise" ? (
-        <motion.div
-          initial={{ opacity: 0, y: 56, scale: 0.96 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {children}
-        </motion.div>
-      ) : (
-        children
-      )}
-    </div>
+    <section id="work" className={`${styles.section} ${inter.className}`} aria-labelledby="work-heading">
+      <div ref={stageRef} className={styles.workStage}>
+        <div ref={pinnedRef} className={styles.workPinned}>
+          {/* The folder's back and front in separate layers, so the cards come out from between them */}
+          <div ref={folderRef} className={`${styles.folderBox} ${styles.flyOnly}`} aria-hidden>
+            <div className={styles.folderFade} {...rangeStyle(FOLDER_GONE)}>
+              <WorkFolder part="back" openRange={FOLDER_OPEN} />
+            </div>
+          </div>
+
+          {/* Reduced motion: the whole folder above the cards */}
+          <div className={styles.inlineFolder}>
+            <WorkFolder subtitle={subtitle} />
+          </div>
+
+          <div className={styles.headingSlot}>
+            <h2 id="work-heading" className={styles.featuredHeading}>
+              Featured work
+            </h2>
+          </div>
+
+          <div className={styles.featuredList}>
+            {FEATURED_PROJECTS.map((project, index) => (
+              <RowContext.Provider key={project.id} value={index}>
+                <div className={styles.arrivalSlot}>
+                  <Link
+                    href={project.href}
+                    className={
+                      index % 2 === 1 ? `${styles.featuredRow} ${styles.featuredRowReverse}` : styles.featuredRow
+                    }
+                    aria-label={`${project.title}: view case study`}
+                  >
+                    <ProjectDetails project={project} />
+                    <FeaturedMedia kind={project.media} />
+                  </Link>
+                </div>
+              </RowContext.Provider>
+            ))}
+          </div>
+
+          <div className={`${styles.folderBox} ${styles.folderFront} ${styles.flyOnly}`} aria-hidden {...rangeStyle(FRONT_DROP)}>
+            <div className={styles.folderFade} {...rangeStyle(FOLDER_GONE)}>
+              <WorkFolder part="front" subtitle={subtitle} openRange={FOLDER_OPEN} />
+            </div>
+          </div>
+        </div>
+        {/* The scrolling the pinned section takes */}
+        <div className={styles.pinRoom} aria-hidden />
+      </div>
+    </section>
   );
 }
 
-/* One card of a case study. In fly mode it waits small and tilted in the folder's pocket with
-   its top showing, rises clear of the folder on its own path, then travels to its own place.
-   Its place is read against the live scroll position, so it lands correctly while the page
-   moves. Outside fly mode it is a plain box. */
+/* One card of a case study: posed in the folder until its range, then flown to its place by the CSS */
 function FlyPiece({ part, className, children }: { part: 0 | 1; className: string; children: ReactNode }) {
-  const fly = useContext(FlyContext);
-  if (!fly) return <div className={className}>{children}</div>;
-  return (
-    <FlyingPiece fly={fly} part={part} className={className}>
-      {children}
-    </FlyingPiece>
-  );
-}
-
-function FlyingPiece({
-  fly,
-  part,
-  className,
-  children,
-}: {
-  fly: FlyState;
-  part: 0 | 1;
-  className: string;
-  children: ReactNode;
-}) {
-  const { row, flight, scrollY, stage, slotRef } = fly;
-  const ref = useRef<HTMLDivElement>(null);
-  const geo = useRef({ cx: 0, cy: 0, width: 1, height: 1, vw: 1, vh: 1 });
-
-  const tick = useMeasured(() => {
-    const el = ref.current;
-    const slot = slotRef.current;
-    if (!el || !slot) return;
-    // offsetLeft/Top ignore transforms, so the card's resting place is read correctly mid-flight
-    const r = slot.getBoundingClientRect();
-    geo.current = {
-      cx: r.left + el.offsetLeft + el.offsetWidth / 2,
-      cy: r.top + window.scrollY + el.offsetTop + el.offsetHeight / 2,
-      width: el.offsetWidth,
-      height: el.offsetHeight,
-      vw: document.documentElement.clientWidth,
-      vh: window.innerHeight,
-    };
-  }, true);
-
+  const row = useContext(RowContext);
+  if (row === null) return <div className={className}>{children}</div>;
   const order = row * 2 + part;
-  // Each card leaves a beat after the one before it
-  const lag = order * 0.05;
-  const tucked = TUCKED[order] ?? TUCKED[0];
-  const lifted = LIFTED[order] ?? LIFTED[0];
-
-  const pose = (sy: number, f: number) => {
-    const { cx, cy, height, vw, vh } = geo.current;
-    const t = clamp01((f - lag) / (1 - lag));
-    const folder = folderSize(vw);
-    // The folder's middle on screen: it rides up with the page until it settles in the middle
-    const half = stage.current.hold / 2;
-    const folderY = Math.max(stage.current.holdTop + half, stage.current.top - sy + half);
-    // Card size in the folder, as a share of its height: larger on desktop, where the folder has room
-    const wide = vw > 700;
-    const pocket = {
-      x: vw / 2 + tucked.x * folder.width,
-      // On desktop the larger cards sit a little lower, deeper in the pocket
-      y: folderY + (tucked.y + (wide ? 0.05 : 0)) * folder.height,
-      s: (folder.height * (wide ? 0.68 : 0.58)) / height,
-      r: tucked.r,
-    };
-    const lift = {
-      x: vw / 2 + lifted.x * folder.width,
-      y: folderY - folder.height * 0.7 - vh * 0.03,
-      s: (folder.height * (wide ? 0.72 : 0.62)) / height,
-      r: lifted.r,
-    };
-    const place = { x: cx, y: cy - sy, s: 1, r: 0 };
-
-    const from = t < RISE_SHARE ? pocket : lift;
-    const to = t < RISE_SHARE ? lift : place;
-    const k = t < RISE_SHARE ? easeOut(t / RISE_SHARE) : easeInOut((t - RISE_SHARE) / (1 - RISE_SHARE));
-    return {
-      x: lerp(from.x, to.x, k) - place.x,
-      y: lerp(from.y, to.y, k) - place.y,
-      s: lerp(from.s, to.s, k),
-      r: lerp(from.r, to.r, k),
-    };
-  };
-
-  const x = useTransform([scrollY, flight, tick], ([sy, f]) => pose(sy as number, f as number).x);
-  const y = useTransform([scrollY, flight, tick], ([sy, f]) => pose(sy as number, f as number).y);
-  const scale = useTransform([scrollY, flight, tick], ([sy, f]) => pose(sy as number, f as number).s);
-  const rotate = useTransform([scrollY, flight, tick], ([sy, f]) => pose(sy as number, f as number).r);
-
+  const { style, ...rest } = rangeStyle(pieceRange(order));
   return (
-    <motion.div ref={ref} className={`${className} ${styles.flyCard}`} style={{ x, y, scale, rotate }}>
+    <div className={`${className} ${styles.flyCard}`} data-piece={order} style={style as CSSProperties} {...rest}>
       {children}
-    </motion.div>
+    </div>
   );
 }
 

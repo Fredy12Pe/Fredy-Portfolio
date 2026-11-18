@@ -13,25 +13,35 @@ type WorkFolderProps = {
   /** 0 closed, 1 open: the front panel tips forward and the back leans away */
   open?: MotionValue<number>;
   className?: string;
+  /** Opened by a scroll-driven CSS animation over this range (see scroll-timeline.ts) instead of `open` */
+  openRange?: [number, number];
 };
 
 /* A milk-glass folder: a brushed-metal back with a tab, and a frosted front panel with a dip in
    its top edge. Drawn in SVG so it stays sharp at any size; the grain and the liquid warp of the
    metal come from SVG filters, so there are no image files to load. */
-export default function WorkFolder({ title, subtitle, part = "whole", open, className }: WorkFolderProps) {
+export default function WorkFolder({ title, subtitle, part = "whole", open, className, openRange }: WorkFolderProps) {
   // Filter and gradient ids must be unique on the page
   const id = useId().replace(/:/g, "");
   const closed = useMotionValue(0);
   const openness = open ?? closed;
   const frontTilt = useTransform(openness, [0, 1], [0, -38]);
   const backTilt = useTransform(openness, [0, 1], [0, 10]);
+  // Scroll-driven: the CSS tips the halves open (home.module.css, [data-fold]); no inline transform
+  const cssOpen = openRange
+    ? {
+        "data-range": openRange.join(","),
+        style: { "--a": openRange[0], "--b": openRange[1] } as unknown as Record<string, number>,
+      }
+    : null;
 
   return (
     <div className={`${styles.folder} ${className ?? ""}`} aria-hidden>
       {part !== "front" && (
         <motion.svg
           className={styles.back}
-          style={{ rotateX: backTilt }}
+          data-fold="back"
+          {...(cssOpen ?? { style: { rotateX: backTilt } })}
           viewBox="0 0 556 420"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -77,7 +87,7 @@ export default function WorkFolder({ title, subtitle, part = "whole", open, clas
       )}
 
       {part !== "back" && (
-        <motion.div className={styles.front} style={{ rotateX: frontTilt }}>
+        <motion.div className={styles.front} data-fold="front" {...(cssOpen ?? { style: { rotateX: frontTilt } })}>
           <svg className={styles.frontArt} viewBox="0 0 556 420" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id={`${id}-glass`} x1="0" y1="112" x2="556" y2="420" gradientUnits="userSpaceOnUse">

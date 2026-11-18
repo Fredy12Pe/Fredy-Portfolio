@@ -22,6 +22,9 @@
   min-height: 100%;
   background: var(--bg);
   color: var(--text);
+  /* Its own layer group, so the Skills section's black layer (ServicesStack .night, z-index -1) paints
+     above this white background but below all the content, from Skills down */
+  isolation: isolate;
 }
 
 .page :where(a, button, input, textarea, [tabindex]):focus-visible {
@@ -174,60 +177,168 @@
   gap: 32px;
 }
 
-/* Scroll stage: the folder layer spans the whole section so its sticky child can hold the middle
-   of the screen; the case studies scroll over it. */
+/* Featured work's fly-out (see WorkSections.tsx and scroll-timeline.ts). The stage is the section
+   plus --pin of extra scrolling; its first child is pinned under the menu (sticky) while that extra
+   scrolling passes, and the animations below run over it. Each animated element has its range as
+   --a and --b, shares of --pin counted from the moment the stage pins. */
 .workStage {
+  --pin-top: 88px;
+  --pin: 120vh;
+  --pin: 120svh;
   position: relative;
+  /* The timeline the animations follow: the stage's scrolling, with the pin line (the menu's bottom)
+     as its start, so "exit-crossing 0" is the moment it pins */
+  view-timeline: --work block;
+  view-timeline-inset: var(--pin-top) 0px;
 }
 
-.folderLayer {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.folderSticky {
+.workPinned {
   position: sticky;
+  top: var(--pin-top);
+}
+
+.pinRoom {
+  height: var(--pin);
+}
+
+/* The folder: centred in the screen below the title, behind (back half) and in front of (front
+   half) the case studies */
+.folderBox {
+  position: absolute;
   top: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  height: 100svh;
+  height: calc(100vh - var(--pin-top));
+  height: calc(100svh - var(--pin-top));
+  padding-top: clamp(64px, 10vh, 120px);
+  box-sizing: border-box;
+  pointer-events: none;
 }
 
-.workContent {
+.folderFront {
+  z-index: 2;
+}
+
+.headingSlot,
+.featuredList {
   position: relative;
   z-index: 1;
 }
 
-.folderSpacer {
-  height: 100vh;
-  height: 100svh;
-}
-
 .flyCard {
   transform-origin: center center;
-  will-change: transform, opacity;
+  will-change: transform;
+}
+
+@keyframes workPiece {
+  0% {
+    transform: translate(var(--px, 0px), var(--py, 0px)) scale(var(--ps, 1)) rotate(var(--pr, 0deg));
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  36% {
+    transform: translate(var(--lx, 0px), var(--ly, 0px)) scale(var(--ls, 1)) rotate(var(--lr, 0deg));
+    animation-timing-function: cubic-bezier(0.6, 0, 0.3, 1);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes workFolderGone {
+  from {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(28px) scale(0.93);
+  }
+}
+
+@keyframes workFrontDrop {
+  from {
+    z-index: 2;
+  }
+  to {
+    z-index: 0;
+  }
+}
+
+@keyframes workOpenFront {
+  from {
+    transform: rotateX(0deg);
+  }
+  to {
+    transform: rotateX(-38deg);
+  }
+}
+
+@keyframes workOpenBack {
+  from {
+    transform: rotateX(0deg);
+  }
+  to {
+    transform: rotateX(10deg);
+  }
+}
+
+.workStage .flyCard {
+  animation: workPiece 1s linear both;
+}
+
+.workStage .folderFade {
+  animation: workFolderGone 1s ease-in-out both;
+}
+
+.workStage .folderFront {
+  animation: workFrontDrop 1s linear both;
+}
+
+.workStage [data-fold="front"] {
+  animation: workOpenFront 1s ease-in-out both;
+}
+
+.workStage [data-fold="back"] {
+  animation: workOpenBack 1s ease-in-out both;
+}
+
+/* Run by the scroll (the timeline must come after the animation shorthand, which resets it) */
+.workStage :is(.flyCard, .folderFade, .folderFront, [data-fold]) {
+  animation-timeline: --work;
+  animation-range: exit-crossing calc(var(--pin) * var(--a)) exit-crossing calc(var(--pin) * var(--b));
+}
+
+/* Browsers without scroll-driven animations: paused, and moved by script (scroll-timeline.ts) */
+.workStage[data-timeline="script"] :is(.flyCard, .folderFade, .folderFront, [data-fold]) {
+  animation-play-state: paused;
+}
+
+/* Until the cards are measured they sit in their places */
+.workPinned:not([data-measured]) .flyCard {
+  animation: none;
 }
 
 .inlineFolder {
   display: none;
 }
 
-/* Phones and tablets (data-mode="rise", set in WorkSections.tsx): no folder or pinned stage; the
-   title, then the case studies, which rise in as they scroll into view */
-.workStage[data-mode="rise"] .flyOnly {
-  display: none;
-}
-
-
-
-/* Reduced motion: the whole folder sits above the cards instead of holding the screen */
+/* Reduced motion: no pinning or flying; the whole folder sits above the cards */
 @media (prefers-reduced-motion: reduce) {
+  .pinRoom,
   .flyOnly {
     display: none;
+  }
+
+  .workPinned {
+    position: static;
+  }
+
+  .workStage :is(.flyCard, .folderFade, .folderFront, [data-fold]) {
+    animation: none;
   }
 
   .inlineFolder {
@@ -1007,27 +1118,13 @@
   }
 }
 
-/* Phones: a tall, narrow screen, so the folder's stage is shorter than a full screen and Featured
-   work starts closer to the strip above. Otherwise the folder sat in a screen-high stage below a
-   desktop-sized section gap, with a large empty space above and below it. */
+/* Phones: the pin sits just under the menu button, and takes a screen and a half of scrolling, so the
+   cards travel gently on a narrow screen */
 @media (max-width: 700px) {
-  /* The folder is centred in its stage, so the title sits about (36% of the screen - 185px) below
-     the stage's top; this margin takes that back out, so the space above the title is the same
-     section gap as everywhere else */
-  .section:has(.workStage[data-mode="fly"]) {
-    margin-top: calc(var(--section-gap, 80px) - 36svh + 185px);
-  }
-
-  .folderSticky,
-  .folderSpacer {
-    height: 72vh;
-    height: 72svh;
-  }
-
-  /* While held, the shorter stage sits in the middle of the screen, so the folder is centred */
-  .folderSticky {
-    top: 14vh;
-    top: 14svh;
+  .workStage {
+    --pin-top: 72px;
+    --pin: 150vh;
+    --pin: 150svh;
   }
 }
 

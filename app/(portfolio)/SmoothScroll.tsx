@@ -1,23 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { clearScrolling, markScrolling } from "./scroll-flag";
 import { holdingReloadPosition } from "./reload-scroll";
 import { glideTo } from "./nav-glide";
 
-gsap.registerPlugin(ScrollTrigger);
-
-// On a phone the address bar sliding away resizes the window mid-scroll. Re-measuring every pinned
-// and scrubbed section on each of those resizes made the page hitch, so only real changes re-measure.
-ScrollTrigger.config({ ignoreMobileResize: true });
-
-// Scrolling is left to the browser. The earlier version (Lenis) turned every wheel tick
-// into JavaScript that ran on each frame, on top of the scrubbed animations, which is what
-// made a heavy page stutter. Native scrolling runs on the compositor, has the platform's
-// own momentum, and costs the page nothing per frame. ScrollTrigger reads the native scroll
-// position directly, so the scrubbed sections stay in step without any extra work here.
+// Scrolling is left entirely to the browser: nothing here listens to scroll events or changes the page
+// while it moves. (A scroll flag on <html> and an unused GSAP ScrollTrigger used to run on every
+// scroll; the flag made the browser recheck the page's styles right as each scroll began.)
 const HOME_RETURN_KEY = "portfolio-home-return";
 
 /** After Back/Forward to the home page, scrolls to where the visitor left it, and keeps it there for
@@ -60,11 +49,6 @@ function restoreHomeReturn() {
 
 export default function SmoothScroll() {
   useEffect(() => {
-    // Feeds the decorative-layer gate: the flag is held while the page moves and the
-    // scrubbed sections keep it alive after the gesture ends (see scroll-flag.ts).
-    const onScroll = () => markScrolling();
-    window.addEventListener("scroll", onScroll, { passive: true });
-
     // In-page links (href="#about") glide to their target instead of snapping. The
     // browser's own smooth-scroll setting is not used globally because it also slows
     // programmatic jumps (such as the scroll restore on reload).
@@ -102,15 +86,10 @@ export default function SmoothScroll() {
     document.addEventListener("click", saveReturn, true);
     const stopReturn = restoreHomeReturn();
 
-    // Keep animation timing steady when a frame runs late, so scrubbed sections don't skip
-    gsap.ticker.lagSmoothing(0);
-
     return () => {
-      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("click", onClick);
       document.removeEventListener("click", saveReturn, true);
       stopReturn();
-      clearScrolling();
     };
   }, []);
 
