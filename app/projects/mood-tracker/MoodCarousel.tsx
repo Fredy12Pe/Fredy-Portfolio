@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import CheckinScreen from "./CheckinScreen";
-import { orbitron } from "@/lib/fonts";
 import { MOODS, MOOD_COUNT } from "./moods";
 import PhoneMockup from "./PhoneMockup";
 import styles from "./stage.module.css";
@@ -34,7 +33,7 @@ export default function MoodCarousel() {
         </div>
 
         <section className={styles.projectInfo} aria-labelledby="checkin-title">
-          <h1 id="checkin-title" className={orbitron.className}>
+          <h1 id="checkin-title">
             Checkin
           </h1>
           <p>An expressive mood check-in that turns everyday emotions into playful, animated characters.</p>

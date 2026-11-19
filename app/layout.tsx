@@ -1,5 +1,5 @@
 import "./globals.css";
-import { inter, orbitron, roboto } from "@/lib/fonts";
+import { inter, jetbrainsMono } from "@/lib/fonts";
 
 // Lets the page draw under the notch and home bar, so the safe-area insets used by the phone menu are real values
 export const viewport = {
@@ -14,7 +14,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${orbitron.variable} ${roboto.variable} ${inter.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Inter, JetBrains_Mono, Sora } from "next/font/google";
+import { Sora } from "next/font/google";
 import type { CSSProperties, ReactNode } from "react";
 import OtherProjects from "@/components/sections/OtherProjects";
 import BoardNav from "../board/BoardNav";
 import { RevealBlock } from "./Reveal";
 import { ParallaxArea } from "./Parallax";
+import { CaseFooter, NextProject } from "../case-study/kit";
 
 // The Grove case study, built from the Figma design (Grove - Case Study).
 // Side-by-side layouts match the design at 1360px and wider; below that they stack.
@@ -16,18 +17,6 @@ export const metadata: Metadata = {
     "Grove is a Tamagotchi-inspired habit tracker for iOS where every completed habit grows a virtual garden. Designed and built end to end.",
 };
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-grove-inter",
-  display: "swap",
-});
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-grove-mono",
-  display: "swap",
-});
 const sora = Sora({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
@@ -41,13 +30,13 @@ const A = "/projects/grove/case-study";
 
 // Every section is the same 1320px column, with 140px between sections on a wide screen
 const SECTION =
-  "mx-auto w-full max-w-[1320px] px-5 sm:px-8 min-[1400px]:px-0 mt-[80px] min-[1360px]:mt-[140px]";
+  "mx-auto w-full max-w-[1320px] px-5 sm:px-8 min-[1400px]:px-0 mt-[80px] min-[1360px]:mt-[120px]";
 
 const BODY = "text-[18px] leading-[26px] tracking-[-0.2px] text-black/90";
 const SUBHEAD = "text-[22px] leading-[28px] md:text-[24px] font-medium tracking-[-0.2px] text-black/90";
 
 const H2 = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
-  <h2 className={`text-[28px] leading-[39px] font-medium tracking-[-0.9px] text-[#00b600] ${className}`}>
+  <h2 className={`text-[30px] leading-[38px] font-semibold tracking-[-0.9px] sm:text-[36px] sm:leading-[44px] text-[#007a12] ${className}`}>
     {children}
   </h2>
 );
@@ -182,31 +171,31 @@ function Pixel({ src, box, rotate, w, h }: { src: string; box: CSSProperties; ro
 
 function Chip({ children }: { children: ReactNode }) {
   return (
-    <span className="whitespace-nowrap rounded-[60px] bg-[#e0f49f] px-[18px] py-[8px] text-[15px] leading-[22px] tracking-[-0.2px] text-[#00c42a]">
+    <span className="whitespace-nowrap rounded-full bg-[#e0f49f] px-[18px] py-[8px] text-[16px] leading-6 tracking-[-0.2px] text-[#007a12]">
       {children}
     </span>
   );
 }
 
 const MONO_LABEL =
-  "[font-family:var(--font-grove-mono),ui-monospace,monospace] text-[13px] leading-[20px] tracking-[-0.42px] uppercase text-[#00c42a]";
+  "[font-family:var(--font-mono),ui-monospace,monospace] text-[13px] leading-[20px] tracking-[-0.42px] uppercase text-[#007a12]";
 
 function Hero() {
   return (
     <section className="mx-auto w-full max-w-[1320px] px-5 pt-[104px] sm:px-8 md:pt-[130px] min-[1400px]:px-0 min-[1400px]:pt-[150px]">
       <ParallaxArea className="relative overflow-hidden rounded-[24px] bg-[rgba(197,234,71,0.2)] min-[1360px]:h-[876px]">
-        <RevealBlock as="p" mount delay={0}  className="absolute left-7 top-7 text-[13px] leading-[20px] tracking-[1.8px] text-[#00b600] md:left-12 md:top-12 min-[1360px]:left-[102px] min-[1360px]:top-[88px]">
+        <RevealBlock as="p" mount delay={0}  className="absolute left-7 top-7 text-[13px] leading-[20px] tracking-[1.8px] text-[#007a12] md:left-12 md:top-12 min-[1360px]:left-[102px] min-[1360px]:top-[88px]">
           GROVE / HABIT TRACKER
         </RevealBlock>
 
         <div className="relative flex w-fit max-w-full flex-col gap-8 px-7 pb-6 pt-[92px] md:max-w-[58%] md:px-12 min-[1360px]:absolute min-[1360px]:max-w-full min-[1360px]:left-[102px] min-[1360px]:top-[calc(50%-28px)] min-[1360px]:-translate-y-1/2 min-[1360px]:p-0">
           <div className="flex flex-col gap-6">
-            <RevealBlock mount delay={0.15}><h1 className="text-[48px] font-semibold leading-[52px] tracking-[-1.8px] text-[#00b600] md:text-[60px] md:leading-[64px] md:tracking-[-2px] min-[1360px]:text-[72px] min-[1360px]:leading-[76px] min-[1360px]:tracking-[-2.5px]">
+            <RevealBlock mount delay={0.15}><h1 className="text-[48px] font-semibold leading-[52px] tracking-[-1.8px] text-[#007a12] md:text-[60px] md:leading-[64px] md:tracking-[-2px] min-[1360px]:text-[72px] min-[1360px]:leading-[76px] min-[1360px]:tracking-[-2.5px]">
               Grow better
               <br />
               habits.
             </h1></RevealBlock>
-            <RevealBlock mount delay={0.3}><p className="w-0 min-w-full text-[15px] leading-[24px] tracking-[-0.2px] text-[#00c42a] md:text-[18px] md:leading-[26px]">
+            <RevealBlock mount delay={0.3}><p className="w-0 min-w-full text-[15px] leading-[24px] tracking-[-0.2px] text-[#007a12] md:text-[18px] md:leading-[26px]">
               I built Grove, a Tamagotchi-inspired habit tracker for iOS, to make sticking with habits more playful.
               Every completed habit grows your virtual garden. I designed and built the app end to end with help from
               ChatGPT, Claude, and Cursor.
@@ -245,7 +234,7 @@ function Hero() {
         </div>
 
         <RevealBlock mount delay={0.6}><div
-          className={`${MONO_LABEL} relative flex flex-wrap items-center gap-x-7 gap-y-2 px-7 pb-7 pt-6 text-[rgba(0,196,42,0.8)] md:px-12 min-[1360px]:absolute min-[1360px]:bottom-[26px] min-[1360px]:left-[102px] min-[1360px]:p-0`}
+          className={`${MONO_LABEL} relative flex flex-wrap items-center gap-x-7 gap-y-2 px-7 pb-7 pt-6 text-[#007a12] md:px-12 min-[1360px]:absolute min-[1360px]:bottom-[26px] min-[1360px]:left-[102px] min-[1360px]:p-0`}
         >
           <span>Year: 2026</span>
           <span className="flex items-center gap-2">
@@ -674,7 +663,7 @@ function DesignSystem() {
     <RevealBlock as="section" className={SECTION}>
       <div className="flex max-w-[960px] flex-col gap-10">
         <div className="flex flex-col gap-6">
-          <H2 className="!text-[#00b600]">Design System</H2>
+          <H2 className="!text-[#007a12]">Design System</H2>
           <p className={`${BODY} max-w-[476px] !text-black`}>
             A friendly, nature-themed system: lime green for actions, deep navy for text, and rounded type and corners
             for a calm, inviting feel.
@@ -685,7 +674,7 @@ function DesignSystem() {
           <h3 className={SUBHEAD}>Principles</h3>
           <ul className="flex flex-wrap gap-[22px]">
             {["Friendly", "Nature themed", "Mindful clarity"].map((p) => (
-              <li key={p} className="flex min-w-[144px] items-center justify-center rounded-[60px] border border-[rgba(102,102,102,0.4)] p-[10px] text-[15px] leading-[28px] tracking-[-0.2px] text-black/90">
+              <li key={p} className="flex min-w-[144px] items-center justify-center rounded-full border border-[rgba(102,102,102,0.4)] p-[10px] text-[15px] leading-[28px] tracking-[-0.2px] text-black/90">
                 {p}
               </li>
             ))}
@@ -782,7 +771,7 @@ function TimelineIcon({ kind }: { kind: "pencil" | "build" | "send" | "store" })
   );
 }
 
-const GREEN_SUB = "text-[22px] leading-[28px] md:text-[24px] font-medium tracking-[-0.2px] text-[rgba(0,182,0,0.9)]";
+const GREEN_SUB = "text-[22px] leading-[28px] md:text-[24px] font-medium tracking-[-0.2px] text-[#007a12]";
 
 function Group({ title, intro, children }: { title: string; intro: ReactNode; children: ReactNode }) {
   return (
@@ -881,7 +870,7 @@ function HowIBuiltIt() {
           <ol className="flex flex-col gap-4 lg:flex-row lg:items-stretch">
             {TIMELINE.map(([title, when, detail, icon], i) => (
               <RevealBlock as="li" from="up" delay={i * 0.1}  key={title} className="flex flex-1 flex-col gap-4 lg:flex-row">
-                <div className="relative flex flex-1 flex-col gap-[6px] rounded-[24px] bg-[#e0f49f] p-7 tracking-[-0.2px] text-[rgba(0,196,42,0.9)]">
+                <div className="relative flex flex-1 flex-col gap-[6px] rounded-[24px] bg-[#e0f49f] p-7 tracking-[-0.2px] text-[#007a12]">
                   <p className="text-[24px] font-semibold leading-[30px]">{title}</p>
                   <p className="text-[16px] font-medium leading-[22px]">{when}</p>
                   <p className="text-[15px] leading-[21px]">{detail}</p>
@@ -1045,8 +1034,7 @@ function ClosingClip() {
 export default function GroveCaseStudyPage() {
   return (
     <div
-      className={`${inter.variable} ${jetbrains.variable} ${sora.variable} min-h-screen bg-white text-black antialiased`}
-      style={{ fontFamily: "var(--font-grove-inter), system-ui, sans-serif" }}
+      className={`${sora.variable} min-h-screen bg-white text-black antialiased`}
     >
       <BoardNav />
       <main>
@@ -1063,9 +1051,9 @@ export default function GroveCaseStudyPage() {
         <HowIBuiltIt />
         <WhereItStands />
         <ClosingClip />
-        <div className="mt-[80px] min-[1360px]:mt-[140px]">
-          <OtherProjects currentProject="grove" />
-        </div>
+        <NextProject href="/projects/ecommerce" name="Samples Store" />
+        <OtherProjects currentProject="grove" />
+        <CaseFooter />
       </main>
     </div>
   );

@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Tidehaus · Case Study · Fredy",
   description:
-    "Tidehaus, a concept surf shop with a dark, mobile-first storefront that Fredy designed and coded.",
+    "Tidehaus, a concept surf shop with a fast, mobile-first storefront that Fredy designed and coded.",
 };
 
 export default function CaseStudyLayout({ children }: { children: ReactNode }) {

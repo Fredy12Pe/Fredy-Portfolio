@@ -165,9 +165,10 @@
 
   .projectInfo h1 {
     margin: 0;
-    font-size: clamp(58px, 7vw, 82px);
-    font-weight: 500;
-    line-height: 0.95;
+    /* The same title style as the other case studies (the phone keeps the app's own Orbitron) */
+    font-size: clamp(56px, 6vw, 72px);
+    font-weight: 600;
+    line-height: 1.05;
     letter-spacing: -0.035em;
   }
 

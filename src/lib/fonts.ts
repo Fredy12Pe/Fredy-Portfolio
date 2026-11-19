@@ -1,11 +1,18 @@
-import { Fredoka, Inter, Orbitron, Roboto } from "next/font/google";
+import { Fredoka, Inter, JetBrains_Mono, Orbitron, Roboto } from "next/font/google";
 
-// Orbitron: display type. Roboto: all body and interface text.
-// Inter: the Featured work section only, to match its Figma design.
+// Inter: every page's text. JetBrains Mono: small uppercase labels.
+// Orbitron (Mood Tracker) and Roboto (Aarhus) are loaded only by the pages that use them.
 export const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+export const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
   display: "swap",
 });
 

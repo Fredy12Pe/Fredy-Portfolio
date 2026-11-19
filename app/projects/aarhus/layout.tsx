@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./aarhus-fonts.css";
 import ArborChrome from "./ArborChrome";
+import { roboto } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "Modular Living · Arbor & Co.",
@@ -17,5 +18,10 @@ export default function AarhusLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <ArborChrome>{children}</ArborChrome>;
+  // Aarhus is set in Roboto, so only this page loads it
+  return (
+    <div className={roboto.variable} style={{ display: "contents" }}>
+      <ArborChrome>{children}</ArborChrome>
+    </div>
+  );
 }

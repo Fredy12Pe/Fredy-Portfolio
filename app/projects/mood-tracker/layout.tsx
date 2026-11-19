@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import BoardNav from "../board/BoardNav";
 
 export const metadata: Metadata = {
-  title: "Mood Tracker · Fredy Design",
+  title: "Mood Tracker · Fredy",
   description:
     "A mobile motion study: ten keyed Checkin moods driven by a live slider, with Figma idle animations imported into code.",
 };

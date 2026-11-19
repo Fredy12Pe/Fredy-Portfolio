@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 // The page is a client component, so its title and description (for tabs, search and link previews) live here
 export const metadata: Metadata = {
-  title: "Selah Devotional Journal · Case Study · Fredy",
+  title: "Selah · Case Study · Fredy",
   description:
     "Selah, a devotional journal for daily reading, journaling and reflection in one mobile-first app, built in 2.5 weeks.",
 };

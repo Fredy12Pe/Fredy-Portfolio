@@ -61,7 +61,7 @@ export const MORE_PROJECTS: MoreProject[] = [
   },
   {
     id: "selah",
-    title: "Selah Devotional Journal",
+    title: "Selah",
     caption:
       "Daily reading, journaling and reflection in one mobile-first app, built in 2.5 weeks.",
     tag: "Web app",
@@ -73,7 +73,7 @@ export const MORE_PROJECTS: MoreProject[] = [
     id: "mood-tracker",
     title: "Mood Tracker",
     caption:
-      "Ten moods driven by a live slider, with Figma animations brought into code.",
+      "A mood check-in where one slider moves a character through ten moods, animated in Figma.",
     tag: "Motion study",
     href: "/projects/mood-tracker",
     image: "/images/case-studies/mood-tracker-caseStudy.png",
@@ -83,7 +83,7 @@ export const MORE_PROJECTS: MoreProject[] = [
     id: "aarhus",
     title: "Aarhus",
     caption:
-      "Four configurable furniture pieces in scenes you can open, light and rearrange.",
+      "A concept furniture store where you open doors, swap finishes and light each piece in its room.",
     tag: "Interaction study",
     href: "/projects/aarhus",
     image: "/images/portfolio-v3/furniture/interactive-furniture.png",
@@ -93,7 +93,7 @@ export const MORE_PROJECTS: MoreProject[] = [
     id: "tidehaus",
     title: "Tidehaus",
     caption:
-      "A concept surf shop with a dark, mobile-first storefront I designed and coded.",
+      "A concept surf shop with a fast, mobile-first storefront I designed and coded.",
     tag: "E-commerce concept",
     href: "/projects/tidehaus",
     image: "/images/case-studies/tidehaus-caseStudy.png",
@@ -101,12 +101,12 @@ export const MORE_PROJECTS: MoreProject[] = [
   },
   {
     id: "ziplearn",
-    title: "Ziplearn",
+    title: "ZipLearn",
     caption: "A concept iOS app for booking online tutors around busy schedules.",
     tag: "Concept",
     href: "/projects/ziplearn",
     image: "/images/case-studies/ziplearn-caseStudy.png",
-    imageAlt: "Ziplearn category screen",
+    imageAlt: "ZipLearn category screen",
   },
 ];
 
