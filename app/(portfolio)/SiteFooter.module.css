@@ -44,8 +44,10 @@
 
 .headline {
   margin: 0;
-  max-width: 9ch;
-  font-size: clamp(2.75rem, 4.6vw, 4.25rem);
+  /* Three lines (the markup breaks them), each kept on one line */
+  max-width: none;
+  white-space: nowrap;
+  font-size: clamp(2rem, 3.2vw, 3rem);
   font-weight: 500;
   line-height: 0.98;
   letter-spacing: -0.045em;
@@ -125,12 +127,18 @@
   }
 
   .headline {
-    max-width: 12ch;
-    font-size: clamp(2.5rem, 12vw, 3.25rem);
+    font-size: clamp(1.75rem, 8.2vw, 2.25rem);
   }
 
   .links {
     max-width: none;
+  }
+}
+
+/* Tablets and small laptops: the headline is too wide for its narrow first column, so it takes the full row */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .headline {
+    grid-column: 1 / -1;
   }
 }
 

@@ -101,6 +101,51 @@
   color: rgba(255, 255, 255, 0.66);
 }
 
+/* Scroll-driven fill. The section holds while each marker fills in turn across the pin: on wider screens
+   the whole section is pinned under the menu, on every screen (scroll-timeline.ts runs the fallback where
+   the browser can't). */
+.stage {
+  position: relative;
+  /* The section locks at the middle of the screen (its content is about 350px tall), not at the top,
+     so the animation runs with the section in view rather than over blank space */
+  --pin-top: max(88px, calc(50svh - 175px));
+  --pin: 120svh;
+  view-timeline: --process block;
+  view-timeline-inset: var(--pin-top) 0px;
+}
+
+.pinned {
+  position: sticky;
+  top: var(--pin-top);
+}
+
+.pinRoom {
+  height: var(--pin);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .marker {
+    animation: markerOn 1s linear both;
+    animation-timeline: --process;
+    animation-range: exit-crossing calc(var(--pin) * var(--a)) exit-crossing calc(var(--pin) * var(--b));
+  }
+
+  .stage[data-timeline="script"] .marker {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes markerOn {
+  from {
+    background: #000;
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+  to {
+    background: #a259ff;
+    border-color: #a259ff;
+  }
+}
+
 /* Tablets: two by two, without the joining line */
 @media (max-width: 1100px) {
   .steps {
@@ -113,18 +158,38 @@
   }
 }
 
-/* Phones: a vertical timeline, the line running down through the markers */
+/* Phones: the whole section stays in view under the menu, so it is set compact enough to fit the screen.
+   Each marker sits at the left of its step and fills as the section scrolls. */
 @media (max-width: 700px) {
-  .steps {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 32px;
+  .stage {
+    --pin-top: 72px;
   }
 
+  .pinned {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .head {
+    gap: 0.4rem;
+    margin-bottom: 24px;
+  }
+
+  .heading {
+    font-size: 2.25rem;
+  }
+
+  .steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  /* The vertical line through the markers, from the first to the last */
   .steps::before {
     display: block;
-    top: 22px;
-    bottom: 22px;
-    left: 22px;
+    top: 18px;
+    bottom: 18px;
+    left: 18px;
     right: auto;
     width: 1px;
     height: auto;
@@ -132,18 +197,30 @@
   }
 
   .step {
-    padding-left: 64px;
+    gap: 0.25rem;
+    padding-left: 60px;
   }
 
   .marker {
     position: absolute;
     top: 0;
     left: 0;
+    width: 36px;
+    height: 36px;
     margin: 0;
+    font-size: 0.6875rem;
   }
 
   .title {
-    padding-top: 10px;
+    font-size: 1.125rem;
+    line-height: 1.2;
+    padding-top: 8px;
+  }
+
+  .text {
+    max-width: none;
+    font-size: 0.8125rem;
+    line-height: 1.4;
   }
 }
 
@@ -159,5 +236,7 @@
 @media (prefers-reduced-motion: reduce) {
   .marker {
     transition: none;
+    background: #a259ff;
+    border-color: #a259ff;
   }
 }

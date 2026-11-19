@@ -192,7 +192,8 @@
     box-sizing: border-box;
   }
 
-  .hTrack [data-node-id="145:574"] > [class*="aboutActivitiesIcon"] {
+  /* Not the inner art (its class also contains "aboutActivitiesIcon"), which must keep its own place */
+  .hTrack [data-node-id="145:574"] > [class*="aboutActivitiesIcon"]:not([class*="aboutActivitiesIconArt"]) {
     position: absolute !important;
     left: auto !important;
     right: 16px;

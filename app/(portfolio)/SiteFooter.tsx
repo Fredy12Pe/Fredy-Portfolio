@@ -47,7 +47,7 @@ export default function SiteFooter() {
               <br />
               products
               <br />
-              people feel.
+              people can feel.
             </h2>
 
             <div className={`${styles.group} fade-up`} style={afterFooter(1)}>

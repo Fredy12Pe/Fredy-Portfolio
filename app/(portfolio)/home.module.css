@@ -1109,7 +1109,7 @@
     box-sizing: border-box;
   }
 
-  .cellActivities [class*="aboutActivitiesIcon"] {
+  .cellActivities [class*="aboutActivitiesIcon"]:not([class*="aboutActivitiesIconArt"]) {
     position: absolute !important;
     left: auto !important;
     right: 16px;

@@ -65,7 +65,7 @@ export default function ContactSection() {
         <div className={styles.copy}>
           <div>
             <h2 className={`${styles.heading} ${inter.className} fade-up`} style={stagger(0)}>
-              Let’s talk.
+              Let’s connect.
             </h2>
             <p className={`${styles.subhead} fade-up`} style={stagger(1)}>
               Have a project or a role in mind? Email me or fill out the form, and I’ll get back
