@@ -28,6 +28,49 @@ export function rangeStyle(...pairs: [number, number][]) {
   return { style, "data-range": pairs.map((pair) => pair.join(",")).join(";") };
 }
 
+/** Rows are clickable only once they have landed. ends[i] is the share of --pin at which row i (its
+    data-row) lands; until then it is inert, so it can't be tapped while it still flies out of the folder. */
+export function useLandedRows(stageRef: RefObject<HTMLElement | null>, ends: number[]) {
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let pinTop = 0;
+    let pin = 1;
+    const measure = () => {
+      const probe = document.createElement("div");
+      probe.style.cssText = "position:absolute;visibility:hidden;height:var(--pin);width:var(--pin-top, 0px)";
+      stage.appendChild(probe);
+      pin = probe.offsetHeight || 1;
+      pinTop = probe.offsetWidth;
+      probe.remove();
+      update();
+    };
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const at = (pinTop - stage.getBoundingClientRect().top) / pin;
+      stage.querySelectorAll<HTMLElement>("[data-row]").forEach((el) => {
+        el.inert = !reduced && at < ends[Number(el.dataset.row)];
+      });
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(stage);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
+    };
+  }, [stageRef, ends]);
+}
+
 /** For browsers without scroll-driven animations: drives the stage's paused animations from the
     scroll position. Does nothing where the browser can run them itself. */
 export function useTimelineFallback(stageRef: RefObject<HTMLElement | null>) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useTransform, type MotionValue } from "motion/react";
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import styles from "./WorkFolder.module.css";
 
 type WorkFolderProps = {
@@ -15,12 +15,14 @@ type WorkFolderProps = {
   className?: string;
   /** Opened by a scroll-driven CSS animation over this range (see scroll-timeline.ts) instead of `open` */
   openRange?: [number, number];
+  /** Drawn beside the folder on the front panel's layer (the folder itself takes no taps) */
+  hint?: ReactNode;
 };
 
 /* A milk-glass folder: a brushed-metal back with a tab, and a frosted front panel with a dip in
    its top edge. Drawn in SVG so it stays sharp at any size; the grain and the liquid warp of the
    metal come from SVG filters, so there are no image files to load. */
-export default function WorkFolder({ title, subtitle, part = "whole", open, className, openRange }: WorkFolderProps) {
+export default function WorkFolder({ title, subtitle, part = "whole", open, className, openRange, hint }: WorkFolderProps) {
   // Filter and gradient ids must be unique on the page
   const id = useId().replace(/:/g, "");
   const closed = useMotionValue(0);
@@ -136,17 +138,7 @@ export default function WorkFolder({ title, subtitle, part = "whole", open, clas
             </div>
           ) : null}
 
-          <span className={styles.button}>
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
-              <path
-                d="M12 5v14M6 13l6 6 6-6"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </span>
+          {hint}
         </motion.div>
       )}
     </div>

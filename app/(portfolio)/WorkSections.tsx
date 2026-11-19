@@ -12,7 +12,7 @@ import {
 } from "react";
 import { inter } from "@/lib/fonts";
 import { useReveal } from "@/lib/reveal";
-import { rangeStyle, useTimelineFallback } from "./scroll-timeline";
+import { rangeStyle, useLandedRows, useTimelineFallback } from "./scroll-timeline";
 import { FEATURED_PROJECTS, MORE_PROJECTS, type FeaturedProject } from "./home-data";
 import WorkFolder from "./WorkFolder";
 import styles from "./home.module.css";
@@ -38,6 +38,8 @@ const ARROW_SRC = "/images/featured-work/project-link.svg";
 /** Each card's scroll range, as shares of the pin: each leaves a beat after the one before it */
 const pieceRange = (order: number): [number, number] => [0.1 + order * 0.05, 0.72 + order * 0.05];
 const FOLDER_OPEN: [number, number] = [-0.45, 0.12];
+// Where each row's second card lands: the row is clickable from then on
+const ROW_LANDED = FEATURED_PROJECTS.map((_, row) => pieceRange(row * 2 + 1)[1]);
 // Gone while the cards are still on their way down, so it never shows behind them
 const FOLDER_GONE: [number, number] = [0.36, 0.56];
 const FRONT_DROP: [number, number] = [0, 0.5];
@@ -79,6 +81,7 @@ export function FeaturedWork() {
   const pinnedRef = useRef<HTMLDivElement>(null);
   const folderRef = useRef<HTMLDivElement>(null);
   useTimelineFallback(stageRef);
+  useLandedRows(stageRef, ROW_LANDED);
 
   useEffect(() => {
     const pinned = pinnedRef.current;
@@ -150,7 +153,7 @@ export function FeaturedWork() {
 
           {/* Reduced motion: the whole folder above the cards */}
           <div className={styles.inlineFolder}>
-            <WorkFolder subtitle={subtitle} />
+            <WorkFolder subtitle={subtitle} hint={<ScrollHint />} />
           </div>
 
           <div className={styles.headingSlot}>
@@ -165,6 +168,7 @@ export function FeaturedWork() {
                 <div className={styles.arrivalSlot}>
                   <Link
                     href={project.href}
+                    data-row={index}
                     className={
                       index % 2 === 1 ? `${styles.featuredRow} ${styles.featuredRowReverse}` : styles.featuredRow
                     }
@@ -180,7 +184,7 @@ export function FeaturedWork() {
 
           <div className={`${styles.folderBox} ${styles.folderFront} ${styles.flyOnly}`} aria-hidden {...rangeStyle(FRONT_DROP)}>
             <div className={styles.folderFade} {...rangeStyle(FOLDER_GONE)}>
-              <WorkFolder part="front" subtitle={subtitle} openRange={FOLDER_OPEN} />
+              <WorkFolder part="front" subtitle={subtitle} openRange={FOLDER_OPEN} hint={<ScrollHint />} />
             </div>
           </div>
         </div>
@@ -188,6 +192,18 @@ export function FeaturedWork() {
         <div className={styles.pinRoom} aria-hidden />
       </div>
     </section>
+  );
+}
+
+/* The arrow and "Scroll down", beside the folder; it fades with the folder */
+function ScrollHint() {
+  return (
+    <span className={styles.scrollHint}>
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" aria-hidden>
+        <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <span>Scroll down</span>
+    </span>
   );
 }
 

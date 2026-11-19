@@ -326,6 +326,61 @@
   display: none;
 }
 
+/* Beside the folder, at the height its arrow used to be */
+.scrollHint {
+  position: absolute;
+  left: 100%;
+  bottom: 10%;
+  margin-left: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b6f6c;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.scrollHint svg {
+  color: #222;
+  flex: none;
+  animation: scrollHintBob 1.6s ease-in-out infinite;
+}
+
+@keyframes scrollHintBob {
+  0%,
+  100% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollHint svg {
+    animation: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .scrollHint {
+    flex-direction: column;
+    gap: 4px;
+    margin-left: 6px;
+    font-size: 10.5px;
+  }
+
+  /* Two short lines, so it fits in the gap beside the folder */
+  .scrollHint > span {
+    width: 3.4em;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.2;
+  }
+}
+
 /* Reduced motion: no pinning or flying; the whole folder sits above the cards */
 @media (prefers-reduced-motion: reduce) {
   .pinRoom,
@@ -376,6 +431,12 @@
 /* The media leads on the reversed row. The DOM keeps the details first for small screens. */
 .featuredRowReverse .featuredMedia {
   order: -1;
+  /* In the folder pile the Samples Store image sits above its description */
+  z-index: 2;
+}
+
+.featuredRowReverse .featuredDetails {
+  z-index: 1;
 }
 
 .featuredDetails {
