@@ -1,0 +1,968 @@
+{
+  "$description": "Grove design tokens as shipped in the Grove app, extracted from the grove-habit-tracker repo (styles/theme.ts, HabitRow.tsx, habitHaptics.ts, plantGrowth.ts, auth-welcome-theme.ts, GroveWidgets.swift). DTCG-style $type/$value. Colors are hex or rgba() strings.",
+  "v1": {
+    "color": {
+      "light": {
+        "primaryGreen": {
+          "$type": "color",
+          "$value": "#A7DE33",
+          "$description": "Primary green"
+        },
+        "accentLime": {
+          "$type": "color",
+          "$value": "#C5EA47",
+          "$description": "Main accent, checked states, progress segments"
+        },
+        "accentLimeSoft": {
+          "$type": "color",
+          "$value": "#BADF3D",
+          "$description": "Secondary accent, active tab tint"
+        },
+        "limeMuted": {
+          "$type": "color",
+          "$value": "#8AA335",
+          "$description": "Emphasis / deep accent"
+        },
+        "background": {
+          "$type": "color",
+          "$value": "#F9FAF1",
+          "$description": "App background (warm cream)"
+        },
+        "cardBackground": {
+          "$type": "color",
+          "$value": "#F2F1E4",
+          "$description": "Card surface"
+        },
+        "softSurface": {
+          "$type": "color",
+          "$value": "#F8F9F9",
+          "$description": "Banners, home cards"
+        },
+        "white": {
+          "$type": "color",
+          "$value": "#FFFFFF",
+          "$description": "Elevated paper surface"
+        },
+        "primaryText": {
+          "$type": "color",
+          "$value": "#7C7B67",
+          "$description": "Olive-gray text"
+        },
+        "deepText": {
+          "$type": "color",
+          "$value": "#213242",
+          "$description": "Titles, headings (navy)"
+        },
+        "secondaryText": {
+          "$type": "color",
+          "$value": "#807E71",
+          "$description": "Body / supporting copy"
+        },
+        "inactive": {
+          "$type": "color",
+          "$value": "#E0E0E0",
+          "$description": "Inactive heatmap cells"
+        },
+        "mutedGray": {
+          "$type": "color",
+          "$value": "#B7BDC1",
+          "$description": "Inactive tab, summary text, empty progress segments"
+        },
+        "streakFlame": {
+          "$type": "color",
+          "$value": "#FF8C00",
+          "$description": "Streak flame"
+        },
+        "outline": {
+          "$type": "color",
+          "$value": "rgba(124,123,103,0.22)",
+          "$description": "Outlines"
+        },
+        "divider": {
+          "$type": "color",
+          "$value": "rgba(124,123,103,0.12)",
+          "$description": "Dividers"
+        },
+        "error": {
+          "$type": "color",
+          "$value": "#B3261E",
+          "$description": "Errors"
+        },
+        "borderSubtle": {
+          "$type": "color",
+          "$value": "rgba(0,0,0,0.1)",
+          "$description": "Hairlines on pills and cards"
+        },
+        "tabBar": {
+          "$type": "color",
+          "$value": "#E8EAEB",
+          "$description": "Floating tab bar fill"
+        },
+        "onAccent": {
+          "$type": "color",
+          "$value": "#FFFFFF",
+          "$description": "Text and icons on lime or green fills"
+        }
+      },
+      "dark": {
+        "primaryGreen": {
+          "$type": "color",
+          "$value": "#A7DE33",
+          "$description": "Primary green"
+        },
+        "accentLime": {
+          "$type": "color",
+          "$value": "#C5EA47",
+          "$description": "Main accent, checked states, progress segments"
+        },
+        "accentLimeSoft": {
+          "$type": "color",
+          "$value": "#BADF3D",
+          "$description": "Secondary accent, active tab tint"
+        },
+        "limeMuted": {
+          "$type": "color",
+          "$value": "#5E7028"
+        },
+        "background": {
+          "$type": "color",
+          "$value": "#141A17"
+        },
+        "cardBackground": {
+          "$type": "color",
+          "$value": "#1E2823"
+        },
+        "softSurface": {
+          "$type": "color",
+          "$value": "#24302B"
+        },
+        "white": {
+          "$type": "color",
+          "$value": "#1A221E",
+          "$description": "Dark 'paper' (named white in v1)"
+        },
+        "primaryText": {
+          "$type": "color",
+          "$value": "#A8A996"
+        },
+        "deepText": {
+          "$type": "color",
+          "$value": "#F0F2E8"
+        },
+        "secondaryText": {
+          "$type": "color",
+          "$value": "#9A9B8A"
+        },
+        "inactive": {
+          "$type": "color",
+          "$value": "#3A4540"
+        },
+        "mutedGray": {
+          "$type": "color",
+          "$value": "#6B736C"
+        },
+        "streakFlame": {
+          "$type": "color",
+          "$value": "#FF9F2E"
+        },
+        "outline": {
+          "$type": "color",
+          "$value": "rgba(240,242,232,0.14)"
+        },
+        "divider": {
+          "$type": "color",
+          "$value": "rgba(240,242,232,0.10)"
+        },
+        "error": {
+          "$type": "color",
+          "$value": "#E57373"
+        },
+        "borderSubtle": {
+          "$type": "color",
+          "$value": "rgba(255,255,255,0.12)"
+        },
+        "tabBar": {
+          "$type": "color",
+          "$value": "#222C28"
+        },
+        "onAccent": {
+          "$type": "color",
+          "$value": "#FFFFFF",
+          "$description": "Text and icons on lime or green fills"
+        }
+      },
+      "auth": {
+        "$description": "components/auth/auth-welcome-theme.ts. Outside the theme",
+        "textMuted": {
+          "$type": "color",
+          "$value": "#5F7A5F"
+        },
+        "taglineGreen": {
+          "$type": "color",
+          "$value": "#13B30B"
+        },
+        "textForest": {
+          "$type": "color",
+          "$value": "#2E4A2E"
+        },
+        "buttonBg": {
+          "$type": "color",
+          "$value": "#C5E0A8"
+        },
+        "buttonText": {
+          "$type": "color",
+          "$value": "#FFFFFF"
+        },
+        "divider": {
+          "$type": "color",
+          "$value": "rgba(47,74,47,0.25)"
+        },
+        "rootFallback": {
+          "$type": "color",
+          "$value": "#E8F5EC"
+        }
+      },
+      "widget": {
+        "$description": "targets/widget/GroveWidgets.swift, as Swift Color(red:green:blue:) literals. Outside the theme",
+        "gradientStart": {
+          "$type": "color",
+          "$value": "#45A427",
+          "$description": "Small widget gradient start"
+        },
+        "gradientEnd": {
+          "$type": "color",
+          "$value": "#97C732",
+          "$description": "Small widget gradient end"
+        },
+        "plantStripBg": {
+          "$type": "color",
+          "$value": "#F4F3E7"
+        },
+        "dotCompleted": {
+          "$type": "color",
+          "$value": "#88BF25"
+        },
+        "dotIncomplete": {
+          "$type": "color",
+          "$value": "#FFFFFF"
+        },
+        "plantTileFill": {
+          "$type": "color",
+          "$value": "rgba(103,178,43,0.2)",
+          "$description": "#67B22B at 20%"
+        }
+      }
+    },
+    "habitCardThemes": {
+      "light": [
+        {
+          "name": "Lime",
+          "bg": "#F3F8E4",
+          "accent": "#A7DE33",
+          "accentDeep": "#8AA335",
+          "iconWell": "#E4F0B8"
+        },
+        {
+          "name": "Sage",
+          "bg": "#EEF4EC",
+          "accent": "#7BA86A",
+          "accentDeep": "#5E8A50",
+          "iconWell": "#D5E6CF"
+        },
+        {
+          "name": "Olive",
+          "bg": "#F2F4E6",
+          "accent": "#A8C44A",
+          "accentDeep": "#8AA335",
+          "iconWell": "#DDE8B8"
+        },
+        {
+          "name": "Sand / clay",
+          "bg": "#F5F1E6",
+          "accent": "#C4A06A",
+          "accentDeep": "#A38452",
+          "iconWell": "#E8DCC4"
+        },
+        {
+          "name": "Moss",
+          "bg": "#EEF3F0",
+          "accent": "#5FA88A",
+          "accentDeep": "#458A6E",
+          "iconWell": "#D0E4D8"
+        },
+        {
+          "name": "Stone teal",
+          "bg": "#F0F3F2",
+          "accent": "#6B8F8A",
+          "accentDeep": "#52706C",
+          "iconWell": "#D4E0DC"
+        },
+        {
+          "name": "Soft lime",
+          "bg": "#F4F6EA",
+          "accent": "#BADF3D",
+          "accentDeep": "#8AA335",
+          "iconWell": "#E6F0C0"
+        },
+        {
+          "name": "Mist",
+          "bg": "#EEF1F3",
+          "accent": "#7A92A0",
+          "accentDeep": "#5E7684",
+          "iconWell": "#D4DCE2"
+        }
+      ],
+      "dark": [
+        {
+          "name": "Lime",
+          "bg": "#2A3320",
+          "accent": "#A7DE33",
+          "accentDeep": "#8AA335",
+          "iconWell": "#354222"
+        },
+        {
+          "name": "Sage",
+          "bg": "#243028",
+          "accent": "#7BA86A",
+          "accentDeep": "#5E8A50",
+          "iconWell": "#2E3C32"
+        },
+        {
+          "name": "Olive",
+          "bg": "#2A3020",
+          "accent": "#A8C44A",
+          "accentDeep": "#8AA335",
+          "iconWell": "#363E24"
+        },
+        {
+          "name": "Sand / clay",
+          "bg": "#2E2A22",
+          "accent": "#C4A06A",
+          "accentDeep": "#A38452",
+          "iconWell": "#3A3428"
+        },
+        {
+          "name": "Moss",
+          "bg": "#22302C",
+          "accent": "#5FA88A",
+          "accentDeep": "#458A6E",
+          "iconWell": "#2A3C36"
+        },
+        {
+          "name": "Stone teal",
+          "bg": "#242C2C",
+          "accent": "#6B8F8A",
+          "accentDeep": "#52706C",
+          "iconWell": "#2E3838"
+        },
+        {
+          "name": "Soft lime",
+          "bg": "#2C3220",
+          "accent": "#BADF3D",
+          "accentDeep": "#8AA335",
+          "iconWell": "#384024"
+        },
+        {
+          "name": "Mist",
+          "bg": "#262C30",
+          "accent": "#7A92A0",
+          "accentDeep": "#5E7684",
+          "iconWell": "#303840"
+        }
+      ]
+    },
+    "typography": {
+      "display": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', system-ui, sans-serif",
+          "fontSize": "24px",
+          "fontWeight": 600,
+          "lineHeight": "30px"
+        },
+        "$description": "Profile name, display",
+        "$extensions": {
+          "com.grove.colorRole": "deepText"
+        }
+      },
+      "h1": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', system-ui, sans-serif",
+          "fontSize": "20px",
+          "fontWeight": 600,
+          "lineHeight": "26px"
+        },
+        "$description": "Section titles",
+        "$extensions": {
+          "com.grove.colorRole": "deepText"
+        }
+      },
+      "h2": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', system-ui, sans-serif",
+          "fontSize": "18px",
+          "fontWeight": 600,
+          "lineHeight": "24px"
+        },
+        "$description": "Card headings, habit names",
+        "$extensions": {
+          "com.grove.colorRole": "deepText"
+        }
+      },
+      "paragraph": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', system-ui, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": 500,
+          "lineHeight": "22px"
+        },
+        "$description": "Body, habit rows",
+        "$extensions": {
+          "com.grove.colorRole": "secondaryText"
+        }
+      },
+      "paragraphRegular": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', system-ui, sans-serif",
+          "fontSize": "14px",
+          "fontWeight": 400,
+          "lineHeight": "20px"
+        },
+        "$description": "Supporting copy",
+        "$extensions": {
+          "com.grove.colorRole": "secondaryText"
+        }
+      },
+      "small": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', system-ui, sans-serif",
+          "fontSize": "14px",
+          "fontWeight": 600,
+          "lineHeight": "18px"
+        },
+        "$description": "Labels, streak, tab labels",
+        "$extensions": {
+          "com.grove.colorRole": "secondaryText"
+        }
+      }
+    },
+    "spacing": {
+      "screenPaddingHorizontal": {
+        "$type": "dimension",
+        "$value": "20px"
+      },
+      "sectionGap": {
+        "$type": "dimension",
+        "$value": "20px"
+      },
+      "cardPaddingHorizontal": {
+        "$type": "dimension",
+        "$value": "20px"
+      },
+      "cardPaddingVertical": {
+        "$type": "dimension",
+        "$value": "28px"
+      },
+      "habitRowGap": {
+        "$type": "dimension",
+        "$value": "16px"
+      }
+    },
+    "radius": {
+      "button": {
+        "$type": "dimension",
+        "$value": "12px"
+      },
+      "card": {
+        "$type": "dimension",
+        "$value": "24px"
+      },
+      "homeCard": {
+        "$type": "dimension",
+        "$value": "48px"
+      },
+      "pill": {
+        "$type": "dimension",
+        "$value": "999px"
+      }
+    },
+    "component": {
+      "habitRow": {
+        "$description": "components/habits/HabitRow.tsx styles. Several sizes are ad-hoc, not type tokens",
+        "minHeight": {
+          "$type": "dimension",
+          "$value": "148px"
+        },
+        "radius": {
+          "$type": "dimension",
+          "$value": "24px"
+        },
+        "contentPadding": {
+          "$type": "dimension",
+          "$value": "16px"
+        },
+        "contentMaxWidth": {
+          "$type": "number",
+          "$value": 0.58,
+          "$description": "Text column is 58% of the card; the habit illustration fills the right 48%"
+        },
+        "checkbox": {
+          "size": {
+            "$type": "dimension",
+            "$value": "40px"
+          },
+          "radius": {
+            "$type": "dimension",
+            "$value": "20px"
+          },
+          "borderWidth": {
+            "$type": "dimension",
+            "$value": "2.5px"
+          },
+          "glyphSize": {
+            "$type": "dimension",
+            "$value": "18px"
+          },
+          "$description": "Unchecked: paper fill, accent border. Checked: accent fill and border, onAccent (white) glyph"
+        },
+        "name": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', system-ui, sans-serif",
+            "fontSize": "20px",
+            "fontWeight": 700,
+            "lineHeight": "24px"
+          },
+          "$description": "AppText h2 overridden to 20/700. Not in the type scale"
+        },
+        "progress": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', system-ui, sans-serif",
+            "fontSize": "13px",
+            "fontWeight": 500,
+            "lineHeight": "18px"
+          },
+          "$description": "AppText small overridden to 13/500. Label is 'Streak N', 'Done' or a summary"
+        },
+        "weekDot": {
+          "size": {
+            "$type": "dimension",
+            "$value": "8px"
+          },
+          "gap": {
+            "$type": "dimension",
+            "$value": "5px"
+          },
+          "emptyOpacity": {
+            "$type": "number",
+            "$value": 0.28,
+            "$description": "Empty days are the same accent at 28% opacity"
+          }
+        },
+        "pressedOpacity": {
+          "$type": "number",
+          "$value": 0.85,
+          "$description": "TouchableOpacity activeOpacity"
+        },
+        "dragHandleOpacity": {
+          "$type": "number",
+          "$value": 0.4,
+          "$description": "line.3.horizontal icon in secondaryText at 40%"
+        }
+      },
+      "tabBar": {
+        "$description": "app/(tabs)/_layout.tsx",
+        "height": {
+          "$type": "dimension",
+          "$value": "96px"
+        },
+        "topRadius": {
+          "$type": "dimension",
+          "$value": "48px",
+          "$description": "Top corners only, borderCurve continuous"
+        },
+        "shadow": {
+          "$type": "number",
+          "$value": 0,
+          "$description": "shadowOpacity 0: the floating tab bar is flat, no shadow"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{v1.color.light.accentLimeSoft}"
+        },
+        "inactive": {
+          "$type": "color",
+          "$value": "{v1.color.light.mutedGray}"
+        }
+      },
+      "widget": {
+        "$description": "targets/widget/GroveWidgets.swift",
+        "cornerRadius": {
+          "$type": "dimension",
+          "$value": "21.67px"
+        },
+        "ringSize": {
+          "$type": "dimension",
+          "$value": "76px"
+        },
+        "ringStroke": {
+          "$type": "dimension",
+          "$value": "13px"
+        }
+      }
+    },
+    "growth": {
+      "$description": "lib/game/plantGrowth.ts + WorldScene.tsx. 28 plants x 7 frames. frame = min(completions this week, 6)",
+      "framesPerPlant": {
+        "$type": "number",
+        "$value": 7
+      },
+      "plants": {
+        "$type": "number",
+        "$value": 28
+      },
+      "seed": {
+        "$type": "com.grove.growth",
+        "$value": {
+          "rule": "No completions yet this week (Sunday to Saturday)",
+          "frame": 0
+        }
+      },
+      "sprout": {
+        "$type": "com.grove.growth",
+        "$value": {
+          "rule": "At least one completion this week",
+          "frame": "1 to 5"
+        }
+      },
+      "bloom": {
+        "$type": "com.grove.growth",
+        "$value": {
+          "rule": "Six or more completions this week",
+          "frame": 6,
+          "scale": 1.08
+        }
+      },
+      "wilt": {
+        "$type": "com.grove.growth",
+        "$value": {
+          "rule": "Missed today and yesterday, after being done before",
+          "opacity": 0.55
+        }
+      }
+    },
+    "elevation": {
+      "drag": {
+        "$type": "shadow",
+        "$value": {
+          "color": "rgba(0,0,0,0.18)",
+          "offsetX": "0px",
+          "offsetY": "8px",
+          "blur": "16px",
+          "spread": "0px"
+        },
+        "$description": "HabitRow wrapperDragging: shadowColor #000, offset 0/8, opacity 0.18, radius 16, Android elevation 8. The CSS blur approximates iOS shadowRadius."
+      }
+    },
+    "motion": {
+      "spring": {
+        "$type": "com.grove.spring",
+        "$value": {
+          "damping": 20,
+          "stiffness": 200
+        },
+        "$description": "Reanimated spring used in the app"
+      }
+    },
+    "haptics": [
+      {
+        "moment": "Habit marked complete",
+        "feedback": "notification.Success",
+        "kind": "confirm"
+      },
+      {
+        "moment": "Habit marked incomplete",
+        "feedback": "impact.Light",
+        "kind": "tap"
+      },
+      {
+        "moment": "Tab press",
+        "feedback": "impact.Light",
+        "kind": "tap"
+      },
+      {
+        "moment": "Counter step + / −",
+        "feedback": "impact.Light",
+        "kind": "tap"
+      },
+      {
+        "moment": "Timer start or resume",
+        "feedback": "impact.Medium",
+        "kind": "grab"
+      },
+      {
+        "moment": "Begin drag to reorder",
+        "feedback": "impact.Medium",
+        "kind": "grab"
+      },
+      {
+        "moment": "Timer finished",
+        "feedback": "Warning · 160ms · Warning · 160ms · Heavy · 70ms · Rigid",
+        "kind": "alarm"
+      }
+    ],
+    "generator": {
+      "description": "habitCardThemeFromAccent(accent, dark)",
+      "bg": {
+        "light": {
+          "toward": "#F9FAF1",
+          "amount": 0.9
+        },
+        "dark": {
+          "toward": "#1A221E",
+          "amount": 0.82
+        }
+      },
+      "iconWell": {
+        "light": {
+          "toward": "#F9FAF1",
+          "amount": 0.74
+        },
+        "dark": {
+          "toward": "#1A221E",
+          "amount": 0.68
+        }
+      },
+      "accentDeep": {
+        "toward": "#000000",
+        "amount": 0.22
+      }
+    }
+  },
+  "audit": {
+    "metrics": [
+      {
+        "value": 155,
+        "label": "hard-coded hex literals",
+        "detail": "97 unique colors across 24 files"
+      },
+      {
+        "value": 59,
+        "label": "hard-coded rgba() values"
+      },
+      {
+        "value": 15,
+        "label": "distinct fontSize literals",
+        "detail": "vs 6 type tokens, plus fractional 20.5 / 18.5 / 14.5"
+      },
+      {
+        "value": "16+",
+        "label": "distinct borderRadius literals",
+        "detail": "vs 4 radius tokens"
+      },
+      {
+        "value": "11+",
+        "label": "files import the light-only GroveColors",
+        "detail": "they will not follow dark mode"
+      },
+      {
+        "value": 2,
+        "label": "palettes outside the theme",
+        "detail": "auth-welcome-theme.ts (7 colors) and GroveWidgets.swift"
+      }
+    ],
+    "fontSizes": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      20,
+      22,
+      24,
+      28,
+      36,
+      56
+    ],
+    "v1Pairs": [
+      {
+        "id": "l-deep-bg",
+        "label": "Light · deepText on background",
+        "fg": "{v1.color.light.deepText}",
+        "bg": "{v1.color.light.background}",
+        "kind": "text",
+        "expected": 12.49
+      },
+      {
+        "id": "l-primary-bg",
+        "label": "Light · primaryText on background",
+        "fg": "{v1.color.light.primaryText}",
+        "bg": "{v1.color.light.background}",
+        "kind": "text",
+        "expected": 4.09
+      },
+      {
+        "id": "l-secondary-bg",
+        "label": "Light · secondaryText on background",
+        "fg": "{v1.color.light.secondaryText}",
+        "bg": "{v1.color.light.background}",
+        "kind": "text",
+        "expected": 3.89
+      },
+      {
+        "id": "l-secondary-card",
+        "label": "Light · secondaryText on cardBackground",
+        "fg": "{v1.color.light.secondaryText}",
+        "bg": "{v1.color.light.cardBackground}",
+        "kind": "text",
+        "expected": 3.59
+      },
+      {
+        "id": "l-muted-soft",
+        "label": "Light · mutedGray summary text on softSurface",
+        "fg": "{v1.color.light.mutedGray}",
+        "bg": "{v1.color.light.softSurface}",
+        "kind": "text",
+        "expected": 1.8
+      },
+      {
+        "id": "l-check-lime",
+        "label": "Light · white checkmark on accentLime",
+        "fg": "{v1.color.light.onAccent}",
+        "bg": "{v1.color.light.accentLime}",
+        "kind": "ui",
+        "expected": 1.38
+      },
+      {
+        "id": "l-check-green",
+        "label": "Light · white checkmark on primaryGreen",
+        "fg": "{v1.color.light.onAccent}",
+        "bg": "{v1.color.light.primaryGreen}",
+        "kind": "ui",
+        "expected": 1.6
+      },
+      {
+        "id": "l-deep-lime",
+        "label": "Light · deepText on accentLime",
+        "fg": "{v1.color.light.deepText}",
+        "bg": "{v1.color.light.accentLime}",
+        "kind": "text",
+        "expected": 9.52
+      },
+      {
+        "id": "l-tab-active",
+        "label": "Light · active tab accentLimeSoft on tabBar",
+        "fg": "{v1.color.light.accentLimeSoft}",
+        "bg": "{v1.color.light.tabBar}",
+        "kind": "ui",
+        "expected": 1.27
+      },
+      {
+        "id": "l-tab-inactive",
+        "label": "Light · inactive tab mutedGray on tabBar",
+        "fg": "{v1.color.light.mutedGray}",
+        "bg": "{v1.color.light.tabBar}",
+        "kind": "ui",
+        "expected": 1.57
+      },
+      {
+        "id": "l-seg",
+        "label": "Light · filled vs empty progress segment",
+        "fg": "{v1.color.light.accentLime}",
+        "bg": "{v1.color.light.mutedGray}",
+        "kind": "ui",
+        "expected": 1.38
+      },
+      {
+        "id": "l-olive-white",
+        "label": "Light · limeMuted on white",
+        "fg": "{v1.color.light.limeMuted}",
+        "bg": "{v1.color.light.white}",
+        "kind": "text",
+        "expected": 2.85
+      },
+      {
+        "id": "l-error",
+        "label": "Light · error on background",
+        "fg": "{v1.color.light.error}",
+        "bg": "{v1.color.light.background}",
+        "kind": "text",
+        "expected": 6.22
+      },
+      {
+        "id": "d-deep-bg",
+        "label": "Dark · deepText on background",
+        "fg": "{v1.color.dark.deepText}",
+        "bg": "{v1.color.dark.background}",
+        "kind": "text",
+        "expected": 15.61
+      },
+      {
+        "id": "d-secondary-card",
+        "label": "Dark · secondaryText on cardBackground",
+        "fg": "{v1.color.dark.secondaryText}",
+        "bg": "{v1.color.dark.cardBackground}",
+        "kind": "text",
+        "expected": 5.37
+      },
+      {
+        "id": "d-muted-soft",
+        "label": "Dark · mutedGray on softSurface",
+        "fg": "{v1.color.dark.mutedGray}",
+        "bg": "{v1.color.dark.softSurface}",
+        "kind": "text",
+        "expected": 2.8
+      },
+      {
+        "id": "d-check-lime",
+        "label": "Dark · white checkmark on accentLime",
+        "fg": "{v1.color.dark.onAccent}",
+        "bg": "{v1.color.dark.accentLime}",
+        "kind": "ui",
+        "expected": 1.38
+      },
+      {
+        "id": "d-tab-active",
+        "label": "Dark · active tab accentLimeSoft on tabBar",
+        "fg": "{v1.color.dark.accentLimeSoft}",
+        "bg": "{v1.color.dark.tabBar}",
+        "kind": "ui",
+        "expected": 9.4
+      },
+      {
+        "id": "d-tab-inactive",
+        "label": "Dark · inactive tab mutedGray on tabBar",
+        "fg": "{v1.color.dark.mutedGray}",
+        "bg": "{v1.color.dark.tabBar}",
+        "kind": "ui",
+        "expected": 2.94
+      },
+      {
+        "id": "a-button",
+        "label": "Auth · white button text on #C5E0A8",
+        "fg": "#FFFFFF",
+        "bg": "#C5E0A8",
+        "kind": "text",
+        "expected": 1.44
+      },
+      {
+        "id": "a-tagline",
+        "label": "Auth · tagline #13B30B on #E8F5EC",
+        "fg": "#13B30B",
+        "bg": "#E8F5EC",
+        "kind": "text",
+        "expected": 2.5
+      }
+    ]
+  }
+}

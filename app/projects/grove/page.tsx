@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Sora } from "next/font/google";
 import type { CSSProperties, ReactNode } from "react";
 import OtherProjects from "@/components/sections/OtherProjects";
@@ -7,6 +8,7 @@ import BoardNav from "../board/BoardNav";
 import { RevealBlock } from "./Reveal";
 import { ParallaxArea } from "./Parallax";
 import { CaseFooter, NextProject } from "../case-study/kit";
+import groveTokens from "./design-system/grove.tokens.json";
 
 // The Grove case study, built from the Figma design (Grove - Case Study).
 // Side-by-side layouts match the design at 1360px and wider; below that they stack.
@@ -218,6 +220,11 @@ function Hero() {
               </div>
             ))}
           </dl></RevealBlock>
+          <RevealBlock mount delay={0.6}>
+            <Link href="/projects/grove/design-system" className="inline-flex w-fit items-center text-[15px] font-medium text-[#007a12] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007a12]">
+              Read the design system case study →
+            </Link>
+          </RevealBlock>
         </div>
 
         {/* On a phone the character sits under the text */}
@@ -633,93 +640,39 @@ function AppScreens() {
 
 /* ───────────── design system ───────────── */
 
-const SWATCHES = [
-  ["Primary Green", "#C5EA47", "Main accent, primary buttons, checked states, brand highlights", "#c5ea47"],
-  ["Dark Green", "#8AA335", "Heading emphasis, contextual text over bright backgrounds", "#8aa335"],
-  ["Bright Green", "#BADF3D", "Secondary accent, sub-cards, brand visual decorations", "#badf3d"],
-  ["Dark Navy", "#213242", "Primary text, core titles, dark modes, dominant interface elements", "#213242"],
-  ["Cool Gray", "#B7BDC1", "Secondary text, disabled icons, placeholders, borders", "#b7bdc1"],
-  ["Light Gray", "#F8F9F9", "Card backgrounds, secondary controls, layout sections", "#f8f9f9"],
-  ["White", "#FFFFFF", "Default app background, primary cards, clean canvas blocks", "#ffffff"],
-  ["Yellow", "#FEE447", "Decorative accent, streak details, gamification highlights", "#fee447"],
-] as const;
-
-const TYPE_SCALE = [
-  ["Display — 24px", "Grow your mindful habits daily with Grove", "text-[24px] font-semibold"],
-  ["Heading — 20px", "Today’s Progress: 3 out of 5 complete", "text-[20px] font-semibold"],
-  ["Subheading — 18px", "Let’s take a few calm breaths with Sprout", "text-[18px] font-semibold"],
-  [
-    "Body — 14px",
-    "Habit tracking doesn't have to be clinical. Playful gardening prompts help you stay connected with your routines over long stretches of time.",
-    "text-[14px] font-normal",
-  ],
-] as const;
-
-const SORA = "[font-family:var(--font-grove-sora),system-ui,sans-serif]";
-const SF_ROUNDED = "[font-family:'SF_Pro_Rounded',ui-rounded,'SF_Pro_Display',system-ui,sans-serif]";
+// A short teaser. The full system lives on its own page, and every value here is read from its token file.
+const TEASER = ["accentLime", "primaryGreen", "limeMuted", "background", "cardBackground", "deepText"] as const;
 
 function DesignSystem() {
   return (
     <RevealBlock as="section" className={SECTION}>
-      <div className="flex max-w-[960px] flex-col gap-10">
+      <div className="flex max-w-[960px] flex-col gap-8">
         <div className="flex flex-col gap-6">
           <H2 className="!text-[#007a12]">Design System</H2>
-          <p className={`${BODY} max-w-[476px] !text-black`}>
-            A friendly, nature-themed system: lime green for actions, deep navy for text, and rounded type and corners
-            for a calm, inviting feel.
+          <p className={`${BODY} max-w-[620px] !text-black`}>
+            A friendly, nature-themed system: lime for actions, deep navy for text, and rounded type and corners for a calm,
+            inviting feel. The full write-up goes through every color, text style and component, and what held up once
+            the app was built.
           </p>
         </div>
-
-        <div className="flex flex-col gap-6">
-          <h3 className={SUBHEAD}>Principles</h3>
-          <ul className="flex flex-wrap gap-[22px]">
-            {["Friendly", "Nature themed", "Mindful clarity"].map((p) => (
-              <li key={p} className="flex min-w-[144px] items-center justify-center rounded-full border border-[rgba(102,102,102,0.4)] p-[10px] text-[15px] leading-[28px] tracking-[-0.2px] text-black/90">
-                {p}
+        <ul className="grid grid-cols-3 gap-4 md:grid-cols-6">
+          {TEASER.map((k) => {
+            const hex = groveTokens.v1.color.light[k].$value;
+            return (
+              <li key={k} className="flex flex-col gap-2">
+                <div className="h-16 w-full rounded-[12px] border border-black/10" style={{ backgroundColor: hex }} />
+                <p className="text-[12px] font-semibold text-[#213242]">{k}</p>
+                <p className="text-[11px] font-bold text-[#717171]">{hex}</p>
               </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="flex flex-col gap-6">
-          <h3 className={SUBHEAD}>Color Roles</h3>
-          <ul className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            {SWATCHES.map(([name, hex, role, color]) => (
-              <li key={name} className="flex flex-col gap-3 rounded-[16px] bg-[#e7e7e7] p-4">
-                <div
-                  className={`h-20 w-full rounded-[8px] ${name === "White" ? "border border-[#e5e8eb]" : ""}`}
-                  style={{ backgroundColor: color }}
-                />
-                <div className={`${SORA} flex flex-col gap-1`}>
-                  <p className="text-[13px] font-semibold text-[#213242]">{name}</p>
-                  <p className="text-[11px] font-bold text-[#9e9e9e]">{hex}</p>
-                  <p className="text-[10px] leading-[1.4] text-[#717171]">{role}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-0">
-            <h3 className={`${SUBHEAD} whitespace-nowrap`}>Font Type &amp; Scale</h3>
-            <div aria-hidden className="relative mx-[28px] hidden h-0 w-[31px] md:block">
-              <div className="absolute inset-[-2px_0_0_0]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`${A}/line-connector.svg`} alt="" className="block size-full max-w-none" />
-              </div>
-            </div>
-            <p className={`${SUBHEAD} md:whitespace-nowrap`}>SF Pro Rounded · 24 / 20 / 18 / 14 px</p>
-          </div>
-          <div className={`${SF_ROUNDED} flex flex-col justify-center gap-4 rounded-[24px] bg-[#e7e7e7] p-6 md:min-h-[246px]`}>
-            {TYPE_SCALE.map(([label, sample, cls]) => (
-              <div key={label} className="flex flex-col gap-1 md:flex-row md:items-center md:gap-6">
-                <p className="w-[200px] shrink-0 text-[13px] font-bold text-[#8aa335]">{label}</p>
-                <p className={`leading-[1.4] text-[#213242] md:max-w-[458px] ${cls}`}>{sample}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+            );
+          })}
+        </ul>
+        <Link
+          href="/projects/grove/design-system"
+          className="inline-flex w-fit items-center rounded-full bg-black px-6 py-3 text-[16px] font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+        >
+          View the full design system →
+        </Link>
       </div>
     </RevealBlock>
   );
