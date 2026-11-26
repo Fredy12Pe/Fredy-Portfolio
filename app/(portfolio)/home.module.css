@@ -507,6 +507,38 @@
   color: #464646;
 }
 
+.featuredTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.storeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 20px 0 16px;
+  border-radius: 40px;
+  background: #000;
+  color: #fff;
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.storeButton:hover {
+  background: #333;
+}
+
+.storeButton:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
 .featuredFooter {
   display: flex;
   align-items: flex-end;
@@ -562,6 +594,19 @@
 
 .featuredMediaGarden {
   background: #a4cd18;
+  container-type: size;
+}
+
+/* Keeps the design's 760 x 720 shape, centred and resting on the bottom edge (the phones run off it,
+   as in the design). In a tall, narrow panel it may be up to 1.3x the panel's width, so the phones stay
+   a good size; its sides then run off the panel, as the garden screen already does on the right. */
+.gardenStage {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: min(130cqw, 100cqh * 760 / 720);
+  aspect-ratio: 760 / 720;
+  transform: translateX(-50%);
 }
 
 .featuredMediaMaterials {

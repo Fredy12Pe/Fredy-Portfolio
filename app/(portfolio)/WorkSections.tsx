@@ -9,6 +9,7 @@ import {
   useRef,
   type CSSProperties,
   type ReactNode,
+  type SyntheticEvent,
 } from "react";
 import { inter } from "@/lib/fonts";
 import { useReveal } from "@/lib/reveal";
@@ -223,7 +224,10 @@ function FlyPiece({ part, className, children }: { part: 0 | 1; className: strin
 function ProjectDetails({ project }: { project: FeaturedProject }) {
   return (
     <FlyPiece part={0} className={styles.featuredDetails}>
-      <span className={styles.featuredCategory}>{project.category}</span>
+      <div className={styles.featuredTop}>
+        <span className={styles.featuredCategory}>{project.category}</span>
+        {project.storeUrl && <StoreButton url={project.storeUrl} />}
+      </div>
 
       <div className={styles.featuredContent}>
         <div className={styles.featuredCopy}>
@@ -252,6 +256,31 @@ function ProjectDetails({ project }: { project: FeaturedProject }) {
   );
 }
 
+/* The whole card is a link to the case study, so this can't be a nested <a>: it opens the store itself */
+function StoreButton({ url }: { url: string }) {
+  const open = (event: SyntheticEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+  return (
+    <span
+      role="link"
+      tabIndex={0}
+      className={styles.storeButton}
+      onClick={open}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") open(event);
+      }}
+    >
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
+        <path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.17-1.53 2.66-.39 6.59 1.1 8.75.73 1.05 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.29-.88-2.3-3.51ZM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.54 1.3-.56.64-1.05 1.68-.92 2.67.97.08 1.96-.49 2.56-1.21Z" />
+      </svg>
+      View in App Store
+    </span>
+  );
+}
+
 function FeaturedMedia({ kind }: { kind: FeaturedProject["media"] }) {
   if (kind === "garden") {
     return (
@@ -265,22 +294,26 @@ function FeaturedMedia({ kind }: { kind: FeaturedProject["media"] }) {
             sizes="(max-width: 1100px) 100vw, 760px"
           />
         </div>
-        <div className={styles.gardenScreen}>
-          <Image
-            src="/images/featured-work/grove-garden-screen.png"
-            alt="Grove garden screen with the island and its plots"
-            fill
-            sizes="(max-width: 1100px) 40vw, 300px"
-          />
-        </div>
-        <div className={styles.habitWrap}>
-          <div className={styles.habitPhone}>
+        {/* The phones sit on a stage with the design's 760 x 720 shape, so they keep their proportions
+            whatever shape the panel takes */}
+        <div className={styles.gardenStage}>
+          <div className={styles.gardenScreen}>
             <Image
-              src="/images/featured-work/grove-habit-progress.png"
-              alt="Grove habit progress screen"
+              src="/images/featured-work/grove-garden-screen.png"
+              alt="Grove garden screen with the island and its plots"
               fill
-              sizes="(max-width: 1100px) 40vw, 290px"
+              sizes="(max-width: 1100px) 40vw, 300px"
             />
+          </div>
+          <div className={styles.habitWrap}>
+            <div className={styles.habitPhone}>
+              <Image
+                src="/images/featured-work/grove-habit-progress.png"
+                alt="Grove habit progress screen"
+                fill
+                sizes="(max-width: 1100px) 40vw, 290px"
+              />
+            </div>
           </div>
         </div>
       </FlyPiece>

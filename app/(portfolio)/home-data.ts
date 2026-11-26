@@ -9,6 +9,8 @@ export type FeaturedProject = {
   year: string;
   role: string;
   href: string;
+  /** Store listing, shown as a button on the card when the app is live */
+  storeUrl?: string;
   /** Which media panel to draw: the Grove phone screens, or the Samples Store puzzle photo */
   media: "garden" | "materials";
 };
@@ -23,6 +25,7 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     year: "2026",
     role: "Product design, iOS development, research",
     href: "/projects/grove",
+    storeUrl: "https://apps.apple.com/us/app/grove-daily-habits/id6761643130",
     media: "garden",
   },
   {

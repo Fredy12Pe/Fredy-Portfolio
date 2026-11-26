@@ -244,11 +244,16 @@ function Hero() {
           className={`${MONO_LABEL} relative flex flex-wrap items-center gap-x-7 gap-y-2 px-7 pb-7 pt-6 text-[#007a12] md:px-12 min-[1360px]:absolute min-[1360px]:bottom-[26px] min-[1360px]:left-[102px] min-[1360px]:p-0`}
         >
           <span>Year: 2026</span>
-          <span className="flex items-center gap-2">
+          <a
+            href="https://apps.apple.com/us/app/grove-daily-habits/id6761643130"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#007a12] py-2 pl-3 pr-4 text-white transition-colors hover:bg-[#00600e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007a12]"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`${A}/icon-app-store.svg`} alt="" className="size-6" />
-            Coming soon to App Store
-          </span>
+            <img src={`${A}/icon-app-store.svg`} alt="" className="size-6 brightness-0 invert" />
+            View in App Store
+          </a>
         </div></RevealBlock>
 
         {/* The character, placed as in the design from the bottom right corner. On a tablet the whole picture scales down with the card (--s). */}
@@ -765,7 +770,7 @@ const TIMELINE = [
   ["Design", "~3 months", "Sketches, Figma, Sprout, brand guide", "pencil"],
   ["Build", "~3 months", "Expo app, Supabase, widgets", "build"],
   ["Submitted", "September 2026", "Sent for App Store review", "send"],
-  ["App Store", "Coming soon", "Future updates after launch", "store"],
+  ["App Store", "Live now", "Available to download on iPhone", "store"],
 ] as const;
 
 const TOOLS = [
@@ -927,7 +932,7 @@ function HowIBuiltIt() {
 
 function WhereItStands() {
   const cards = [
-    ["Where it stands", ["Submitted for App Store review in September 2026", "Coming soon to the App Store"]],
+    ["Where it stands", ["Submitted for App Store review in September 2026", "Live on the App Store now"]],
     ["Planned next", ["Leaderboard", "Visit friends’ gardens", "Character customization"]],
     ["What I’d change", ["Write a plan document before designing", "Keep a strict checklist and calendar", "This was my first app, so I jumped into design without a detailed plan"]],
   ] as const;
@@ -937,7 +942,7 @@ function WhereItStands() {
         <div className="flex flex-col gap-6">
           <H2>Where it stands and what I’d change</H2>
           <p className={`${BODY} max-w-[820px]`}>
-            Grove has been submitted for App Store review and is launching soon, so I can’t report real usage yet. Here
+            Grove is now live on the App Store. It has only just launched, so I can’t report real usage yet. Here
             is where it stands, what I plan to add, and what I would do differently.
           </p>
         </div>
